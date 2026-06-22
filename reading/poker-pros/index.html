@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html class="cache-narrow" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>High Roller Ledger &mdash; cache</title>
+<style>
+  :root {
+    --bg:#f1f2f6; --surface:#ffffff; --ink:#181a20; --mut:#6b7180; --line:#e4e6ec;
+    --ac:#3a3fb0; --acbg:#ecedfa; --pos:#1a7d4a; --neg:#c12c3b;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:17px/1.7 var(--serif); -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1080px; margin:0 auto; padding:20px 24px 72px; }
+  a { color:var(--ac); text-decoration:none; } a:hover { text-decoration:underline; }
+
+  header { padding:22px 0 14px; border-bottom:2px solid var(--ink); margin-bottom:20px; }
+  .kick { font-family:var(--sans); color:var(--ac); font-size:12px; font-weight:600;
+    letter-spacing:.15em; text-transform:uppercase; margin-bottom:12px; }
+  header h1 { margin:0; font-size:clamp(22px,2.7vw,29px); line-height:1.05; letter-spacing:-.02em; }
+  .dek { font-size:15.5px; line-height:1.45; color:#3c3f48; margin:9px 0 0; max-width:72ch; }
+  .headrow { display:flex; gap:24px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+  .headrow .dek { margin:0; flex:1 1 320px; }
+  .headrow .stats { display:flex; gap:12px; flex:0 0 auto; margin-left:auto; }
+
+  section { margin:32px 0 0; }
+  h2 { font-family:var(--serif); font-size:24px; line-height:1.2; font-weight:700;
+    letter-spacing:-.012em; margin:0 0 14px; display:flex; align-items:center; gap:12px; }
+  h2::before { content:""; width:10px; height:22px; border-radius:3px; background:var(--ac); }
+  h3 { font-family:var(--sans); font-size:13px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.05em; margin:26px 0 10px; display:flex; align-items:center; gap:8px; }
+
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px; margin:0; }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 16px; }
+  .card .n { font-family:var(--sans); font-size:clamp(18px,2.2vw,24px); font-weight:700;
+    color:var(--ac); line-height:1.05; letter-spacing:-.02em; font-variant-numeric:tabular-nums;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card .l { font-family:var(--sans); color:var(--mut); font-size:10.5px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.06em; margin-top:4px; }
+
+  .controls { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:0 0 14px; }
+  .lbl { font-family:var(--sans); font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--mut); }
+  .yf { font-family:var(--sans); font-size:13px; color:var(--ink); background:var(--surface);
+    border:1px solid var(--line); border-radius:8px; padding:6px 10px; cursor:pointer; }
+  .scope { font-family:var(--sans); font-size:13px; color:var(--mut); }
+  .lbtoggle { margin:12px 0 0; font-family:var(--sans); font-size:13px; font-weight:600;
+    color:var(--ac); background:none; border:none; cursor:pointer; padding:4px 0; }
+  .lbtoggle:hover { text-decoration:underline; }
+
+  .tablewrap { background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-family:var(--sans); font-size:14px; }
+  th, td { padding:10px 14px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th:nth-child(2), td:nth-child(2) { text-align:left; white-space:normal; }
+  th { background:#fafafd; color:var(--mut); font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:.05em; cursor:pointer; user-select:none; }
+  th:hover { color:var(--ink); }
+  th.sorted::after { content:" \25BE"; font-size:9px; }
+  th.asc::after { content:" \25B4"; font-size:9px; }
+  tbody tr:hover { background:#f6f7fb; }
+  tbody tr:last-child td { border-bottom:none; }
+  td:nth-child(2) { font-weight:600; color:var(--ink); }
+  .pos { color:var(--pos); } .neg { color:var(--neg); }
+  .mono { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  .note { background:var(--acbg); border:1px solid #d9daf3; border-left:4px solid var(--ac);
+    border-radius:10px; padding:16px 18px; margin:30px 0 0; font-family:var(--sans);
+    font-size:13.5px; line-height:1.6; color:#44474f; }
+  .note b { color:var(--ink); }
+
+  .hiatus { background:#fdeeb8; border:1px solid #e3c24f; border-top:5px solid #c79a1e;
+    border-radius:12px; padding:20px 24px; margin:0 0 32px; font-family:var(--sans);
+    box-shadow:0 2px 10px rgba(160,120,20,.14); }
+  .hiatus .htitle { font-size:19px; font-weight:800; letter-spacing:-.01em; color:#6b520f;
+    margin-bottom:8px; display:flex; align-items:center; gap:9px; }
+  .hiatus .htitle .dot { font-size:22px; }
+  .hiatus .hbody { font-size:15px; line-height:1.6; color:#574716; }
+  .hiatus .hbody a { color:#9a6b00; font-weight:700; }
+
+  .tag { display:inline-block; font-family:var(--sans); font-size:10px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.04em; padding:2px 8px; border-radius:20px; }
+  .tag.inc { background:rgba(26,125,74,.12); color:var(--pos); }
+  .tag.exc { background:rgba(193,44,59,.10); color:var(--neg); }
+  .inc-h { color:var(--pos); } .exc-h { color:var(--neg); }
+  .cov { margin:18px 0 0; }
+  .cov > summary { cursor:pointer; list-style:none; font-family:var(--sans); font-size:13px;
+    font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:8px 0;
+    display:flex; align-items:center; gap:8px; }
+  .cov > summary::-webkit-details-marker { display:none; }
+  .cov > summary::before { content:"\25B8"; font-size:11px; color:var(--mut); }
+  .cov[open] > summary::before { content:"\25BE"; }
+  .cov .tablewrap { margin-top:10px; }
+  .reason { font-family:var(--sans); color:var(--mut); font-size:12.5px; line-height:1.45; white-space:normal; }
+
+  footer { font-family:var(--sans); color:var(--mut); font-size:12.5px; line-height:1.6;
+    margin-top:50px; border-top:1px solid var(--line); padding-top:18px; }
+  footer code { font-family:var(--mono); font-size:12px; background:#e9ebf2; padding:1px 5px; border-radius:4px; }
+</style>
+<link rel="stylesheet" type="text/css" href="../../assets/css/reading-theme.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%204%2028%2010%2016%2016%204%2010Z%27/%3E%3Cpath%20d%3D%27M4%2016%2016%2022%2028%2016%27/%3E%3Cpath%20d%3D%27M4%2022%2016%2028%2028%2022%27/%3E%3C/svg%3E">
+<meta property="og:title" content="High Roller Ledger">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cache">
+<meta property="og:url" content="https://cache.bwang.io/reading/poker-pros/index.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="High Roller Ledger &mdash; cache">
+</head>
+<body>
+<style>@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:400;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');}@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:600;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');}@keyframes cacheFadeIn{from{opacity:0;}to{opacity:1;}}body{animation:cacheFadeIn .4s ease both;}</style><style>
+@view-transition{navigation:auto;}
+.nav-float{position:fixed;top:22px;left:22px;z-index:2147483647;pointer-events:none;
+	font:400 14px/1.45 'Josefin Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-min-cb{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.nav-card{width:230px;max-height:calc(100vh - 44px);overflow-y:auto;
+	background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.16);
+	border-radius:13px;padding:14px 0 16px;pointer-events:auto;transform-origin:top left;
+	transition:opacity .24s ease,transform .24s ease;}
+.nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;}
+.nav-home{display:inline-flex;align-items:center;color:#9a9a9a;text-decoration:none;
+	padding:2px;transition:color .15s;}
+.nav-home:hover{color:#333;}
+.nav-mini{cursor:pointer;color:#c4c4c4;font-size:21px;line-height:.5;padding:0 3px 6px;
+	user-select:none;transition:color .15s;}
+.nav-mini:hover{color:#333;}
+.nav-restore{position:absolute;top:0;left:0;display:inline-flex;align-items:center;gap:8px;
+	cursor:pointer;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.2);
+	color:#555;border-radius:11px;padding:8px 14px;font-size:13px;user-select:none;
+	opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.nav-restore::before{content:"";width:15px;height:11px;flex:none;color:#888;
+	background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left center/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left bottom/100% 1.5px no-repeat;}
+.nav-restore:hover{color:#111;}
+.nav-min-cb:checked ~ .nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+.nav-min-cb:checked ~ .nav-restore{opacity:1;pointer-events:auto;}
+.nav-card a.item{display:block;padding:7px 20px;color:#333;text-decoration:none;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-card a.item:hover{background:#f6f6f6;color:#111;}
+.nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-radio{position:absolute;opacity:0;pointer-events:none;}
+.nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
+.nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
+	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
+.nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
+.nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+	color:#111;border-bottom-color:#357BB3;}
+.nav-feed{display:none;}
+.nav-card #nav-cache:checked ~ .nf-cache{display:block;}
+.nav-card #nav-reading:checked ~ .nf-reading{display:block;}
+.nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+/* The panel is a left rail beside the centered column. Until the viewport is
+   wide enough for it to clear that column (same breakpoint as the article
+   outline), start it minimized: the pill shows by default and tapping it
+   expands the list. Otherwise the card slides out over the post text. */
+@media (max-width:1330px){
+	.nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+	.nav-restore{opacity:1;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-card{opacity:1;transform:none;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-restore{opacity:0;pointer-events:none;}
+}
+@media (max-width:700px){
+	.nav-card{width:min(230px,calc(100vw - 36px));}
+}
+@media (prefers-reduced-motion: reduce){
+	.nav-card,.nav-restore{transition:none;}
+}
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label></div><div class="nav-feed nf-cache"><a class="item" href="../../token-playbook.html">Token Playbook</a><a class="item" href="../../some-projects.html">Some Projects</a><a class="item" href="../../practical-poker.html">Practical Poker</a><a class="item" href="../../ecom-experiments.html">Ecom Experiments</a><a class="item" href="../../why-crypto.html">Why Crypto</a><a class="item" href="../../growing-peppers.html">Growing Peppers</a><a class="item" href="../../book-reviews.html">Book Reviews</a><a class="item" href="../../wasted-time.html">Dumb Poker</a><a class="item" href="../../trading-automation.html">Trading Automation</a><a class="item" href="../../api-in-rust.html">API in Rust</a><a class="item" href="../../cicd-on-gcp.html">CI/CD on GCP + SQL</a><a class="item" href="../../nomad-and-waypoint.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item active" href="../poker-pros/index.html">High Roller Ledger</a><a class="item" href="../spacs/index.html">Understanding SPACs</a><a class="item" href="../ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../watches/index.html">Watches That Beat Retail</a><a class="item" href="../wine/index.html">Wine as an Investment Asset</a><a class="item" href="../real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a></div></div></div>
+<div class="wrap">
+  <header>
+    <h1>High Roller Ledger</h1>
+    <div class="kick">High-stakes tournament poker · net profit &amp; loss</div>
+    <div class="headrow">
+      <p class="dek">Who in the high-stakes professional cohort is actually winning or losing &mdash;
+        live freezeout tournaments, $7,000+ buy-ins, with <i>every</i> buy-in counted (busts included).
+        Data spans 2012&ndash;present; the leaderboard defaults to 2020 onward.</p>
+      <div class="stats" id="cards"></div>
+    </div>
+  </header>
+<nav class="outline" aria-label="Outline">
+  <a href="#leaderboard">Leaderboard</a>
+  <a href="#coverage">Coverage</a>
+</nav>
+
+  <div class="hiatus">
+    <div class="htitle"><span class="dot">⏸</span> Project on hiatus</div>
+    <div class="hbody"><b>This project is incomplete and paused.</b> Net P&amp;L here is winnings minus
+      <i>every</i> buy-in (busts included), which needs a complete entrant list &mdash; so only
+      freezeouts with a fully published field are counted. I haven't been able to get the data to go
+      further: full rosters and per-player re-entry counts for re-entry events aren't published
+      anywhere I can reach. The events shown are exact; backing/staking is ignored and all amounts
+      are USD. Everything left out is listed, with reasons, in <a href="#coverage">Coverage</a>.</div>
+  </div>
+
+  <section id="leaderboard">
+    <h2>Net P&amp;L leaderboard</h2>
+    <div class="controls">
+      <label class="lbl" for="yearFilter">Show events from</label>
+      <select id="yearFilter" class="yf">
+        <option value="2020" selected>2020 onwards</option>
+        <option value="0">All time</option>
+        <option value="2016">2016 onwards</option>
+        <option value="2023">2023 onwards</option>
+      </select>
+      <span class="scope" id="lb-scope"></span>
+    </div>
+    <div class="tablewrap">
+      <table id="lb">
+        <thead><tr>
+          <th data-k="rank">#</th>
+          <th data-k="player">Player</th>
+          <th data-k="events_played">Events</th>
+          <th data-k="itm">ITM</th>
+          <th data-k="buy_ins_usd">Buy-ins</th>
+          <th data-k="winnings_usd">Winnings</th>
+          <th data-k="net_usd">Net P&amp;L</th>
+          <th data-k="roi">ROI</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button id="lb-toggle" class="lbtoggle"></button>
+  </section>
+
+  <section id="coverage">
+    <h2>Coverage &mdash; which tournaments are used</h2>
+    <details class="cov">
+      <summary class="inc-h">Included <span class="tag inc">feeds P&amp;L</span></summary>
+      <div class="tablewrap">
+        <table id="inc"><thead><tr>
+          <th data-k="date">Date</th><th data-k="name">Event</th>
+          <th data-k="buy_in_usd">Buy-in</th><th data-k="entries">Entries</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </details>
+
+    <details class="cov">
+      <summary class="exc-h">Excluded <span class="tag exc">not used</span></summary>
+      <div class="tablewrap">
+        <table id="exc"><thead><tr>
+          <th data-k="date">Date</th><th data-k="name">Event</th>
+          <th data-k="buy_in_usd">Buy-in</th><th data-k="entries">Entries</th>
+          <th data-k="exclusion_reason">Reason not used</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    Built by a deterministic pipeline (<code>pipeline/build.py</code>) from versioned per-event JSON
+    in <code>data/events/</code>. Each included event has a complete named field with payouts that
+    reconcile to the prize pool. Source: <a href="https://github.com/sooflee/voltorb">github.com/sooflee/voltorb</a>.
+  </footer>
+</div>
+
+<script>
+const fmtUSD = n => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US");
+const fmtROI = r => r == null ? "—" : (r >= 0 ? "+" : "") + (r * 100).toFixed(0) + "%";
+const fmtDate = d => d || "—";
+const cls = n => n > 0 ? "pos" : n < 0 ? "neg" : "";
+
+let RAW = [], SUMMARY = {};
+async function load() {
+  const [lb, cov] = await Promise.all([
+    fetch("./data/leaderboard.json").then(r => r.json()),
+    fetch("./data/coverage.json").then(r => r.json()),
+  ]);
+  RAW = lb.players; SUMMARY = lb.summary;
+  renderCoverage(cov);
+  const sel = document.getElementById("yearFilter");
+  sel.onchange = () => applyFilter(Number(sel.value));
+  applyFilter(Number(sel.value));
+}
+
+// Recompute the whole leaderboard client-side for events with year >= minYear,
+// using each player's per-event breakdown in leaderboard.json.
+function applyFilter(minYear) {
+  const players = [];
+  for (const p of RAW) {
+    const es = (p.events || []).filter(e => e.year >= minYear);
+    if (!es.length) continue;
+    const buy = es.reduce((s, e) => s + e.buy_in_usd * (e.entries || 1), 0);
+    const win = es.reduce((s, e) => s + e.winnings_usd, 0);
+    const net = es.reduce((s, e) => s + e.net_usd, 0);
+    players.push({ player: p.player, events_played: es.length,
+      itm: es.filter(e => e.winnings_usd > 0).length,
+      buy_ins_usd: buy, winnings_usd: win, net_usd: net,
+      roi: buy ? net / buy : null, events: es });
+  }
+  players.sort((a, b) => b.net_usd - a.net_usd);
+  players.forEach((p, i) => p.rank = i + 1);
+  const ids = new Set();
+  players.forEach(p => p.events.forEach(e => ids.add(e.id)));
+  const years = [...new Set(players.flatMap(p => p.events.map(e => e.year)))].sort();
+  renderCards({ players: players.length, events_included: ids.size,
+    events_excluded: SUMMARY.events_excluded, events_evaluated_excluded: SUMMARY.events_evaluated_excluded,
+    pool_buy_ins_usd: players.reduce((s, p) => s + p.buy_ins_usd, 0),
+    pool_winnings_usd: players.reduce((s, p) => s + p.winnings_usd, 0) });
+  renderLeaderboard(players);
+  document.getElementById("lb-scope").textContent =
+    `${players.length} players across ${ids.size} event(s)` +
+    (years.length ? `, ${years[0]}–${years[years.length - 1]}` : "") +
+    (minYear ? ` — filtered to ${minYear}+` : "") + ".";
+}
+
+function renderCards(s) {
+  const cards = [
+    ["Buy-ins tracked", fmtUSD(s.pool_buy_ins_usd)],
+    ["Winnings tracked", fmtUSD(s.pool_winnings_usd)],
+  ];
+  document.getElementById("cards").innerHTML = cards.map(
+    ([l, n]) => `<div class="card"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
+}
+
+let lbRows = [], sortKey = "net_usd", sortAsc = false, showAll = false;
+function renderLeaderboard(players) {
+  lbRows = players;
+  const tb = document.querySelector("#lb tbody");
+  const btn = document.getElementById("lb-toggle");
+  const draw = () => {
+    const sorted = [...lbRows].sort((a, b) => {
+      const av = a[sortKey] ?? -Infinity, bv = b[sortKey] ?? -Infinity;
+      if (typeof av === "string") return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+      return sortAsc ? av - bv : bv - av;
+    });
+    const rows = showAll ? sorted : sorted.slice(0, 5);
+    tb.innerHTML = rows.map(p => `<tr>
+      <td class="mono">${p.rank}</td>
+      <td>${p.player}</td>
+      <td class="mono">${p.events_played}</td>
+      <td class="mono">${p.itm}</td>
+      <td class="mono">${fmtUSD(p.buy_ins_usd)}</td>
+      <td class="mono">${fmtUSD(p.winnings_usd)}</td>
+      <td class="mono ${cls(p.net_usd)}">${fmtUSD(p.net_usd)}</td>
+      <td class="mono ${cls(p.net_usd)}">${fmtROI(p.roi)}</td>
+    </tr>`).join("");
+    document.querySelectorAll("#lb th").forEach(th => {
+      th.classList.toggle("sorted", th.dataset.k === sortKey && !sortAsc);
+      th.classList.toggle("asc", th.dataset.k === sortKey && sortAsc);
+    });
+    if (lbRows.length <= 5) { btn.style.display = "none"; }
+    else { btn.style.display = ""; btn.textContent = showAll ? "Show top 5 only" : `Show all ${lbRows.length} players ▾`; }
+  };
+  btn.onclick = () => { showAll = !showAll; draw(); };
+  document.querySelectorAll("#lb th").forEach(th => th.onclick = () => {
+    if (sortKey === th.dataset.k) sortAsc = !sortAsc;
+    else { sortKey = th.dataset.k; sortAsc = false; }
+    draw();
+  });
+  draw();
+}
+
+function renderCoverage(cov) {
+  document.querySelector("#inc tbody").innerHTML = cov.included.map(e => `<tr>
+    <td class="mono">${fmtDate(e.date)}</td>
+    <td>${e.name}<br><span class="reason">${e.series}${e.stop ? " · " + e.stop : ""}</span></td>
+    <td class="mono">${fmtUSD(e.buy_in_usd)}</td>
+    <td class="mono">${e.entries}</td></tr>`).join("") ||
+    `<tr><td colspan="4" class="reason">None yet.</td></tr>`;
+  document.querySelector("#exc tbody").innerHTML = cov.excluded.map(e => `<tr>
+    <td class="mono">${e.date || e.year}</td>
+    <td>${e.name}${e.evaluated_only ? ' <span class="tag exc">evaluated</span>' : ""}<br>
+        <span class="reason">${e.series || ""}${e.stop ? " · " + e.stop : ""}</span></td>
+    <td class="mono">${fmtUSD(e.buy_in_usd)}</td>
+    <td class="mono">${e.entries ?? "—"}</td>
+    <td class="reason">${e.exclusion_reason || ""}</td></tr>`).join("") ||
+    `<tr><td colspan="5" class="reason">None.</td></tr>`;
+}
+
+load().catch(e => {
+  document.querySelector(".wrap").insertAdjacentHTML("beforeend",
+    `<p class="neg">Failed to load data: ${e}</p>`);
+});
+</script>
+<script>
+(function () {
+  var links = [].slice.call(document.querySelectorAll('nav.outline a'));
+  if (!links.length) return;
+  var map = links.map(function (a) {
+    var el = document.querySelector(a.getAttribute('href'));
+    return el ? { a: a, el: el } : null;
+  }).filter(Boolean);
+  function onScroll() {
+    var cur = null;
+    map.forEach(function (m) { if (m.el.getBoundingClientRect().top <= 140) cur = m; });
+    links.forEach(function (a) { a.classList.remove('active'); });
+    if (cur) cur.a.classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+<a href="#top" class="to-top" aria-label="Back to top" title="Back to top">↑</a>
+<style>
+.to-top{position:fixed;bottom:22px;right:22px;z-index:2147483646;width:40px;height:40px;
+	display:flex;align-items:center;justify-content:center;border-radius:50%;
+	background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+	border:1px solid rgba(140,140,140,.28);color:#555;font-size:19px;line-height:1;text-decoration:none;
+	opacity:0;pointer-events:none;transition:opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.to-top.show{opacity:1;pointer-events:auto;}
+.to-top:hover{color:#111;border-color:rgba(140,140,140,.5);}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none;}html{scroll-behavior:auto;}}
+</style>
+<script>(function(){var b=document.querySelector('.to-top');if(!b)return;
+function f(){b.classList.toggle('show',window.scrollY>500);}
+window.addEventListener('scroll',f,{passive:true});f();
+b.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});})();</script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>High Roller Ledger — High-Stakes Poker P&amp;L</title>
+<style>
+  :root {
+    --bg:#f1f2f6; --surface:#ffffff; --ink:#181a20; --mut:#6b7180; --line:#e4e6ec;
+    --ac:#3a3fb0; --acbg:#ecedfa; --pos:#1a7d4a; --neg:#c12c3b;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:17px/1.7 var(--serif); -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1080px; margin:0 auto; padding:20px 24px 72px; }
+  a { color:var(--ac); text-decoration:none; } a:hover { text-decoration:underline; }
+
+  header { padding:22px 0 14px; border-bottom:2px solid var(--ink); margin-bottom:20px; }
+  .kick { font-family:var(--sans); color:var(--ac); font-size:12px; font-weight:600;
+    letter-spacing:.15em; text-transform:uppercase; margin-bottom:12px; }
+  header h1 { margin:0; font-size:clamp(22px,2.7vw,29px); line-height:1.05; letter-spacing:-.02em; }
+  .dek { font-size:15.5px; line-height:1.45; color:#3c3f48; margin:9px 0 0; max-width:72ch; }
+  .headrow { display:flex; gap:24px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+  .headrow .dek { margin:0; flex:1 1 320px; }
+  .headrow .stats { display:flex; gap:12px; flex:0 0 auto; margin-left:auto; }
+
+  section { margin:32px 0 0; }
+  h2 { font-family:var(--serif); font-size:24px; line-height:1.2; font-weight:700;
+    letter-spacing:-.012em; margin:0 0 14px; display:flex; align-items:center; gap:12px; }
+  h2::before { content:""; width:10px; height:22px; border-radius:3px; background:var(--ac); }
+  h3 { font-family:var(--sans); font-size:13px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.05em; margin:26px 0 10px; display:flex; align-items:center; gap:8px; }
+
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px; margin:0; }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 16px; }
+  .card .n { font-family:var(--sans); font-size:clamp(18px,2.2vw,24px); font-weight:700;
+    color:var(--ac); line-height:1.05; letter-spacing:-.02em; font-variant-numeric:tabular-nums;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card .l { font-family:var(--sans); color:var(--mut); font-size:10.5px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.06em; margin-top:4px; }
+
+  .controls { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:0 0 14px; }
+  .lbl { font-family:var(--sans); font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--mut); }
+  .yf { font-family:var(--sans); font-size:13px; color:var(--ink); background:var(--surface);
+    border:1px solid var(--line); border-radius:8px; padding:6px 10px; cursor:pointer; }
+  .scope { font-family:var(--sans); font-size:13px; color:var(--mut); }
+  .lbtoggle { margin:12px 0 0; font-family:var(--sans); font-size:13px; font-weight:600;
+    color:var(--ac); background:none; border:none; cursor:pointer; padding:4px 0; }
+  .lbtoggle:hover { text-decoration:underline; }
+
+  .tablewrap { background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-family:var(--sans); font-size:14px; }
+  th, td { padding:10px 14px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th:nth-child(2), td:nth-child(2) { text-align:left; white-space:normal; }
+  th { background:#fafafd; color:var(--mut); font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:.05em; cursor:pointer; user-select:none; }
+  th:hover { color:var(--ink); }
+  th.sorted::after { content:" \25BE"; font-size:9px; }
+  th.asc::after { content:" \25B4"; font-size:9px; }
+  tbody tr:hover { background:#f6f7fb; }
+  tbody tr:last-child td { border-bottom:none; }
+  td:nth-child(2) { font-weight:600; color:var(--ink); }
+  .pos { color:var(--pos); } .neg { color:var(--neg); }
+  .mono { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  .note { background:var(--acbg); border:1px solid #d9daf3; border-left:4px solid var(--ac);
+    border-radius:10px; padding:16px 18px; margin:30px 0 0; font-family:var(--sans);
+    font-size:13.5px; line-height:1.6; color:#44474f; }
+  .note b { color:var(--ink); }
+
+  .hiatus { background:#fdeeb8; border:1px solid #e3c24f; border-top:5px solid #c79a1e;
+    border-radius:12px; padding:20px 24px; margin:0 0 32px; font-family:var(--sans);
+    box-shadow:0 2px 10px rgba(160,120,20,.14); }
+  .hiatus .htitle { font-size:19px; font-weight:800; letter-spacing:-.01em; color:#6b520f;
+    margin-bottom:8px; display:flex; align-items:center; gap:9px; }
+  .hiatus .htitle .dot { font-size:22px; }
+  .hiatus .hbody { font-size:15px; line-height:1.6; color:#574716; }
+  .hiatus .hbody a { color:#9a6b00; font-weight:700; }
+
+  .tag { display:inline-block; font-family:var(--sans); font-size:10px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.04em; padding:2px 8px; border-radius:20px; }
+  .tag.inc { background:rgba(26,125,74,.12); color:var(--pos); }
+  .tag.exc { background:rgba(193,44,59,.10); color:var(--neg); }
+  .inc-h { color:var(--pos); } .exc-h { color:var(--neg); }
+  .cov { margin:18px 0 0; }
+  .cov > summary { cursor:pointer; list-style:none; font-family:var(--sans); font-size:13px;
+    font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:8px 0;
+    display:flex; align-items:center; gap:8px; }
+  .cov > summary::-webkit-details-marker { display:none; }
+  .cov > summary::before { content:"\25B8"; font-size:11px; color:var(--mut); }
+  .cov[open] > summary::before { content:"\25BE"; }
+  .cov .tablewrap { margin-top:10px; }
+  .reason { font-family:var(--sans); color:var(--mut); font-size:12.5px; line-height:1.45; white-space:normal; }
+
+  footer { font-family:var(--sans); color:var(--mut); font-size:12.5px; line-height:1.6;
+    margin-top:50px; border-top:1px solid var(--line); padding-top:18px; }
+  footer code { font-family:var(--mono); font-size:12px; background:#e9ebf2; padding:1px 5px; border-radius:4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kick">High-stakes tournament poker · net profit &amp; loss</div>
+    <h1>High Roller Ledger</h1>
+    <div class="headrow">
+      <p class="dek">Who in the high-stakes professional cohort is actually winning or losing &mdash;
+        live freezeout tournaments, $7,000+ buy-ins, with <i>every</i> buy-in counted (busts included).
+        Data spans 2012&ndash;present; the leaderboard defaults to 2020 onward.</p>
+      <div class="stats" id="cards"></div>
+    </div>
+  </header>
+<nav class="outline" aria-label="Outline">
+  <a href="#leaderboard">Leaderboard</a>
+  <a href="#coverage">Coverage</a>
+</nav>
+
+  <div class="hiatus">
+    <div class="htitle"><span class="dot">⏸</span> Project on hiatus</div>
+    <div class="hbody"><b>This project is incomplete and paused.</b> Net P&amp;L here is winnings minus
+      <i>every</i> buy-in (busts included), which needs a complete entrant list &mdash; so only
+      freezeouts with a fully published field are counted. I haven't been able to get the data to go
+      further: full rosters and per-player re-entry counts for re-entry events aren't published
+      anywhere I can reach. The events shown are exact; backing/staking is ignored and all amounts
+      are USD. Everything left out is listed, with reasons, in <a href="#coverage">Coverage</a>.</div>
+  </div>
+
+  <section id="leaderboard">
+    <h2>Net P&amp;L leaderboard</h2>
+    <div class="controls">
+      <label class="lbl" for="yearFilter">Show events from</label>
+      <select id="yearFilter" class="yf">
+        <option value="2020" selected>2020 onwards</option>
+        <option value="0">All time</option>
+        <option value="2016">2016 onwards</option>
+        <option value="2023">2023 onwards</option>
+      </select>
+      <span class="scope" id="lb-scope"></span>
+    </div>
+    <div class="tablewrap">
+      <table id="lb">
+        <thead><tr>
+          <th data-k="rank">#</th>
+          <th data-k="player">Player</th>
+          <th data-k="events_played">Events</th>
+          <th data-k="itm">ITM</th>
+          <th data-k="buy_ins_usd">Buy-ins</th>
+          <th data-k="winnings_usd">Winnings</th>
+          <th data-k="net_usd">Net P&amp;L</th>
+          <th data-k="roi">ROI</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button id="lb-toggle" class="lbtoggle"></button>
+  </section>
+
+  <section id="coverage">
+    <h2>Coverage &mdash; which tournaments are used</h2>
+    <details class="cov">
+      <summary class="inc-h">Included <span class="tag inc">feeds P&amp;L</span></summary>
+      <div class="tablewrap">
+        <table id="inc"><thead><tr>
+          <th data-k="date">Date</th><th data-k="name">Event</th>
+          <th data-k="buy_in_usd">Buy-in</th><th data-k="entries">Entries</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </details>
+
+    <details class="cov">
+      <summary class="exc-h">Excluded <span class="tag exc">not used</span></summary>
+      <div class="tablewrap">
+        <table id="exc"><thead><tr>
+          <th data-k="date">Date</th><th data-k="name">Event</th>
+          <th data-k="buy_in_usd">Buy-in</th><th data-k="entries">Entries</th>
+          <th data-k="exclusion_reason">Reason not used</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    Built by a deterministic pipeline (<code>pipeline/build.py</code>) from versioned per-event JSON
+    in <code>data/events/</code>. Each included event has a complete named field with payouts that
+    reconcile to the prize pool. Source: <a href="https://github.com/sooflee/voltorb">github.com/sooflee/voltorb</a>.
+  </footer>
+</div>
+
+<script>
+const fmtUSD = n => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US");
+const fmtROI = r => r == null ? "—" : (r >= 0 ? "+" : "") + (r * 100).toFixed(0) + "%";
+const fmtDate = d => d || "—";
+const cls = n => n > 0 ? "pos" : n < 0 ? "neg" : "";
+
+let RAW = [], SUMMARY = {};
+async function load() {
+  const [lb, cov] = await Promise.all([
+    fetch("./data/leaderboard.json").then(r => r.json()),
+    fetch("./data/coverage.json").then(r => r.json()),
+  ]);
+  RAW = lb.players; SUMMARY = lb.summary;
+  renderCoverage(cov);
+  const sel = document.getElementById("yearFilter");
+  sel.onchange = () => applyFilter(Number(sel.value));
+  applyFilter(Number(sel.value));
+}
+
+// Recompute the whole leaderboard client-side for events with year >= minYear,
+// using each player's per-event breakdown in leaderboard.json.
+function applyFilter(minYear) {
+  const players = [];
+  for (const p of RAW) {
+    const es = (p.events || []).filter(e => e.year >= minYear);
+    if (!es.length) continue;
+    const buy = es.reduce((s, e) => s + e.buy_in_usd * (e.entries || 1), 0);
+    const win = es.reduce((s, e) => s + e.winnings_usd, 0);
+    const net = es.reduce((s, e) => s + e.net_usd, 0);
+    players.push({ player: p.player, events_played: es.length,
+      itm: es.filter(e => e.winnings_usd > 0).length,
+      buy_ins_usd: buy, winnings_usd: win, net_usd: net,
+      roi: buy ? net / buy : null, events: es });
+  }
+  players.sort((a, b) => b.net_usd - a.net_usd);
+  players.forEach((p, i) => p.rank = i + 1);
+  const ids = new Set();
+  players.forEach(p => p.events.forEach(e => ids.add(e.id)));
+  const years = [...new Set(players.flatMap(p => p.events.map(e => e.year)))].sort();
+  renderCards({ players: players.length, events_included: ids.size,
+    events_excluded: SUMMARY.events_excluded, events_evaluated_excluded: SUMMARY.events_evaluated_excluded,
+    pool_buy_ins_usd: players.reduce((s, p) => s + p.buy_ins_usd, 0),
+    pool_winnings_usd: players.reduce((s, p) => s + p.winnings_usd, 0) });
+  renderLeaderboard(players);
+  document.getElementById("lb-scope").textContent =
+    `${players.length} players across ${ids.size} event(s)` +
+    (years.length ? `, ${years[0]}–${years[years.length - 1]}` : "") +
+    (minYear ? ` — filtered to ${minYear}+` : "") + ".";
+}
+
+function renderCards(s) {
+  const cards = [
+    ["Buy-ins tracked", fmtUSD(s.pool_buy_ins_usd)],
+    ["Winnings tracked", fmtUSD(s.pool_winnings_usd)],
+  ];
+  document.getElementById("cards").innerHTML = cards.map(
+    ([l, n]) => `<div class="card"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
+}
+
+let lbRows = [], sortKey = "net_usd", sortAsc = false, showAll = false;
+function renderLeaderboard(players) {
+  lbRows = players;
+  const tb = document.querySelector("#lb tbody");
+  const btn = document.getElementById("lb-toggle");
+  const draw = () => {
+    const sorted = [...lbRows].sort((a, b) => {
+      const av = a[sortKey] ?? -Infinity, bv = b[sortKey] ?? -Infinity;
+      if (typeof av === "string") return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+      return sortAsc ? av - bv : bv - av;
+    });
+    const rows = showAll ? sorted : sorted.slice(0, 5);
+    tb.innerHTML = rows.map(p => `<tr>
+      <td class="mono">${p.rank}</td>
+      <td>${p.player}</td>
+      <td class="mono">${p.events_played}</td>
+      <td class="mono">${p.itm}</td>
+      <td class="mono">${fmtUSD(p.buy_ins_usd)}</td>
+      <td class="mono">${fmtUSD(p.winnings_usd)}</td>
+      <td class="mono ${cls(p.net_usd)}">${fmtUSD(p.net_usd)}</td>
+      <td class="mono ${cls(p.net_usd)}">${fmtROI(p.roi)}</td>
+    </tr>`).join("");
+    document.querySelectorAll("#lb th").forEach(th => {
+      th.classList.toggle("sorted", th.dataset.k === sortKey && !sortAsc);
+      th.classList.toggle("asc", th.dataset.k === sortKey && sortAsc);
+    });
+    if (lbRows.length <= 5) { btn.style.display = "none"; }
+    else { btn.style.display = ""; btn.textContent = showAll ? "Show top 5 only" : `Show all ${lbRows.length} players ▾`; }
+  };
+  btn.onclick = () => { showAll = !showAll; draw(); };
+  document.querySelectorAll("#lb th").forEach(th => th.onclick = () => {
+    if (sortKey === th.dataset.k) sortAsc = !sortAsc;
+    else { sortKey = th.dataset.k; sortAsc = false; }
+    draw();
+  });
+  draw();
+}
+
+function renderCoverage(cov) {
+  document.querySelector("#inc tbody").innerHTML = cov.included.map(e => `<tr>
+    <td class="mono">${fmtDate(e.date)}</td>
+    <td>${e.name}<br><span class="reason">${e.series}${e.stop ? " · " + e.stop : ""}</span></td>
+    <td class="mono">${fmtUSD(e.buy_in_usd)}</td>
+    <td class="mono">${e.entries}</td></tr>`).join("") ||
+    `<tr><td colspan="4" class="reason">None yet.</td></tr>`;
+  document.querySelector("#exc tbody").innerHTML = cov.excluded.map(e => `<tr>
+    <td class="mono">${e.date || e.year}</td>
+    <td>${e.name}${e.evaluated_only ? ' <span class="tag exc">evaluated</span>' : ""}<br>
+        <span class="reason">${e.series || ""}${e.stop ? " · " + e.stop : ""}</span></td>
+    <td class="mono">${fmtUSD(e.buy_in_usd)}</td>
+    <td class="mono">${e.entries ?? "—"}</td>
+    <td class="reason">${e.exclusion_reason || ""}</td></tr>`).join("") ||
+    `<tr><td colspan="5" class="reason">None.</td></tr>`;
+}
+
+load().catch(e => {
+  document.querySelector(".wrap").insertAdjacentHTML("beforeend",
+    `<p class="neg">Failed to load data: ${e}</p>`);
+});
+</script>
+<script>
+(function () {
+  var links = [].slice.call(document.querySelectorAll('nav.outline a'));
+  if (!links.length) return;
+  var map = links.map(function (a) {
+    var el = document.querySelector(a.getAttribute('href'));
+    return el ? { a: a, el: el } : null;
+  }).filter(Boolean);
+  function onScroll() {
+    var cur = null;
+    map.forEach(function (m) { if (m.el.getBoundingClientRect().top <= 140) cur = m; });
+    links.forEach(function (a) { a.classList.remove('active'); });
+    if (cur) cur.a.classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE HTML>
+<html lang="en" dir="ltr">
+	<head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+		<meta charset="utf-8">
+
+		<title>practical poker &mdash; cache</title>
+		
+		<link rel="stylesheet" type="text/css" href="https://cdn.writeas.net/css/write.7a8d594726b6871de2afc.css" />
+		
+		<link rel="shortcut icon" href="https://cdn.writeas.net/favicon.ico" />
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<link rel="canonical" href="https://cache.bwang.io/practical-poker" />
+		<link rel="alternate" type="application/rss+xml" title="cache &raquo; Feed" href="https://cache.bwang.io/feed/" />
+		<meta name="generator" content="Write.as">
+		<meta name="title" content="practical poker &mdash; cache">
+		<meta name="description" content="Across playing low stakes live and microstakes online, I have won somewhere around 15k in profit playing poker.  I used to have a lengthi...">
+		
+		<meta name="twitter:label1" value="Views">
+		<meta name="twitter:data1" value="56">
+		<link rel="author" href="http://cache.bwang.io/" />
+		<meta name="author" content="cache" />
+		<meta itemprop="description" content="Across playing low stakes live and microstakes online, I have won somewhere around 15k in profit playing poker.  I used to have a lengthi...">
+		<meta itemprop="datePublished" content="2025-11-14" />
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:description" content="Across playing low stakes live and microstakes online, I have won somewhere around 15k in profit playing poker.  I used to have a lengthi...">
+		<meta name="twitter:title" content="practical poker &mdash; cache">
+		<meta name="twitter:image" content="https://cdn.writeas.net/img/w-sq-light.png">
+		<meta property="og:title" content="practical poker" />
+		<meta property="og:description" content="Across playing low stakes live and microstakes online, I have won somewhere around 15k in profit playing poker.  I used to have a lengthi..." />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://cache.bwang.io/practical-poker" />
+		<meta property="og:updated_time" content="2025-11-14T18:43:34Z" />
+		<meta property="og:image" content="https://cdn.writeas.net/img/w-sq-light.png">
+		<meta property="article:published_time" content="2025-11-14T18:43:34Z">
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	</head>
+	<body id="post">
+		
+		<div id="overlay"></div>
+
+		<header>
+		<h1 dir="ltr" id="blog-title"><a rel="author" href="/" class="h-card p-author">cache</a></h1>
+			<nav>
+				
+				<a class="pinned" href="https://cache.bwang.io/reading">reading</a><a class="pinned" href="https://cache.bwang.io/about">about</a>
+				
+				
+			</nav>
+		</header>
+
+		
+
+		<article id="post-body" class="norm h-entry "><h2 id="title" class="p-name dated">practical poker</h2><time class="dt-published" datetime="2025-11-14T18:43:34Z" pubdate itemprop="datePublished" content="2025-11-14 18:43:34 &#43;0000 UTC">November 14, 2025</time><div class="e-content"><p>Across playing low stakes live and microstakes online, I have won somewhere around 15k in profit playing poker.</p>
+
+<p>I used to have a lengthier post full of EV calculation and theory. This is a much shorter post, more practical.</p>
+
+<h3 id="should-i-be-playing" id="should-i-be-playing">should I be playing</h3>
+
+<p>I recently came across describing poker tilt with Kahneman’s systems of thinking. The first system is automatic, fast, and emotional. The second system is deliberate, slow, and conscious. We use the first system when we are tilted. We abandon rational thoughts, becoming disillusioned gamblers.</p>
+
+<p>I think about 10% of players are winners in the long run. In a small enough sample, anyone can be winning. Looking at this <a href="https://www.primedope.com/poker-variance-calculator/">variance calculator</a>, we’d need hundreds of thousands of hands to get an approximate win rate. And even then, a theoretically winning player could still be losing. Therefore, poker makes an excellent hobby but a poor source of income.</p>
+
+<p>Lastly, money. How much money should I have to play? We can&#39;t make any bets if we don&#39;t have money. To calculate the <a href="https://www.investopedia.com/terms/r/risk-of-ruin.asp#:~:text=What%20Is%20Risk%20of%20Ruin,recover%20the%20losses%20or%20continue.">Risk of Ruin</a> of poker, I personally vouch for just taking a sample of your last n sessions, getting a mean/variance, and seeing how many standard deviations we are from the mean. We answer questions like “are these games too big for me?”. F(n) = e^(-2nm/v), v=variance, m=mean.</p>
+
+<p>This is <a href="https://forumserver.twoplustwo.com/174/poker-blogs-goals/deeepz-moving-up-50nl-moving-out-2014-6max-1385616/">a thread</a> from Linus, one of the greatest cash game players of all time, before his ascent to greatness. To me, he just seems indomitable even during his rise, ignoring the naysayers, always inquisitive and enjoying the game. And I think that’s how I think the game should be.</p>
+
+<h3 id="pot-odds" id="pot-odds">pot odds</h3>
+
+<p>People say poker is a game for the math-inclined, but the only equation you need is pot odds.</p>
+<ul><li>Pot odds is risk/reward or b/(p+2b); this equation is really only applicable for rivers. For example, when villain bets a half pot sized bet, the pot odds is .25. If our call generates a win over a fourth of the time, then it’s printing. Sometimes, a villain will give us a great discrepancy between pot odds and how often we should be calling. These villains are called fish.</li>
+<li>Much less useful than pot odds, but when constructing a bluff on a river with a range advantage, the theoretical bluff to value ratio should be b/(p+b). I mainly use this equation to keep me at bay from not over-bluffing. For example, a half-pot sized bet should have a bluff to value ratio of 1 to 3. Caveats: we need to have a range advantage, and this equation doesn’t account for villain having traps and raising. Consequences: this is ignoring exploit sizings … the greater the bet size, the greater the EV gained; however, even though theoretically a bigger bet will have more bluffs, when you actually have the nuts, villain is never calling your 3x shove on the river. (This <a href="https://www.youtube.com/watch?v=w_N-zaMbDok">video </a>on trapping frequency is also a relevant watch.)</li></ul>
+
+<p><strong>preflop</strong></p>
+<ul><li>In a low stack-to-pot ratio situations, we want to have a hand like AQo or 77 for immediate showdown. In a high stack-to-pot ratio situations, we can consider hands like 89s or A7s to cooler/stack someone.</li>
+<li>We should play more hands in position and less hands out of position. Ideally, in terms of where we sit, we want (1) aggressive players to the right of us so we can react and (2) passive players to the left of us so our aggression can go unchecked.</li>
+<li>I just checked my preflop values for a site, my VPIP (voluntarily put in pot %) is 26 and my PFR (preflop raise %) is 18. I don’t think these numbers will deviate very much. A low VPIP/PFR is easier to play; the solver tells us a range advantage equals carte blanche to start blasting. You can consider playing even less hands due to rake; I looked at some solver outputs for 5-7x opens in casino rake environments, and there are situations when we should be folding even JJ and TT to a single early position raise.</li>
+<li>Deviating preflop from optimal solver results is fine if you have a plan. For example, when people behind you only 3bet with premiums, it’s fine to just call in position. I also employ a light 3bet squeeze when there is a raise from a weak range and too many callers, specifically isolating a weak player.</li></ul>
+
+<p><strong>general</strong></p>
+
+<p>There are some wizards of the game, but I think a general sense of how to play optimally is good enough.</p>
+<ul><li>In general, tight aggressive is the correct style to play.</li>
+<li>People at my stake tend to call with draws and raise with made hands.</li>
+<li>Raises on the river are severely under-bluffed.</li>
+<li>Under-bluffed population lines (4 to a flush, 4 to a straight, double paired boards, etc.) are good bluff lines.</li>
+<li>Most EV is won by being in position of fish, usually a LAG type of player.</li>
+<li>There are some BXB (bet flop, check turn, bet river) and BB lines that is going to be profitable against most population villains, especially on boards like dry paired boards (villain unlikely to connect) or blind vs blind (villain range too wide). However, I personally like to be villain specific when going for these red-line exploits.</li>
+<li>Raises are going to generate more folds than bets. A small raise can be really effective against a weak polar range.</li>
+<li>Bigger bets is an exploit against villains who over call.</li>
+<li>Some players will respond to absolute sized bets more so than relative sized bets. E.g. A 300 dollar bet into a 600 dollar pot might be very big for someone. Sometimes on rivers, you might need to size down to get called.</li>
+<li>I have a smaller sizing when I am trying to be raised or if villain is under-calling. I have a larger sizing to get called by lower equity hands or to generate folds.</li>
+<li>More important than balance is knowing your image and knowing your opponent.</li></ul>
+
+<p><strong>multiway</strong></p>
+
+<p>Many hands are played multi-way with nonstandard sizing.</p>
+<ul><li>Use smaller bet sizing and bluff less in general multi-way. Against a half pot bet against 1 other player, we should call 66%. Against 5 players, we should call 20% of the time. Realistically, this number ought to be less. Half pot is big multi-way, but over-fold against even bigger bets.</li>
+<li>If we have a very strong hand and the board is likely to be bet, we just want to check (to raise) to cooler someone. If it’s unlikely to be bet, we want to bet ourselves. If we have a good hand (but not a very strong hand), we can consider betting ourselves so we can react to a raise. In general, a lot of fishy villains telegraph hand strength from bet sizing or raises. You want to play a reactionary game against fishy players. Let them act, and then you get to react almost perfectly.</li>
+<li>The person immediately calling a bet in a multi-way pot has a strong range. Given most situations, I usually just fold middle pair or worse.</li>
+<li>Obviously, shift your range to be value heavy against villain who overcall. But since people over-fold to raises, it’s often good to check raise when we block a really strong hand on boards where villain is capped or doesn’t want to put more money in.</li></ul>
+
+<p>Actual strategies are villain specific and more nuanced. But this should be a good start.</p>
+
+<p><strong>live tells</strong></p>
+
+<p>I have been getting better at live tells. Here are some examples:</p>
+<ul><li>Villain reaching for chips defensively when you start to bet is weak.</li>
+<li>A fishy player might say something regarding how weak they are. “I’m on a draw”, “I was afraid you’d snap call” are all signs of strength.</li>
+<li>A player making a nervous move when they think you are not watching is much more indicative of weakness than if they act in an obvious manner. People know they are being watched after they make a big bet so you have to look for tells they can’t control (still palpitating after a few minutes might indicate a bluff, etc.).</li>
+<li>Never believe what people have unless they show.</li></ul>
+
+<p><strong>other</strong></p>
+<ul><li>Be aware of collaboration. When two players always enter the pot together and there are suspicious betting patterns (to bully a third person out of pot or to maximize value of a player’s nutted hand to get multiple players to call). I think seeing showdown hands played in ways that don’t make sense can give you signs of collaboration.</li>
+<li>Be aware of cheating; I put cheating in a different category from collaboration. I have been cheated twice in home games (once in Asia and once in NYC) due to some sort of dealer mechanics or marked cards. I don’t play in home games anymore.</li>
+<li>PT4 is pretty good software to collect your hands. There are nice discord channels you can find to talk about hands.</li></ul>
+</div></article>
+
+		
+
+		
+		<footer dir="ltr"><hr><nav><p style="font-size: 0.9em">published with <a class="home pubd" href="https://write.as/">write.as</a></p></nav></footer>
+		
+
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	</body>
+	
+	
+		
+		
+	
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/posts/ct0gywaugncn927q/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var pinning = false;
+function unpinPost(e, postID) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var $header = document.getElementsByTagName('header')[0];
+	var callback = function() {
+		
+		var $pinnedNavLink = $header.getElementsByTagName('nav')[0].querySelector('.pinned.selected');
+		$pinnedNavLink.style.display = 'none';
+		try { _paq.push(['trackEvent', 'Post', 'unpin', 'post']); } catch(e) {}
+	};
+
+	var $pinBtn = $header.getElementsByClassName('unpin')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/unpin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+				$pinBtn.style.display = 'none';
+				$pinBtn.innerHTML = 'Pin';
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'Unpin';
+			} else {
+				$pinBtn.innerHTML = 'Unpin';
+				alert("Failed to unpin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+
+var $form = document.getElementById('emailsub');
+if ($form != null) {
+	$form.onsubmit = function() {
+		var $sub = document.getElementById('subscribe-btn');
+		$sub.disabled = true;
+		$sub.value = 'Subscribing...';
+	}
+}
+
+	
+
+	
+	try { 
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+	try { 
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {   }
+	</script>
+
+    
+</html>

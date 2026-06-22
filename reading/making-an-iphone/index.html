@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html class="cache-narrow" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomy of an iPhone &mdash; cache</title>
+<meta name="description" content="An interactive guide to the iPhone supply chain: which company makes each component, where in the world it's made, what it costs, and how it all gets shipped.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%204%2028%2010%2016%2016%204%2010Z%27/%3E%3Cpath%20d%3D%27M4%2016%2016%2022%2028%2016%27/%3E%3Cpath%20d%3D%27M4%2022%2016%2028%2028%2022%27/%3E%3C/svg%3E"><rect width='32' height='32' rx='7' fill='%23fbfaf7'/><rect x='10' y='5' width='12' height='22' rx='3' fill='none' stroke='%232b5ea7' stroke-width='2.5'/><rect x='13.5' y='8' width='5' height='2.5' rx='1.25' fill='%232b5ea7'/></svg>">
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --surface: #f5f2ec;
+    --border: #e6e1d8;
+    --text: #1c1b19;
+    --muted: #6f6a62;
+    --accent: #2b5ea7;
+    --accent-soft: rgba(43,94,167,0.08);
+    --amber: #8a6d1d;
+    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.7 var(--serif);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px; }
+  p { margin: 0 0 1em; }
+
+  /* ---------- Header ---------- */
+  header { padding: 34px 0 0; margin-bottom: 8px; }
+  header .wrap { padding-bottom: 22px; border-bottom: 2px solid var(--text); }
+  .kick {
+    font-family: var(--sans); color: var(--accent); letter-spacing: .14em;
+    text-transform: uppercase; font-size: 12px; font-weight: 700;
+  }
+  h1 {
+    font-size: clamp(26px, 3.6vw, 38px); line-height: 1.12;
+    letter-spacing: -0.015em; margin: .2em 0 .3em; font-weight: 700;
+  }
+  .subtitle { font-size: 18px; line-height: 1.5; color: #3a3833; margin: 0 0 14px; max-width: 720px; }
+  .asof { font-family: var(--sans); font-size: 13.5px; color: var(--muted); }
+
+  /* ---------- Sticky nav ---------- */
+
+  /* ---------- Sections ---------- */
+  section { margin: 36px 0; }
+  h2 { font-size: 23px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 .5em; }
+  .section-note { margin: 0 0 1em; max-width: 720px; }
+
+  /* ---------- Takeaways ---------- */
+  .takeaways {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 16px 20px; margin: 24px 0 8px;
+  }
+  .takeaways .kicker {
+    font-family: var(--sans); color: var(--accent); letter-spacing: .14em;
+    text-transform: uppercase; font-size: 11px; font-weight: 700; margin-bottom: 8px;
+  }
+  .takeaways ol { padding-left: 1.25em; }
+  .takeaways li { font-size: 15.5px; line-height: 1.6; margin: .4em 0; color: var(--muted); }
+  .takeaways li b { color: var(--text); }
+
+  /* ---------- Holistic exploded diagram ---------- */
+  .exploded-box {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+    padding: 16px 16px 10px; margin: 0 0 14px; position: relative;
+  }
+  #explodedSvg { overflow-x: auto; }
+  .exploded-box svg { min-width: 700px; width: 100%; height: auto; display: block; }
+  @media (max-width: 760px) {
+    /* edge fade signals the diagram scrolls sideways */
+    .exploded-box::after {
+      content: ""; position: absolute; top: 1px; bottom: 1px; right: 1px; width: 30px;
+      background: linear-gradient(to right, rgba(245,242,236,0), var(--surface));
+      border-radius: 0 9px 9px 0; pointer-events: none;
+    }
+  }
+  .layer { cursor: pointer; transition: opacity .15s ease; outline: none; }
+  .layer:hover { opacity: 0.75; }
+  .layer:focus-visible .base { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 4 3; }
+  .layer .base { stroke: #d6cfc0; stroke-width: 1.5; }
+  .layer.active .base { stroke: var(--accent); stroke-width: 2.5; }
+  .layer.dim { opacity: 0.28; }
+  .layer.dim:hover { opacity: 0.55; }
+  .layer text { font-family: var(--sans); fill: var(--muted); pointer-events: none; }
+  .layer .lbl { font-size: 11.5px; }
+  .layer.active .lbl { fill: var(--accent); font-weight: 700; }
+  .hint { font-family: var(--sans); color: var(--muted); font-size: 12.5px; line-height: 1.5; margin: 12px 0 0; }
+
+  /* ---------- Detail panel ---------- */
+  .detail-panel {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+    padding: 18px; margin: 0 0 22px;
+  }
+  .detail-panel h3 { font-size: 19px; letter-spacing: -0.01em; margin: 0 0 2px; }
+  .detail-panel .cat {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-family: var(--sans); color: var(--accent); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 10px;
+  }
+  .detail-panel p { color: var(--muted); font-size: 15.5px; line-height: 1.6; margin-bottom: 12px; max-width: 720px; }
+  .suppliers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 8px; }
+  .supplier {
+    padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
+    font-family: var(--sans); font-size: 13.5px;
+  }
+  .supplier-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .supplier .name { font-weight: 600; }
+  .supplier .loc { color: var(--muted); font-size: 12.5px; text-align: right; }
+  .supplier .note { color: var(--muted); font-size: 12.5px; line-height: 1.5; margin-top: 3px; }
+
+  /* ---------- Filter chips ---------- */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 20px; }
+  .chip {
+    border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+    padding: 4px 13px; border-radius: 999px; cursor: pointer;
+    font-family: var(--sans); font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em;
+    transition: all .15s ease;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ---------- Cost badges & BOM chart ---------- */
+  .cost-badge {
+    font-family: var(--sans); display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.03em; vertical-align: middle; white-space: nowrap;
+    background: var(--accent-soft); border: 1px solid rgba(43,94,167,0.25); color: var(--accent);
+  }
+  .bom-box {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+    padding: 18px; margin: 16px 0 24px;
+  }
+  .bom-box .bom-head { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--sans); font-size: 14px; }
+  .bom-box .bom-head b { font-size: 15px; }
+  .bom-bar {
+    display: flex; height: 38px; border-radius: 7px; overflow: hidden;
+    border: 1px solid var(--border); margin: 14px 0 18px;
+  }
+  .bom-seg {
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans); font-size: 11px; font-weight: 600; color: #fff;
+    transition: filter .15s ease; cursor: default; overflow: hidden;
+  }
+  .bom-seg:hover { filter: brightness(1.15); }
+  @media (max-width: 560px) { .bom-seg { font-size: 0; } } /* too narrow for inline values; legend has them */
+  .bom-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px; }
+  .bom-li { display: flex; align-items: baseline; gap: 8px; font-family: var(--sans); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  .bom-li .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; align-self: center; }
+  .bom-li .nm { color: var(--text); }
+  .bom-li .val { color: var(--muted); margin-left: auto; }
+  .price-split { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 20px; }
+  .price-card {
+    flex: 1; min-width: 190px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 9px; padding: 13px 15px;
+  }
+  .price-card .big { font-size: 25px; font-weight: 700; line-height: 1.2; }
+  .price-card .big.parts { color: var(--accent); }
+  .price-card .big.rest { color: var(--muted); }
+  .price-card .sm { font-family: var(--sans); color: var(--muted); font-size: 12.5px; line-height: 1.4; margin-top: 4px; }
+
+  /* ---------- Region contribution panel ---------- */
+  .region-panel {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 12px 16px; margin: 0 0 14px; font-family: var(--sans);
+  }
+  .region-panel .head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+  .region-panel .head .f { font-size: 1.25rem; align-self: center; }
+  .region-panel .head b { font-size: 14.5px; }
+  .region-panel .head .tag { color: var(--muted); font-size: 12.5px; }
+  .region-panel ul { list-style: none; columns: 2; column-gap: 28px; }
+  @media (max-width: 640px) { .region-panel ul { columns: 1; } }
+  .region-panel li { padding: 3px 0; font-size: 13px; line-height: 1.5; color: var(--muted); break-inside: avoid; }
+  .region-panel li b { color: var(--text); font-weight: 600; font-size: 13px; }
+
+  /* ---------- Journey timeline ---------- */
+  .journey { position: relative; padding-left: 30px; max-width: 720px; margin: 22px 0; }
+  .journey::before {
+    content: ""; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px;
+    background: var(--border);
+  }
+  .step { position: relative; padding-bottom: 26px; }
+  .step:last-child { padding-bottom: 0; }
+  .step::before {
+    content: ""; position: absolute; left: -30px; top: 7px; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--bg); border: 3px solid var(--accent);
+  }
+  .step h3 { font-size: 18px; letter-spacing: -0.01em; margin: 0 0 1px; }
+  .step .where { font-family: var(--sans); color: var(--accent); font-size: 12.5px; font-weight: 600; margin-bottom: 3px; }
+  .step p { color: var(--muted); font-size: 15.5px; line-height: 1.6; margin: 0; }
+
+  /* ---------- Logistics ---------- */
+  .logi-list { margin: 22px 0; border-bottom: 1px solid var(--border); }
+  .logi {
+    display: grid; grid-template-columns: 38px 1fr; gap: 0 14px; align-items: start;
+    padding: 15px 0; border-top: 1px solid var(--border);
+  }
+  .logi .icon { font-size: 1.35rem; line-height: 1.3; text-align: center; }
+  .logi h3 { font-size: 17px; letter-spacing: -0.01em; margin: 0 0 3px; }
+  .logi p { color: var(--muted); font-size: 15.5px; line-height: 1.6; margin: 0; max-width: 700px; }
+  .logi .figure { color: var(--accent); font-weight: 700; }
+
+  /* ---------- Materials (rendered in the detail panel) ---------- */
+  .materials { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 0; }
+  .mat {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px;
+  }
+  .mat .sym {
+    display: inline-block; width: 36px; height: 36px; border-radius: 7px;
+    background: var(--accent-soft); color: var(--accent); font-family: var(--sans);
+    font-weight: 700; font-size: 13.5px; text-align: center; line-height: 36px; margin-bottom: 7px;
+  }
+  .mat h3 { font-size: 16px; margin: 0 0 1px; }
+  .mat p { font-family: var(--sans); color: var(--muted); font-size: 12.5px; line-height: 1.5; margin: 0; }
+
+  /* ---------- Callout / footer ---------- */
+  .callout {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--amber);
+    border-radius: 8px; padding: 14px 18px; margin: 22px 0; font-size: 15.5px; line-height: 1.6; color: var(--muted);
+  }
+  .callout b { color: var(--text); }
+  footer {
+    margin-top: 56px; padding: 24px 0 48px; border-top: 1px solid var(--border);
+    color: var(--muted); font-family: var(--sans); font-size: 13.5px; line-height: 1.55;
+  }
+  footer ul { list-style: none; margin: 8px 0 0; }
+  footer li { padding: 3px 0; }
+</style>
+<link rel="stylesheet" type="text/css" href="../../assets/css/reading-theme.css">
+<meta property="og:title" content="Anatomy of an iPhone">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cache">
+<meta property="og:url" content="https://cache.bwang.io/reading/making-an-iphone/index.html">
+<meta property="og:description" content="An interactive guide to the iPhone supply chain: which company makes each component, where in the world it's made, what it costs, and how it all gets shipped.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Anatomy of an iPhone &mdash; cache">
+<meta name="twitter:description" content="An interactive guide to the iPhone supply chain: which company makes each component, where in the world it's made, what it costs, and how it all gets shipped.">
+</head>
+<body>
+<style>@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:400;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');}@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:600;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');}@keyframes cacheFadeIn{from{opacity:0;}to{opacity:1;}}body{animation:cacheFadeIn .4s ease both;}</style><style>
+@view-transition{navigation:auto;}
+.nav-float{position:fixed;top:22px;left:22px;z-index:2147483647;pointer-events:none;
+	font:400 14px/1.45 'Josefin Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-min-cb{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.nav-card{width:230px;max-height:calc(100vh - 44px);overflow-y:auto;
+	background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.16);
+	border-radius:13px;padding:14px 0 16px;pointer-events:auto;transform-origin:top left;
+	transition:opacity .24s ease,transform .24s ease;}
+.nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;}
+.nav-home{display:inline-flex;align-items:center;color:#9a9a9a;text-decoration:none;
+	padding:2px;transition:color .15s;}
+.nav-home:hover{color:#333;}
+.nav-mini{cursor:pointer;color:#c4c4c4;font-size:21px;line-height:.5;padding:0 3px 6px;
+	user-select:none;transition:color .15s;}
+.nav-mini:hover{color:#333;}
+.nav-restore{position:absolute;top:0;left:0;display:inline-flex;align-items:center;gap:8px;
+	cursor:pointer;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.2);
+	color:#555;border-radius:11px;padding:8px 14px;font-size:13px;user-select:none;
+	opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.nav-restore::before{content:"";width:15px;height:11px;flex:none;color:#888;
+	background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left center/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left bottom/100% 1.5px no-repeat;}
+.nav-restore:hover{color:#111;}
+.nav-min-cb:checked ~ .nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+.nav-min-cb:checked ~ .nav-restore{opacity:1;pointer-events:auto;}
+.nav-card a.item{display:block;padding:7px 20px;color:#333;text-decoration:none;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-card a.item:hover{background:#f6f6f6;color:#111;}
+.nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-radio{position:absolute;opacity:0;pointer-events:none;}
+.nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
+.nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
+	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
+.nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
+.nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+	color:#111;border-bottom-color:#357BB3;}
+.nav-feed{display:none;}
+.nav-card #nav-cache:checked ~ .nf-cache{display:block;}
+.nav-card #nav-reading:checked ~ .nf-reading{display:block;}
+.nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+/* The panel is a left rail beside the centered column. Until the viewport is
+   wide enough for it to clear that column (same breakpoint as the article
+   outline), start it minimized: the pill shows by default and tapping it
+   expands the list. Otherwise the card slides out over the post text. */
+@media (max-width:1330px){
+	.nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+	.nav-restore{opacity:1;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-card{opacity:1;transform:none;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-restore{opacity:0;pointer-events:none;}
+}
+@media (max-width:700px){
+	.nav-card{width:min(230px,calc(100vw - 36px));}
+}
+@media (prefers-reduced-motion: reduce){
+	.nav-card,.nav-restore{transition:none;}
+}
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label></div><div class="nav-feed nf-cache"><a class="item" href="../../token-playbook.html">Token Playbook</a><a class="item" href="../../some-projects.html">Some Projects</a><a class="item" href="../../practical-poker.html">Practical Poker</a><a class="item" href="../../ecom-experiments.html">Ecom Experiments</a><a class="item" href="../../why-crypto.html">Why Crypto</a><a class="item" href="../../growing-peppers.html">Growing Peppers</a><a class="item" href="../../book-reviews.html">Book Reviews</a><a class="item" href="../../wasted-time.html">Dumb Poker</a><a class="item" href="../../trading-automation.html">Trading Automation</a><a class="item" href="../../api-in-rust.html">API in Rust</a><a class="item" href="../../cicd-on-gcp.html">CI/CD on GCP + SQL</a><a class="item" href="../../nomad-and-waypoint.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../poker-pros/index.html">High Roller Ledger</a><a class="item" href="../spacs/index.html">Understanding SPACs</a><a class="item" href="../ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item active" href="../making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../watches/index.html">Watches That Beat Retail</a><a class="item" href="../wine/index.html">Wine as an Investment Asset</a><a class="item" href="../real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a></div></div></div>
+
+<header>
+  <div class="wrap">
+    <h1>Anatomy of an iPhone</h1>
+    <div class="kick">Supply Chain Explainer · Apple iPhone</div>
+    <p class="subtitle">One phone, dozens of companies, six continents. Where every major part of an iPhone is designed, made, and assembled — what each part costs, and how it all gets moved around the planet.</p>
+    <span class="asof">iPhone 17 generation · last reviewed June 2026 · component costs are third-party teardown estimates</span>
+  </div>
+</header>
+
+<nav class="outline" aria-label="Outline">
+  <a href="#components">Components</a>
+  <a href="#costs">Costs</a>
+  <a href="#logistics">Transportation</a>
+  <a href="#history">History</a>
+  <a href="#notes">Notes</a>
+</nav>
+
+<main class="wrap">
+
+  <div class="takeaways">
+    <div class="kicker">If you only remember five things</div>
+    <ol>
+      <li><b>No country could build it alone.</b> The US designs, Taiwan fabricates the chips, Korea and Japan supply displays and sensors, China and India assemble — about 2,700 parts from 200 suppliers across 50+ countries.</li>
+      <li><b>Taiwan is the chokepoint.</b> Every A-series chip is made by a single company, TSMC, mostly on one island.</li>
+      <li><b>The parts cost ~$550 of a $1,199 phone.</b> The other half pays for R&D, software, marketing, logistics — and Apple's margin.</li>
+      <li><b>Almost every iPhone flies.</b> Air freight adds only ~$2–4 per phone, so Apple charters 747s rather than wait weeks on ships.</li>
+      <li><b>India is the decade's big shift.</b> From a side experiment in 2017 to roughly a quarter of output — and most US-bound iPhones today.</li>
+    </ol>
+  </div>
+
+  <!-- ================= COMPONENTS (holistic exploded diagram) ================= -->
+  <section id="components">
+    <h2>Every major component</h2>
+    <p class="section-note">The whole chain, left to right — from raw materials, through every layer of the phone, to final assembly. Click any part to see who makes it, where, and what it costs. Filter by region to see what that country contributes: parts that don't fade are the ones it supplies.</p>
+    <div class="chips" id="chips"></div>
+    <div class="region-panel" id="regionPanel" hidden></div>
+    <div class="exploded-box">
+      <div id="explodedSvg"></div>
+      <p class="hint">Simplified — a real iPhone packs ~2,700 discrete parts. Apple deliberately dual-sources most of them to reduce risk.</p>
+    </div>
+    <div class="detail-panel" id="detailPanel"></div>
+  </section>
+
+  <!-- ================= COSTS / BOM ================= -->
+  <section id="costs">
+    <h2>What the parts actually cost</h2>
+    <p class="section-note">Teardown firms (TechInsights, Counterpoint, Fomalhaut/Nikkei) estimate the "bill of materials" — what Apple pays for the parts in one phone. For a flagship iPhone 17 Pro Max (256&nbsp;GB, $1,199 retail), the parts come to roughly <b>$550</b>. Hover the bar to explore.</p>
+    <div class="bom-box">
+      <div class="bom-head">
+        <b>Estimated bill of materials — iPhone 17 Pro Max class</b>
+        <span style="color:var(--muted);">≈ $550 total</span>
+      </div>
+      <div class="bom-bar" id="bomBar"></div>
+      <div class="bom-legend" id="bomLegend"></div>
+      <div class="price-split">
+        <div class="price-card">
+          <div class="big parts">~$550</div>
+          <div class="sm">Parts (BOM) — about 45% of retail price</div>
+        </div>
+        <div class="price-card">
+          <div class="big rest">~$650</div>
+          <div class="sm">Everything else: R&D, software, marketing, retail &amp; channel, warranty, logistics, tariffs — and Apple's margin</div>
+        </div>
+        <div class="price-card">
+          <div class="big">$1,199</div>
+          <div class="sm">Retail price (US, 256&nbsp;GB)</div>
+        </div>
+      </div>
+      <p class="hint">BOM ≠ Apple's real cost per phone. It excludes the billions in chip R&D, iOS development, tooling Apple buys for suppliers, and the cost of running 500+ stores. Hardware gross margin is estimated in the mid-30s to ~45% — and Apple makes additional high-margin revenue on services over the phone's life.</p>
+    </div>
+  </section>
+
+  <!-- ================= TRANSPORTATION ================= -->
+  <section id="logistics">
+    <h2>Transportation: the supply chain's nervous system</h2>
+    <p class="section-note">Tim Cook ran Apple's operations before he ran Apple, and it shows: iPhones are one of the only mass-market products on earth that travel almost entirely by air. Here's why — and what moving a phone actually costs.</p>
+
+    <div class="logi-list">
+      <div class="logi">
+        <div class="icon">✈️</div>
+        <div>
+          <h3>Why air, not sea</h3>
+          <p>An iPhone is extreme value density: a single 747 freighter pallet can hold roughly <span class="figure">$1.5M+ of phones</span>, so flying Asia → US adds only <span class="figure">~$2–4 per phone</span> and arrives in <span class="figure">1–3 days</span>. Sea would cost pennies (~$0.10–0.30 per phone) but takes 3–5 weeks plus port time — locking up <span class="figure">$100M+ of inventory per ship</span> and risking the launch window. So finished iPhones fly; the slow boat is for cables, cases, and accessories.</p>
+        </div>
+      </div>
+      <div class="logi">
+        <div class="icon">📦</div>
+        <div>
+          <h3>The launch-week airlift</h3>
+          <p>In the weeks around a September launch, Apple books dozens of chartered freighter flights per week. One Boeing 747F carries roughly <span class="figure">150,000 iPhones</span>. Air cargo brokers report Apple's launch surge visibly tightens trans-Pacific freighter capacity — and raises spot rates for everyone else.</p>
+        </div>
+      </div>
+      <div class="logi">
+        <div class="icon">🛫</div>
+        <div>
+          <h3>An airport built for a factory</h3>
+          <p>Foxconn's Zhengzhou "iPhone City" sits in a bonded customs zone next to Xinzheng International Airport — an airport that grew around the factory, not the other way round. Phones can clear export customs <span class="figure">inside the factory complex</span> and be airborne within hours of final test.</p>
+        </div>
+      </div>
+      <div class="logi">
+        <div class="icon">🧾</div>
+        <div>
+          <h3>Tariffs now dwarf freight</h3>
+          <p>Since the US tariff escalations beginning in 2025, the import duty on a phone can reach <span class="figure">tens of dollars or more</span> — many times the freight cost. Country of <i>final assembly</i> determines the tariff, which is a big reason most US-bound iPhones now ship from India. In spring 2025, Apple famously airlifted ~600 tonnes of iPhones (~1.5M units) from Chennai to beat a tariff deadline.</p>
+        </div>
+      </div>
+      <div class="logi">
+        <div class="icon">🔁</div>
+        <div>
+          <h3>Parts fly before the phone does</h3>
+          <p>The finished phone's flight is the <i>last</i> leg. Before assembly, a camera sensor has already flown Japan → Korea (module assembly) → China or India (final assembly). Chips fly Taiwan → packaging → assembly. Summed across all parts, the components of one iPhone travel an estimated <span class="figure">few hundred thousand miles</span>.</p>
+        </div>
+      </div>
+      <div class="logi">
+        <div class="icon">🚚</div>
+        <div>
+          <h3>The last mile</h3>
+          <p>Online pre-orders often ship <span class="figure">directly from the factory floor</span> — the FedEx/UPS label on a launch-day order frequently shows Zhengzhou or Chennai as origin. Retail stock flows through regional distribution hubs (e.g., Elk Grove for the Americas) and is trucked to stores under tight secrecy before launch day.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="hint" style="max-width:720px">The deeper logic: a new iPhone loses value every week it sits unsold, and demand in week one is enormous. Cook's doctrine — "inventory is fundamentally evil" — makes the $3 flight the cheapest insurance in the building.</p>
+  </section>
+
+  <!-- ================= HISTORY ================= -->
+  <section id="history">
+    <h2>A decade of change (2016–2026)</h2>
+    <p class="section-note">The map above isn't static — it's the product of ten years of shocks and slow-motion responses. The through-line: from "everything through China" to a hedged, multi-country machine, with Apple steadily replacing suppliers' chips with its own.</p>
+    <div class="journey">
+      <div class="step">
+        <h3>Peak China</h3>
+        <div class="where">2016–2017</div>
+        <p>Zhengzhou's "iPhone City" runs at full scale and nearly every iPhone ships from China. India begins as a side experiment: Wistron assembles the budget iPhone SE in Bangalore (2017), mainly to dodge India's import duties on phones sold there.</p>
+      </div>
+      <div class="step">
+        <h3>The trade war</h3>
+        <div class="where">2018–2019</div>
+        <p>US–China tariffs turn Apple's concentration into a board-level risk, and "China + 1" planning starts in earnest. Apple also buys Intel's modem business for $1B (2019) — the opening move in a decade-long push to replace Qualcomm's silicon with its own.</p>
+      </div>
+      <div class="step">
+        <h3>COVID and the chip shortage</h3>
+        <div class="where">2020–2021</div>
+        <p>Factory shutdowns and a global semiconductor shortage prove that single-country, just-in-time supply has real tail risk. AirPods and iPad capacity shifts to Vietnam, and the M1 Mac transition shows how far Apple's in-house silicon ambitions reach.</p>
+      </div>
+      <div class="step">
+        <h3>The Zhengzhou breaking point</h3>
+        <div class="where">2022</div>
+        <p>A COVID lockdown and worker protests hit iPhone City in the middle of the Pro launch season, costing Apple billions in missed holiday sales. It's widely seen as the moment diversification went from strategy deck to urgent priority.</p>
+      </div>
+      <div class="step">
+        <h3>India scales up</h3>
+        <div class="where">2023–2024</div>
+        <p>Tata buys Wistron's plant to become the first Indian-owned iPhone assembler, then takes over Pegatron's India operations too. The iPhone 15 ships from India on launch day — a first — and TSMC's Arizona fab comes online for older Apple chips.</p>
+      </div>
+      <div class="step">
+        <h3>The tariff era</h3>
+        <div class="where">2025–2026</div>
+        <p>New US tariffs reorder the logistics map almost overnight: India rises to roughly a quarter of global iPhone output and supplies most US-bound units. Apple's own C1 modem and N1 wireless chips ship in volume, and Apple pledges $600B of US investment over four years — including American-made chips, glass, and Face ID lasers.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NOTES ================= -->
+  <section id="notes">
+    <h2>Notes, caveats &amp; further reading</h2>
+    <div class="callout">
+      <b>⚠️ Supply chains move.</b> This page reflects the iPhone 17-generation supply chain as publicly reported through mid-2026. Apple doesn't publish a component-by-component supplier map; this synthesis draws on Apple's official Supplier List, teardowns (iFixit, TechInsights), and supply-chain reporting (Nikkei Asia, Bloomberg, Counterpoint). Specific suppliers vary by model, storage size, and even by individual unit — two identical-looking iPhones can carry displays or memory from different companies.
+      <br><br>
+      <b>💲 On the cost figures.</b> Apple never discloses what it pays for parts. All per-component prices here are third-party teardown <i>estimates</i> (TechInsights, Counterpoint Research, Fomalhaut Techno-Solutions via Nikkei), shown as ranges and midpoints for a flagship model. Apple's real prices are negotiated, volume-dependent, and almost certainly lower for some parts; memory prices in particular swing with the commodity market. Freight and tariff figures are likewise industry estimates, not Apple disclosures.
+    </div>
+    <footer>
+      <b>Good starting points to learn more:</b>
+      <ul>
+        <li>• Apple Supplier List (apple.com/supplier-responsibility) — Apple's official top-200 supplier disclosure</li>
+        <li>• iFixit teardowns (ifixit.com) — see the actual parts, chip markings and all</li>
+        <li>• TechInsights teardown analyses — identifies the silicon inside each model</li>
+        <li>• Nikkei Asia tech/supply-chain desk — best ongoing reporting on Apple's supplier shifts</li>
+        <li>• Apple Environmental Progress Reports — recycled-material claims for cobalt, rare earths, tin, gold</li>
+      </ul>
+      <p style="margin-top: 20px;">Educational, independently compiled reference. Not affiliated with Apple Inc. Last reviewed: June 2026.</p>
+    </footer>
+  </section>
+
+</main>
+
+<script>
+// ===================== DATA =====================
+// Each component: category, suppliers [{co, where, flag}], regions for filtering.
+const COMPONENTS = [
+  {
+    key: "soc", icon: "🧠", name: "A-series chip (SoC)", cat: "Silicon", cost: "≈ $110–130",
+    desc: "The brain: CPU, GPU and Neural Engine on one chip. Designed by Apple, manufactured on the world's most advanced process.",
+    long: "Apple designs the A19 / A19 Pro in Cupertino, but no Apple factory exists — fabrication is done by TSMC in Taiwan on its 3nm process. A single fab costs ~$20B, which is why almost nobody else can do this. TSMC's Arizona fab now makes some older Apple chips, but the leading edge stays in Taiwan.",
+    suppliers: [
+      { co: "Apple (design)", where: "Cupertino, USA", flag: "🇺🇸",
+        note: "Thousands of in-house engineers design the CPU, GPU and Neural Engine — Apple owns the blueprint but no chip factory." },
+      { co: "TSMC (fabrication)", where: "Hsinchu/Tainan, Taiwan + Arizona, USA", flag: "🇹🇼🇺🇸",
+        note: "The only foundry shipping 3nm chips at iPhone volume; Apple is its largest customer at roughly a quarter of its revenue." },
+      { co: "ASE / Amkor (packaging & test)", where: "Taiwan / S. Korea, Vietnam", flag: "🇹🇼🇰🇷",
+        note: "Mounts the bare silicon die onto its substrate and runs final electrical test before boards are built." },
+    ],
+    regions: ["USA", "Taiwan"]
+  },
+  {
+    key: "display", icon: "📱", name: "OLED display", cat: "Display", cost: "≈ $70–90 (Pro) / $45–60 (base)",
+    desc: "The Super Retina XDR panel — the single most expensive component in most iPhones.",
+    long: "South Korea's Samsung Display is the lead supplier (and sole source for the most advanced LTPO panels in Pro models), with LG Display second. China's BOE supplies a share of panels for standard models. The display often costs Apple more than the main chip.",
+    suppliers: [
+      { co: "Samsung Display", where: "Asan, South Korea", flag: "🇰🇷",
+        note: "Lead supplier since the iPhone X and the only maker trusted with the 120Hz LTPO Pro panels — Apple's biggest rival is also its biggest screen vendor." },
+      { co: "LG Display", where: "Paju, South Korea", flag: "🇰🇷",
+        note: "The second source that keeps Samsung's pricing honest; has fought through tough Apple quality certifications to win Pro-panel share." },
+      { co: "BOE", where: "Chengdu/Mianyang, China", flag: "🇨🇳",
+        note: "China's panel champion, admitted after years of failed certifications — Apple's deliberate hedge against the Korean duopoly." },
+    ],
+    regions: ["South Korea", "China"]
+  },
+  {
+    key: "glass", icon: "🔲", name: "Cover glass (Ceramic Shield)", cat: "Display", cost: "≈ $15–25",
+    desc: "The ceramic-hardened front glass — one of the few parts with a genuinely American-made core.",
+    long: "Ceramic Shield glass is developed and made with Corning at its Harrodsburg, Kentucky plant — Apple has invested over $1B in Corning's US operations. The raw glass is then cut, shaped, and finished by Lens Technology and Biel Crystal in China.",
+    suppliers: [
+      { co: "Corning (glass)", where: "Harrodsburg, Kentucky, USA", flag: "🇺🇸",
+        note: "Rushed the original Gorilla Glass into production for the 2007 iPhone in months; Ceramic Shield is co-developed with over $1B of Apple investment." },
+      { co: "Lens Technology (finishing)", where: "Hunan, China", flag: "🇨🇳",
+        note: "Founded by Zhou Qunfei, a former factory worker who became the world's richest self-made woman cutting watch glass." },
+      { co: "Biel Crystal (finishing)", where: "Huizhou, China", flag: "🇨🇳",
+        note: "Corning sheets in, iPhone-shaped glass out — cut, drilled, polished and strengthened by the billions of units." },
+    ],
+    regions: ["USA", "China"]
+  },
+  {
+    key: "camera", icon: "📷", name: "Camera system", cat: "Imaging", cost: "≈ $70–90 (Pro triple) / $35–50 (base)",
+    desc: "Image sensors, lenses, and stabilized modules — a three-country relay: Japan → Taiwan → Korea/China.",
+    long: "Sony has made nearly every iPhone camera sensor since 2011, fabbed in Kumamoto and Nagasaki, Japan. Precision lenses come from Largan and Genius in Taiwan. LG Innotek in Korea (plus Foxconn-Sharp and Cowell in China) assembles them into folded-zoom and stabilized modules.",
+    suppliers: [
+      { co: "Sony Semiconductor (sensors)", where: "Kumamoto/Nagasaki, Japan", flag: "🇯🇵",
+        note: "Has supplied virtually every iPhone main camera sensor since 2011; its stacked CMOS designs lead the industry by a comfortable margin." },
+      { co: "Largan / Genius (lenses)", where: "Taichung, Taiwan", flag: "🇹🇼",
+        note: "Molds the 7-element plastic lens stacks to sub-micron tolerances — optics so precise few others can match the yield." },
+      { co: "LG Innotek (modules)", where: "Gumi, South Korea", flag: "🇰🇷",
+        note: "Marries sensor and lens into finished modules, including the folded-zoom telephoto and sensor-shift stabilization." },
+      { co: "Cowell / Foxconn-Sharp (modules)", where: "China", flag: "🇨🇳",
+        note: "Second-source module assemblers that keep LG Innotek's pricing and capacity honest." },
+    ],
+    regions: ["Japan", "Taiwan", "South Korea", "China"]
+  },
+  {
+    key: "memory", icon: "💾", name: "Memory (DRAM & NAND)", cat: "Silicon", cost: "≈ $45–60 (12GB + 256GB)",
+    desc: "RAM for running apps; NAND flash for storage. Korea and Japan dominate.",
+    long: "DRAM comes from SK Hynix and Samsung (South Korea) and Micron (USA, with fabs in Japan/Taiwan). NAND storage comes from Kioxia (Japan), SK Hynix, and Samsung. Two identical iPhones may have memory from different companies — Apple mixes suppliers freely.",
+    suppliers: [
+      { co: "SK Hynix / Samsung (DRAM, NAND)", where: "Icheon/Pyeongtaek, South Korea", flag: "🇰🇷",
+        note: "Korea's memory duopoly supplies most iPhone LPDDR5X RAM — the same firms feeding the AI-datacenter memory boom." },
+      { co: "Micron (DRAM)", where: "USA / Hiroshima, Japan / Taiwan", flag: "🇺🇸🇯🇵",
+        note: "The only American memory maker — as much a geopolitical hedge as a commercial one." },
+      { co: "Kioxia (NAND)", where: "Yokkaichi, Japan", flag: "🇯🇵",
+        note: "Spun out of Toshiba, the company that invented NAND flash in the 1980s." },
+    ],
+    regions: ["South Korea", "Japan", "USA", "Taiwan"]
+  },
+  {
+    key: "modem", icon: "📡", name: "Modem & wireless chips", cat: "Silicon", cost: "≈ $40–55 (modem + RF)",
+    desc: "5G connectivity — an area Apple is actively bringing in-house.",
+    long: "Most iPhone 17 models still use Qualcomm 5G modems (designed in San Diego, fabbed by TSMC/Samsung). Apple's own C1/C1X modem debuted in the iPhone 16e and the slim iPhone Air, and Apple's N1 chip now handles Wi-Fi/Bluetooth across the line — replacing Broadcom. RF front-end chips still come from Broadcom, Skyworks, and Qorvo (USA).",
+    suppliers: [
+      { co: "Qualcomm (5G modem)", where: "San Diego, USA (fabbed in Asia)", flag: "🇺🇸",
+        note: "Still inside most iPhone 17s despite years of lawsuits between the two companies; the current supply deal runs into 2027." },
+      { co: "Apple C1/C1X & N1 (modem, Wi-Fi/BT)", where: "Designed USA, fabbed TSMC Taiwan", flag: "🇺🇸🇹🇼",
+        note: "A decade-long replacement project that began with Apple buying Intel's modem division for $1B in 2019." },
+      { co: "Broadcom / Skyworks / Qorvo (RF)", where: "USA", flag: "🇺🇸",
+        note: "The amplifiers and filters that tune the radio to each country's spectrum — unglamorous chips with few substitutes." },
+    ],
+    regions: ["USA", "Taiwan"]
+  },
+  {
+    key: "battery", icon: "🔋", name: "Battery", cat: "Power", cost: "≈ $12–18",
+    desc: "Lithium-ion cell custom-shaped to the chassis, with a charge-management board.",
+    long: "Battery cells come overwhelmingly from ATL (Amperex Technology, Hong Kong-headquartered, TDK-owned, factories in Fujian, China), with packs assembled by Sunwoda and Simplo. TDK has begun making iPhone battery cells in India for Indian-assembled phones — a notable first.",
+    suppliers: [
+      { co: "ATL / TDK (cells)", where: "Ningde, China + Haryana, India", flag: "🇨🇳🇮🇳",
+        note: "The world's biggest pouch-cell maker; its spun-off sister company CATL went on to dominate EV batteries." },
+      { co: "Sunwoda (packs)", where: "Shenzhen, China", flag: "🇨🇳",
+        note: "Wraps bare cells with the protection circuitry and connectors that make a finished battery pack." },
+      { co: "Simplo (packs)", where: "Taiwan / China", flag: "🇹🇼",
+        note: "Taiwanese pack assembler — the second source for the same job." },
+    ],
+    regions: ["China", "India", "Taiwan"]
+  },
+  {
+    key: "haptics", icon: "🔊", name: "Haptics, speakers & mics", cat: "Audio / Haptics", cost: "≈ $10–15",
+    desc: "The Taptic Engine, stereo speakers, and MEMS microphones.",
+    long: "The Taptic Engine (Apple's precision vibration motor) is built mainly by AAC Technologies and Luxshare in China and Nidec in Japan/Vietnam. Speakers come from Goertek and AAC; tiny MEMS microphones from Knowles (US-designed, made in Malaysia) and Goertek.",
+    suppliers: [
+      { co: "AAC Technologies (haptics, speakers)", where: "Shenzhen, China", flag: "🇨🇳",
+        note: "The acoustics specialist behind much of the Taptic Engine's signature precise 'click' feel." },
+      { co: "Luxshare (haptics)", where: "China / Vietnam", flag: "🇨🇳🇻🇳",
+        note: "Started as a connector maker, grew into haptics, AirPods — and eventually whole-iPhone assembly." },
+      { co: "Nidec (motors)", where: "Japan / Vietnam", flag: "🇯🇵🇻🇳",
+        note: "Kyoto's precision-motor giant — the same company whose tiny motors spin most of the world's hard drives." },
+      { co: "Goertek / Knowles (audio, mics)", where: "China / Malaysia", flag: "🇨🇳🇲🇾",
+        note: "MEMS microphones smaller than a grain of rice, three or more per phone." },
+    ],
+    regions: ["China", "Japan", "Vietnam"]
+  },
+  {
+    key: "faceid", icon: "👤", name: "Face ID & sensors", cat: "Imaging", cost: "≈ $15–20",
+    desc: "The TrueDepth system: infrared dot projector, flood illuminator, and depth sensors.",
+    long: "The VCSEL lasers that project 30,000 invisible dots come largely from Coherent and Lumentum (USA). STMicroelectronics (France/Italy) supplies time-of-flight sensors; Sony supplies the LiDAR sensor on Pro models. Bosch and TDK-InvenSense provide motion sensors (accelerometer/gyroscope).",
+    suppliers: [
+      { co: "Coherent / Lumentum (VCSEL lasers)", where: "USA", flag: "🇺🇸",
+        note: "The laser arrays that project Face ID's 30,000 invisible dots — Apple seeded US VCSEL capacity with a $390M award to Finisar, now part of Coherent." },
+      { co: "STMicroelectronics (ToF, sensors)", where: "France / Italy / Singapore", flag: "🇫🇷🇮🇹",
+        note: "Time-of-flight sensors that measure distance by literally timing photons on their round trip." },
+      { co: "Sony (LiDAR)", where: "Japan", flag: "🇯🇵",
+        note: "The Pro models' depth scanner for night portraits and AR — camera-sensor expertise pointed at 3D." },
+      { co: "Bosch / TDK (motion sensors)", where: "Germany / Japan", flag: "🇩🇪🇯🇵",
+        note: "Automotive-grade accelerometers and gyroscopes that know when you raise, rotate, or drop the phone." },
+    ],
+    regions: ["USA", "Europe", "Japan"]
+  },
+  {
+    key: "power", icon: "⚡", name: "Power & charging chips", cat: "Silicon", cost: "≈ $20–30",
+    desc: "Power management ICs, USB-C and wireless-charging controllers.",
+    long: "Apple designs its own main power-management chips (fabbed at TSMC, with some capacity in Germany after Apple absorbed Dialog Semiconductor's teams). Texas Instruments (USA), STMicroelectronics (Europe), and Infineon (Germany) supply additional power and charging silicon. MagSafe coils come from Luxshare and Amphenol.",
+    suppliers: [
+      { co: "Apple PMIC (ex-Dialog)", where: "Designed USA/UK-Germany, fabbed Taiwan", flag: "🇺🇸🇩🇪",
+        note: "Born of Apple's $600M absorption of Dialog Semiconductor's teams in 2018 — power management decides battery life as much as the battery does." },
+      { co: "Texas Instruments", where: "Texas, USA", flag: "🇺🇸",
+        note: "The quiet analog giant — charging, USB-C control, and dozens of small power chips across the board." },
+      { co: "STMicro / Infineon", where: "France / Italy / Germany", flag: "🇪🇺",
+        note: "European power silicon, including wireless-charging and MagSafe control." },
+    ],
+    regions: ["USA", "Europe", "Taiwan"]
+  },
+  {
+    key: "board", icon: "🟩", name: "Logic board & passives", cat: "Silicon", cost: "≈ $25–40",
+    desc: "The high-density motherboard plus thousands of tiny capacitors and resistors.",
+    long: "The substrate-like PCB comes from makers in Taiwan (Unimicron), South Korea (Samsung Electro-Mechanics), and Japan (Ibiden, TDK). Murata (Japan) supplies many of the ~1,000+ multilayer ceramic capacitors in every phone. Flex cables and connectors come from Luxshare and Foxconn Interconnect.",
+    suppliers: [
+      { co: "Ibiden / Unimicron (PCB)", where: "Japan / Taiwan", flag: "🇯🇵🇹🇼",
+        note: "Ten-plus-layer boards thinner than a credit card, with wiring packed at near-chip density." },
+      { co: "Murata / TDK / Yageo (passives)", where: "Japan / Taiwan", flag: "🇯🇵🇹🇼",
+        note: "Over a thousand ceramic capacitors per phone, some the size of a grain of sand — Murata alone makes trillions a year." },
+      { co: "Luxshare / FIT (connectors, flex)", where: "China / Vietnam", flag: "🇨🇳🇻🇳",
+        note: "The flex cables and board-to-board connectors that lace every module together." },
+    ],
+    regions: ["Japan", "Taiwan", "China"]
+  },
+  {
+    key: "frame", icon: "🪙", name: "Enclosure (frame & back)", cat: "Mechanical", cost: "≈ $45–60",
+    desc: "The aluminum unibody or frame, back glass, and buttons.",
+    long: "iPhone 17 Pro returned to a forged-aluminum unibody (lighter and more thermally efficient than titanium), machined by Foxconn and other Chinese CNC specialists; standard models use aluminum frames with back glass finished by Lens Technology and Biel Crystal. Enclosure machining is also ramping in India alongside final assembly.",
+    suppliers: [
+      { co: "Foxconn / BYD Electronics (machining)", where: "Shenzhen, China", flag: "🇨🇳",
+        note: "Tens of thousands of CNC machines milling each unibody from a forged aluminum blank — scale no other country has built." },
+      { co: "Lens Tech / Biel Crystal (back glass)", where: "China", flag: "🇨🇳",
+        note: "The same glass-finishing duo as the front cover, handling the color-infused back panels." },
+      { co: "Tata Electronics (casings)", where: "Hosur, India", flag: "🇮🇳",
+        note: "India's first Apple casing plant — feeding Tata's own assembly lines next door." },
+    ],
+    regions: ["China", "India"]
+  },
+  {
+    key: "assembly", icon: "🏭", name: "Final assembly", cat: "Assembly", cost: "≈ $20–30 (labor, test & overhead)",
+    desc: "Where everything converges: hundreds of parts become one phone in a few hours.",
+    long: "Foxconn's Zhengzhou campus ('iPhone City', ~200,000 workers at peak) is still the biggest site, with Luxshare growing fast in China. India is the big story: Foxconn (Tamil Nadu, Karnataka) and Tata Electronics (Hosur) now assemble a substantial and growing share of all iPhones — including flagship models at launch — and supply most US-bound units.",
+    suppliers: [
+      { co: "Foxconn", where: "Zhengzhou/Shenzhen, China + Tamil Nadu/Karnataka, India", flag: "🇨🇳🇮🇳",
+        note: "Apple's manufacturing partner since the first iPhone; Zhengzhou alone can turn out roughly half a million phones a day at peak." },
+      { co: "Luxshare", where: "Kunshan, China", flag: "🇨🇳",
+        note: "In 2020 became the first mainland-Chinese company to win final iPhone assembly — Beijing's counterweight to Taiwanese Foxconn." },
+      { co: "Tata Electronics", where: "Hosur, India", flag: "🇮🇳",
+        note: "Bought Wistron's and Pegatron's India operations to become the first Indian-owned iPhone assembler." },
+    ],
+    regions: ["China", "India"]
+  },
+];
+
+const REGIONS = ["All", "USA", "Taiwan", "South Korea", "Japan", "China", "India", "Vietnam", "Europe"];
+
+const MATERIALS = [
+  { sym: "Li",  name: "Lithium",     text: "Battery cathode. Mined mainly in Australia and Chile; mostly refined in China." },
+  { sym: "Co",  name: "Cobalt",      text: "Battery stability. Historically DR Congo; Apple now reports 100% recycled cobalt in iPhone batteries." },
+  { sym: "REE", name: "Rare earths", text: "Neodymium magnets in speakers, Taptic Engine, cameras. China dominates refining; Apple uses recycled REEs in magnets." },
+  { sym: "Si",  name: "Silicon",     text: "Every chip starts as ultra-pure polysilicon — much of it from the US, Germany, and Japan — grown into wafers largely by Shin-Etsu & SUMCO (Japan)." },
+  { sym: "Al",  name: "Aluminum",    text: "Enclosures. Smelted worldwide; Apple sources low-carbon aluminum (e.g., ELYSIS, Canada) and uses high recycled content." },
+  { sym: "Sn",  name: "Tin",         text: "Solder on every board. Indonesia and Peru are major miners; Apple reports 100% recycled tin in solder for many boards." },
+  { sym: "Au",  name: "Gold",        text: "Corrosion-proof contacts and bonding wire. Mined globally; increasingly recovered from recycled electronics." },
+  { sym: "Ta",  name: "Tantalum",    text: "Tiny high-density capacitors. Mined in Rwanda, DR Congo, Brazil — a focus of conflict-minerals auditing." },
+];
+
+const COUNTRIES = [
+  { flag: "🇺🇸", name: "United States", tag: "Design & high-value silicon", items: [
+    ["Apple", "chip & product design, iOS"],
+    ["Corning", "Ceramic Shield glass (Kentucky)"],
+    ["Qualcomm / Broadcom / Skyworks / Qorvo", "modem & RF chips"],
+    ["Coherent / Lumentum", "Face ID lasers"],
+    ["Texas Instruments / Micron", "power chips, DRAM"],
+    ["TSMC Arizona", "some older-gen Apple chips"],
+  ]},
+  { flag: "🇹🇼", name: "Taiwan", tag: "The silicon chokepoint", items: [
+    ["TSMC", "fabricates every A-series chip"],
+    ["Largan / Genius", "camera lenses"],
+    ["ASE", "chip packaging & test"],
+    ["Unimicron / Yageo", "PCBs, passives"],
+    ["Foxconn / Pegatron (HQ)", "assembly giants are Taiwanese companies"],
+  ]},
+  { flag: "🇰🇷", name: "South Korea", tag: "Displays & memory", items: [
+    ["Samsung Display / LG Display", "OLED panels"],
+    ["SK Hynix / Samsung", "DRAM & NAND memory"],
+    ["LG Innotek", "camera modules"],
+    ["Samsung Electro-Mechanics", "substrates, passives"],
+  ]},
+  { flag: "🇯🇵", name: "Japan", tag: "Sensors & materials", items: [
+    ["Sony", "camera image sensors, LiDAR"],
+    ["Kioxia", "NAND flash"],
+    ["Murata / TDK", "capacitors, batteries (via ATL)"],
+    ["Ibiden", "chip package substrates"],
+    ["Shin-Etsu / SUMCO", "silicon wafers"],
+  ]},
+  { flag: "🇨🇳", name: "China", tag: "Manufacturing scale & assembly", items: [
+    ["Foxconn Zhengzhou", "largest assembly site on earth"],
+    ["Luxshare", "assembly, haptics, connectors"],
+    ["ATL", "battery cells"],
+    ["BOE", "OLED panels (standard models)"],
+    ["Lens Tech / Biel Crystal", "glass finishing"],
+    ["AAC / Goertek", "acoustics & haptics"],
+  ]},
+  { flag: "🇮🇳", name: "India", tag: "The fast-rising second hub", items: [
+    ["Foxconn (Tamil Nadu, Karnataka)", "final assembly"],
+    ["Tata Electronics (Hosur)", "assembly & casings"],
+    ["TDK (Haryana)", "battery cells"],
+    ["~25% of global iPhone output", "and most US-bound units"],
+  ]},
+  { flag: "🇻🇳", name: "Vietnam", tag: "Diversification play", items: [
+    ["Luxshare / Foxconn / Goertek plants", "components & sub-assembly"],
+    ["Nidec", "motors"],
+    ["Bigger for AirPods, iPads & Watch", "than for the iPhone itself"],
+  ]},
+  { flag: "🇪🇺", name: "Europe", tag: "Specialty chips & equipment", items: [
+    ["STMicroelectronics (FR/IT)", "sensors, power chips"],
+    ["Infineon / Bosch (DE)", "power & motion sensors"],
+    ["ams OSRAM (AT)", "optical sensors"],
+    ["ASML (NL)", "the only maker of the EUV machines TSMC needs"],
+  ]},
+];
+
+// ===================== RENDER =====================
+const $ = (s) => document.querySelector(s);
+
+// --- Horizontal exploded diagram, generated from COMPONENTS ---
+const byKey = Object.fromEntries(COMPONENTS.map(c => [c.key, c]));
+const INK = "#5b564c";
+// Hand-drawn glyphs, each centered on (cx, cy).
+const GLYPHS = {
+  glass: (cx, cy) => `
+    <rect x="${cx-9}" y="${cy-12}" width="18" height="24" rx="4" fill="#fbfaf7" stroke="${INK}" stroke-width="1.5"/>
+    <line x1="${cx-3}" y1="${cy-8}" x2="${cx+4}" y2="${cy-1}" stroke="#9db4d8" stroke-width="1.5" stroke-linecap="round"/>`,
+  display: (cx, cy) => `
+    <rect x="${cx-9}" y="${cy-12}" width="18" height="24" rx="3" fill="#bccde6" stroke="${INK}" stroke-width="1.5"/>
+    <rect x="${cx-3.5}" y="${cy-9}" width="7" height="2.5" rx="1.25" fill="${INK}"/>`,
+  faceid: (cx, cy) => `
+    <circle cx="${cx}" cy="${cy}" r="10" fill="#fbfaf7" stroke="${INK}" stroke-width="1.5" stroke-dasharray="2.5 2.5"/>
+    <circle cx="${cx-3.5}" cy="${cy-2}" r="1.4" fill="${INK}"/>
+    <circle cx="${cx+3.5}" cy="${cy-2}" r="1.4" fill="${INK}"/>
+    <path d="M ${cx-3.5} ${cy+4} Q ${cx} ${cy+6.5} ${cx+3.5} ${cy+4}" fill="none" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`,
+  camera: (cx, cy) => `
+    <circle cx="${cx}" cy="${cy}" r="10" fill="#fbfaf7" stroke="${INK}" stroke-width="1.5"/>
+    <circle cx="${cx}" cy="${cy}" r="4.5" fill="${INK}"/>
+    <circle cx="${cx+2}" cy="${cy-2}" r="1.3" fill="#fbfaf7"/>`,
+  soc: (cx, cy) => `
+    ${[-5, 0, 5].map(o => `
+      <line x1="${cx-12}" y1="${cy+o}" x2="${cx-8}" y2="${cy+o}" stroke="${INK}" stroke-width="1.5"/>
+      <line x1="${cx+8}" y1="${cy+o}" x2="${cx+12}" y2="${cy+o}" stroke="${INK}" stroke-width="1.5"/>
+      <line x1="${cx+o}" y1="${cy-12}" x2="${cx+o}" y2="${cy-8}" stroke="${INK}" stroke-width="1.5"/>
+      <line x1="${cx+o}" y1="${cy+8}" x2="${cx+o}" y2="${cy+12}" stroke="${INK}" stroke-width="1.5"/>`).join("")}
+    <rect x="${cx-8}" y="${cy-8}" width="16" height="16" rx="2" fill="#2b5ea7"/>`,
+  memory: (cx, cy) => `
+    <rect x="${cx-11}" y="${cy-7}" width="22" height="14" rx="2" fill="#fbfaf7" stroke="${INK}" stroke-width="1.5"/>
+    <rect x="${cx-7.5}" y="${cy-3.5}" width="4" height="7" fill="#b08a35"/>
+    <rect x="${cx-2}" y="${cy-3.5}" width="4" height="7" fill="#b08a35"/>
+    <rect x="${cx+3.5}" y="${cy-3.5}" width="4" height="7" fill="#b08a35"/>`,
+  modem: (cx, cy) => `
+    <circle cx="${cx}" cy="${cy+7}" r="2" fill="${INK}"/>
+    <path d="M ${cx-5} ${cy+1} A 7.5 7.5 0 0 1 ${cx+5} ${cy+1}" fill="none" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M ${cx-9} ${cy-4} A 13 13 0 0 1 ${cx+9} ${cy-4}" fill="none" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M ${cx-13} ${cy-9} A 19 19 0 0 1 ${cx+13} ${cy-9}" fill="none" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`,
+  power: (cx, cy) => `
+    <polygon points="${cx+3},${cy-12} ${cx-7},${cy+2} ${cx-1},${cy+2} ${cx-3},${cy+12} ${cx+7},${cy-2} ${cx+1},${cy-2}"
+      fill="#b08a35" stroke="${INK}" stroke-width="1" stroke-linejoin="round"/>`,
+  board: (cx, cy) => `
+    <rect x="${cx-11}" y="${cy-8}" width="22" height="16" rx="2" fill="#fbfaf7" stroke="${INK}" stroke-width="1.5"/>
+    <rect x="${cx-6}" y="${cy-4}" width="6" height="6" fill="#2b5ea7"/>
+    <polyline points="${cx+1},${cy-1} ${cx+5},${cy-1} ${cx+5},${cy+4} ${cx+8},${cy+4}" fill="none" stroke="#b08a35" stroke-width="1.2"/>
+    <circle cx="${cx+8}" cy="${cy+4}" r="1.2" fill="#b08a35"/>
+    <circle cx="${cx-8}" cy="${cy+5}" r="1.2" fill="#b08a35"/>`,
+  haptics: (cx, cy) => `
+    <polygon points="${cx-9},${cy-3} ${cx-4},${cy-3} ${cx+1},${cy-8} ${cx+1},${cy+8} ${cx-4},${cy+3} ${cx-9},${cy+3}"
+      fill="#fbfaf7" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M ${cx+5} ${cy-4} A 5.5 5.5 0 0 1 ${cx+5} ${cy+4}" fill="none" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M ${cx+8} ${cy-7} A 9.5 9.5 0 0 1 ${cx+8} ${cy+7}" fill="none" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/>`,
+  battery: (cx, cy) => `
+    <rect x="${cx-11}" y="${cy-6}" width="20" height="12" rx="3" fill="#fbfaf7" stroke="${INK}" stroke-width="1.5"/>
+    <rect x="${cx+9.5}" y="${cy-3}" width="3" height="6" rx="1" fill="${INK}"/>
+    <rect x="${cx-8.5}" y="${cy-3.5}" width="9" height="7" rx="1.5" fill="#b08a35"/>`,
+  frame: (cx, cy) => `
+    <rect x="${cx-8}" y="${cy-12}" width="16" height="24" rx="5" fill="none" stroke="${INK}" stroke-width="2"/>
+    <line x1="${cx+9.5}" y1="${cy-6}" x2="${cx+9.5}" y2="${cy-2}" stroke="${INK}" stroke-width="2"/>`,
+  assembly: (cx, cy) => `
+    <polygon points="${cx-11},${cy+9} ${cx-11},${cy-3} ${cx-4},${cy-8} ${cx-4},${cy-3} ${cx+3},${cy-8} ${cx+3},${cy-3} ${cx+11},${cy-3} ${cx+11},${cy+9}"
+      fill="#fbfaf7" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>
+    <rect x="${cx+5}" y="${cy-12}" width="3.5" height="9" fill="${INK}"/>
+    <rect x="${cx-8}" y="${cy+2}" width="4" height="4" fill="${INK}" opacity=".55"/>
+    <rect x="${cx-1}" y="${cy+2}" width="4" height="4" fill="${INK}" opacity=".55"/>`,
+  materials: (cx, cy) => `
+    <polygon points="${cx-10},${cy-3} ${cx-5},${cy-10} ${cx+5},${cy-10} ${cx+10},${cy-3} ${cx},${cy+10}"
+      fill="#dde5ef" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>
+    <line x1="${cx-10}" y1="${cy-3}" x2="${cx+10}" y2="${cy-3}" stroke="${INK}" stroke-width="1"/>
+    <polyline points="${cx-4},${cy-3} ${cx},${cy+10} ${cx+4},${cy-3}" fill="none" stroke="${INK}" stroke-width="1"/>`,
+};
+// The whole chain: raw materials first, then the physical stack front-to-back, ending with assembly.
+const DIAGRAM = [
+  { key: "materials", short: "Materials", fill: "#e7dfd0" },
+  { key: "glass",    short: "Glass",    fill: "#dde5ef" },
+  { key: "display",  short: "Display",  fill: "#bccde6" },
+  { key: "faceid",   short: "Face ID",  fill: "#eee9df" },
+  { key: "camera",   short: "Cameras",  fill: "#eee9df" },
+  { key: "soc",      short: "A19 chip", fill: "#eee9df" },
+  { key: "memory",   short: "Memory",   fill: "#eee9df" },
+  { key: "modem",    short: "Modem",    fill: "#eee9df" },
+  { key: "power",    short: "Power",    fill: "#eee9df" },
+  { key: "board",    short: "Board",    fill: "#eee9df" },
+  { key: "haptics",  short: "Haptics",  fill: "#eee9df" },
+  { key: "battery",  short: "Battery",  fill: "#eee9df" },
+  { key: "frame",    short: "Frame",    fill: "#dcd5c5" },
+  { key: "assembly", short: "Assembly", fill: "#e7dfd0" },
+];
+const SLAB_W = 46, SLAB_H = 64, GAP = 16, X0 = 22, Y0 = 12;
+const BREAK = 12; // extra breathing room after materials and before assembly
+const svgW = X0 * 2 + DIAGRAM.length * SLAB_W + (DIAGRAM.length - 1) * GAP + 2 * BREAK;
+$("#explodedSvg").innerHTML = `
+  <svg viewBox="0 0 ${svgW} 144" xmlns="http://www.w3.org/2000/svg" aria-label="Horizontal exploded view of the iPhone supply chain">
+    ${DIAGRAM.map((d, i) => {
+      const x = X0 + i * (SLAB_W + GAP) + (i > 0 ? BREAK : 0) + (i === DIAGRAM.length - 1 ? BREAK : 0);
+      const cx = x + SLAB_W / 2;
+      const ly = Y0 + SLAB_H + 18;
+      const label = d.key === "materials" ? "Raw materials" : byKey[d.key].name;
+      return `
+      <g class="layer" data-key="${d.key}" tabindex="0" role="button" aria-label="${label} — view details">
+        <rect class="base" x="${x}" y="${Y0}" width="${SLAB_W}" height="${SLAB_H}" rx="8" fill="${d.fill}"/>
+        ${GLYPHS[d.key](cx, Y0 + SLAB_H / 2)}
+        <text class="lbl" x="${cx + 5}" y="${ly}" text-anchor="end" transform="rotate(-38 ${cx + 5} ${ly})">${d.short}</text>
+      </g>`;
+    }).join("")}
+  </svg>`;
+
+// --- Selection: clicking a part fills the detail panel ---
+let selectedKey = "soc";
+function renderDetail() {
+  document.querySelectorAll(".layer").forEach(l => l.classList.toggle("active", l.dataset.key === selectedKey));
+  if (selectedKey === "materials") {
+    $("#detailPanel").innerHTML = `
+      <h3>Raw materials</h3>
+      <div class="cat">Before the factory</div>
+      <p>Underneath the brand names is a mining and refining chain. Apple increasingly uses recycled sources for several of these — 100% recycled cobalt in batteries and recycled rare earths in magnets, by Apple's own reporting.</p>
+      <div class="materials">
+        ${MATERIALS.map(m => `<div class="mat"><span class="sym">${m.sym}</span><h3>${m.name}</h3><p>${m.text}</p></div>`).join("")}
+      </div>
+    `;
+    return;
+  }
+  const c = byKey[selectedKey];
+  $("#detailPanel").innerHTML = `
+    <h3>${c.icon} ${c.name}</h3>
+    <div class="cat">${c.cat}${c.cost ? ` <span class="cost-badge">${c.cost} per phone</span>` : ""}</div>
+    <p>${c.desc} ${c.long}</p>
+    <div class="suppliers-grid">
+      ${c.suppliers.map(s => `
+        <div class="supplier">
+          <div class="supplier-top">
+            <span class="name">${s.flag} ${s.co}</span>
+            <span class="loc">${s.where}</span>
+          </div>
+          ${s.note ? `<div class="note">${s.note}</div>` : ""}
+        </div>`).join("")}
+    </div>
+  `;
+}
+document.querySelectorAll(".layer").forEach(l => {
+  const select = () => {
+    selectedKey = l.dataset.key;
+    renderDetail();
+    // on small screens the panel sits below the fold — bring it into view
+    if (window.matchMedia("(max-width: 760px)").matches)
+      $("#detailPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+  l.addEventListener("click", select);
+  l.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(); }
+  });
+});
+
+// --- Region filter: dim parts the region doesn't supply, show its contributions ---
+let activeRegion = "All";
+const chipsEl = $("#chips");
+const regionPanel = $("#regionPanel");
+const countryFor = (r) => COUNTRIES.find(c => c.name === (r === "USA" ? "United States" : r));
+REGIONS.forEach(r => {
+  const b = document.createElement("button");
+  b.className = "chip" + (r === "All" ? " on" : "");
+  b.textContent = r === "All" ? "🌍 All regions" : r;
+  b.onclick = () => {
+    activeRegion = r;
+    document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+    b.classList.add("on");
+    document.querySelectorAll(".layer").forEach(l => {
+      // raw materials are sourced globally — never dim that slab
+      const inRegion = r === "All" || l.dataset.key === "materials" || byKey[l.dataset.key].regions.includes(r);
+      l.classList.toggle("dim", !inRegion);
+    });
+    // panel: what this country uniquely contributes
+    const c = countryFor(r);
+    regionPanel.hidden = !c;
+    if (c) {
+      regionPanel.innerHTML = `
+        <div class="head"><span class="f">${c.flag}</span><b>${c.name}</b><span class="tag">— ${c.tag}</span></div>
+        <ul>${c.items.map(([t, rest]) => `<li><b>${t}</b> — ${rest}</li>`).join("")}</ul>
+      `;
+    }
+    // if the selected part fades out, jump to the first part the region does supply
+    if (c && selectedKey !== "materials" && !byKey[selectedKey].regions.includes(r)) {
+      const first = DIAGRAM.find(d => d.key !== "materials" && byKey[d.key].regions.includes(r));
+      if (first) { selectedKey = first.key; renderDetail(); }
+    }
+  };
+  chipsEl.appendChild(b);
+});
+renderDetail();
+
+// --- BOM stacked bar (midpoint estimates, iPhone 17 Pro Max class, ≈ $550 total) ---
+const BOM = [
+  { name: "A19 Pro chip",        usd: 115, color: "#2b5ea7" },
+  { name: "OLED display",        usd: 80,  color: "#7a6ea8" },
+  { name: "Cameras",             usd: 80,  color: "#a85c7c" },
+  { name: "Enclosure & glass",   usd: 73,  color: "#8a8273" },
+  { name: "Memory (RAM+256GB)",  usd: 50,  color: "#b08a35" },
+  { name: "Modem & RF",          usd: 45,  color: "#4a8a96" },
+  { name: "Board, power & misc", usd: 37,  color: "#9aa7c7" },
+  { name: "Assembly & test",     usd: 25,  color: "#c96f4a" },
+  { name: "Face ID & sensors",   usd: 18,  color: "#6f6a62" },
+  { name: "Battery",             usd: 15,  color: "#8d6e63" },
+  { name: "Haptics & audio",     usd: 12,  color: "#b3382e" },
+];
+const bomTotal = BOM.reduce((s, b) => s + b.usd, 0);
+$("#bomBar").innerHTML = BOM.map(b =>
+  `<div class="bom-seg" style="width:${(b.usd / bomTotal * 100).toFixed(2)}%; background:${b.color};" title="${b.name}: ~$${b.usd}">${b.usd >= 37 ? "$" + b.usd : ""}</div>`
+).join("");
+$("#bomLegend").innerHTML = BOM.map(b => `
+  <div class="bom-li">
+    <span class="dot" style="background:${b.color}"></span>
+    <span class="nm">${b.name}</span>
+    <span class="val">~$${b.usd}</span>
+  </div>`).join("");
+
+// --- Scroll-spy: highlight the current section in the sticky nav ---
+const navLinks = {};
+document.querySelectorAll("nav.outline a[href^='#']").forEach(a => navLinks[a.getAttribute("href").slice(1)] = a);
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && navLinks[e.target.id]) {
+      Object.values(navLinks).forEach(a => a.classList.remove("active"));
+      navLinks[e.target.id].classList.add("active");
+    }
+  });
+}, { rootMargin: "-25% 0px -65% 0px" });
+document.querySelectorAll("section[id]").forEach(s => spy.observe(s));
+</script>
+<a href="#top" class="to-top" aria-label="Back to top" title="Back to top">↑</a>
+<style>
+.to-top{position:fixed;bottom:22px;right:22px;z-index:2147483646;width:40px;height:40px;
+	display:flex;align-items:center;justify-content:center;border-radius:50%;
+	background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+	border:1px solid rgba(140,140,140,.28);color:#555;font-size:19px;line-height:1;text-decoration:none;
+	opacity:0;pointer-events:none;transition:opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.to-top.show{opacity:1;pointer-events:auto;}
+.to-top:hover{color:#111;border-color:rgba(140,140,140,.5);}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none;}html{scroll-behavior:auto;}}
+</style>
+<script>(function(){var b=document.querySelector('.to-top');if(!b)return;
+function f(){b.classList.toggle('show',window.scrollY>500);}
+window.addEventListener('scroll',f,{passive:true});f();
+b.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});})();</script>
+</body>
+</html>

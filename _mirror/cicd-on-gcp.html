@@ -1,0 +1,312 @@
+<!DOCTYPE HTML>
+<html lang="en" dir="ltr">
+	<head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+		<meta charset="utf-8">
+
+		<title>cicd on gcp &#43; sql &mdash; cache</title>
+		
+		<link rel="stylesheet" type="text/css" href="https://cdn.writeas.net/css/write.7a8d594726b6871de2afc.css" />
+		
+		<link rel="shortcut icon" href="https://cdn.writeas.net/favicon.ico" />
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<link rel="canonical" href="https://cache.bwang.io/cicd-on-gcp" />
+		<link rel="alternate" type="application/rss+xml" title="cache &raquo; Feed" href="https://cache.bwang.io/feed/" />
+		<meta name="generator" content="Write.as">
+		<meta name="title" content="cicd on gcp &#43; sql &mdash; cache">
+		<meta name="description" content="\[This post was originally written in 2020.\]  This post is dedicated primarily on making a cicd pipeline, a pretty generic boilerplate p...">
+		
+		<meta name="twitter:label1" value="Views">
+		<meta name="twitter:data1" value="18">
+		<link rel="author" href="http://cache.bwang.io/" />
+		<meta name="author" content="cache" />
+		<meta itemprop="description" content="\[This post was originally written in 2020.\]  This post is dedicated primarily on making a cicd pipeline, a pretty generic boilerplate p...">
+		<meta itemprop="datePublished" content="2020-12-16" />
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:description" content="\[This post was originally written in 2020.\]  This post is dedicated primarily on making a cicd pipeline, a pretty generic boilerplate p...">
+		<meta name="twitter:title" content="cicd on gcp &#43; sql &mdash; cache">
+		<meta name="twitter:image" content="https://blog.bwang.io/content/images/2020/10/image-20201012224313973.png">
+		<meta property="og:title" content="cicd on gcp &#43; sql" />
+		<meta property="og:description" content="\[This post was originally written in 2020.\]  This post is dedicated primarily on making a cicd pipeline, a pretty generic boilerplate p..." />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://cache.bwang.io/cicd-on-gcp" />
+		<meta property="og:updated_time" content="2020-12-16T02:20:52Z" />
+		<meta property="og:image" content="https://blog.bwang.io/content/images/2020/10/image-20201012224313973.png" />
+		<meta property="article:published_time" content="2020-12-16T02:20:52Z">
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	</head>
+	<body id="post">
+		
+		<div id="overlay"></div>
+
+		<header>
+		<h1 dir="ltr" id="blog-title"><a rel="author" href="/" class="h-card p-author">cache</a></h1>
+			<nav>
+				
+				<a class="pinned" href="https://cache.bwang.io/reading">reading</a><a class="pinned" href="https://cache.bwang.io/about">about</a>
+				
+				
+			</nav>
+		</header>
+
+		
+
+		<article id="post-body" class="norm h-entry "><h2 id="title" class="p-name dated">cicd on gcp + sql</h2><time class="dt-published" datetime="2020-12-16T02:20:52Z" pubdate itemprop="datePublished" content="2020-12-16 02:20:52 &#43;0000 UTC">December 16, 2020</time><div class="e-content"><p>[This post was originally written in 2020.]</p>
+
+<p>This post is dedicated primarily on making a cicd pipeline, a pretty generic boilerplate pipeline that uses <a href="https://cloud.google.com/cloud-build/#section-1">Cloud Build</a>, which is google&#39;s CICD serverless platform. Modularly building upwards so that my next project can use this. We&#39;re using <a href="https://cloud.google.com/source-repositories?authuser=4">Cloud Source Repos</a> to host repos, but the pattern is all the same. All these CI pipelines follow the same structure:</p>
+<ul><li>There&#39;s a <a href="https://cloud.google.com/cloud-build/docs/build-config">steps</a> file to define steps (e.g. steps to test a pipeline)</li>
+<li>There&#39;s a <a href="https://cloud.google.com/cloud-build/docs/automating-builds/create-manage-triggers">trigger</a> to invoke some steps (e.g. pushing to a branch)</li></ul>
+
+<p>My trigger is defined as any changes to my master branch, and my cloudbuild.yml file has pretty self-explanatory steps: run a test, build docker image, push docker image (and optionally deploy docker image).</p>
+
+<p>This <a href="https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build">tutorial</a>, which is what I&#39;m generally following, has a separate branch that has a separate cloudbuild.yaml file to manage deployment. This way, the CI step which is generally managed by the developer is decoupled from the CD step, which is generally managed by automated <a href="https://cloud.google.com/kubernetes-engine/images/gitops-tutorial-pipeline-flow.svg">systems</a>. The CD step uses the <a href="https://blog.bwang.io/cicd-pipeline-cloud-build/gcr.io/cloud-builders/kubectl">kubectl builder</a> to automatically link a cluster to deploy, which is a nice abstraction. I made some custom modifications to conform to the way I want feature-branch tested and the final result deployed.</p>
+
+<p>Feature branch runs test and builds docker image.</p>
+
+<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201012224313973.png" alt="image-20201012224313973"/></p>
+
+<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201012224339864.png" alt="image-20201012224339864"/></p>
+
+<p>Master branch runs test, builds, pushes image, and deploys</p>
+
+<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201012230527371.png" alt="image-20201012230527371"/></p>
+
+<p>Cool! Everything works like a charm. You can also do more <a href="https://cloud.google.com/cloud-build/docs/build-config">fancy things</a>. I think if you have more complex docker images, you can simply layer images on top of the GCP builder images. These A-records are mapped to LoadBalancer IPs:</p>
+
+<h3 id="adding-a-service" id="adding-a-service">adding a service</h3>
+
+<p>I&#39;m using postgresql as the backend hosted on <a href="https://cloud.google.com/sql">Cloud SQL</a>; it&#39;s a managed database service that does scaling, security, and backups for you. For postgres tooling, everything I&#39;m using is pretty standard: psycopg2/sqlalchemy/alembic via the flask ecosystem.</p>
+
+<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201021224538288-1.png" alt="image-20201021224538288-1"/></p>
+
+<p>Anyways, everything works great! I can also see it exposed on a lightweight front end I made.</p>
+
+<p>I am using <a href="https://cloud.google.com/sql/docs/postgres/sql-proxy">cloud<em>sql</em>proxy</a> to run everything local against a production database, but alembic makes it really easy to sync your data models up.</p>
+
+<p>Note that sqlalchemy <a href="https://www.michaelcho.me/article/sqlalchemy-commit-flush-expire-refresh-merge-whats-the-difference">expires on commit</a>; this means that when the data is transferred from local memory to be committed onto the database, the object can&#39;t be used anymore. It doesn’t matter too much since you do business logic before you commit anyway.</p>
+
+<p>Cool! I’m ready to hire some engineers now for my project (joking).</p>
+
+<p>Other random stuff:</p>
+<ul><li>I recommend <a href="https://codelabs.developers.google.com/codelabs/cloud-builder-gke-continuous-deploy/index.html">this</a> to follow to do what I did here.</li>
+<li><a href="https://www.learndatasci.com/tutorials/using-databases-python-postgres-sqlalchemy-and-alembic/">easy-to-follow alembic set up and reasoning + commit/rollback code</a></li></ul>
+</div></article>
+
+		
+
+		
+		<footer dir="ltr"><hr><nav><p style="font-size: 0.9em">published with <a class="home pubd" href="https://write.as/">write.as</a></p></nav></footer>
+		
+
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	</body>
+	
+	
+		
+		
+	
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/posts/ovkrbiboknu37bm5/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var pinning = false;
+function unpinPost(e, postID) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var $header = document.getElementsByTagName('header')[0];
+	var callback = function() {
+		
+		var $pinnedNavLink = $header.getElementsByTagName('nav')[0].querySelector('.pinned.selected');
+		$pinnedNavLink.style.display = 'none';
+		try { _paq.push(['trackEvent', 'Post', 'unpin', 'post']); } catch(e) {}
+	};
+
+	var $pinBtn = $header.getElementsByClassName('unpin')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/unpin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+				$pinBtn.style.display = 'none';
+				$pinBtn.innerHTML = 'Pin';
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'Unpin';
+			} else {
+				$pinBtn.innerHTML = 'Unpin';
+				alert("Failed to unpin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+
+var $form = document.getElementById('emailsub');
+if ($form != null) {
+	$form.onsubmit = function() {
+		var $sub = document.getElementById('subscribe-btn');
+		$sub.disabled = true;
+		$sub.value = 'Subscribing...';
+	}
+}
+
+	
+
+	
+	try { 
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+	try { 
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {   }
+	</script>
+
+    
+</html>

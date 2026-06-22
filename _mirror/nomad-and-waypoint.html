@@ -1,0 +1,318 @@
+<!DOCTYPE HTML>
+<html lang="en" dir="ltr">
+	<head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+		<meta charset="utf-8">
+
+		<title>nomad &amp; waypoint &mdash; cache</title>
+		
+		<link rel="stylesheet" type="text/css" href="https://cdn.writeas.net/css/write.7a8d594726b6871de2afc.css" />
+		
+		<link rel="shortcut icon" href="https://cdn.writeas.net/favicon.ico" />
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<link rel="canonical" href="https://cache.bwang.io/nomad-and-waypoint" />
+		<link rel="alternate" type="application/rss+xml" title="cache &raquo; Feed" href="https://cache.bwang.io/feed/" />
+		<meta name="generator" content="Write.as">
+		<meta name="title" content="nomad &amp; waypoint &mdash; cache">
+		<meta name="description" content="This is just me trying out Nomad and Waypoint. This post was originally wrote in 2020.  nomad  Nomad acts as an online server/system to m...">
+		
+		<meta name="twitter:label1" value="Views">
+		<meta name="twitter:data1" value="43">
+		<link rel="author" href="http://cache.bwang.io/" />
+		<meta name="author" content="cache" />
+		<meta itemprop="description" content="This is just me trying out Nomad and Waypoint. This post was originally wrote in 2020.  nomad  Nomad acts as an online server/system to m...">
+		<meta itemprop="datePublished" content="2020-08-11" />
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:description" content="This is just me trying out Nomad and Waypoint. This post was originally wrote in 2020.  nomad  Nomad acts as an online server/system to m...">
+		<meta name="twitter:title" content="nomad &amp; waypoint &mdash; cache">
+		<meta name="twitter:image" content="https://blog.bwang.io/content/images/2020/10/image-20201019235928035.png">
+		<meta property="og:title" content="nomad &amp; waypoint" />
+		<meta property="og:description" content="This is just me trying out Nomad and Waypoint. This post was originally wrote in 2020.  nomad  Nomad acts as an online server/system to m..." />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://cache.bwang.io/nomad-and-waypoint" />
+		<meta property="og:updated_time" content="2020-08-11T01:03:32Z" />
+		<meta property="og:image" content="https://blog.bwang.io/content/images/2020/10/image-20201019235928035.png" />
+		<meta property="article:published_time" content="2020-08-11T01:03:32Z">
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	</head>
+	<body id="post">
+		
+		<div id="overlay"></div>
+
+		<header>
+		<h1 dir="ltr" id="blog-title"><a rel="author" href="/" class="h-card p-author">cache</a></h1>
+			<nav>
+				
+				<a class="pinned" href="https://cache.bwang.io/reading">reading</a><a class="pinned" href="https://cache.bwang.io/about">about</a>
+				
+				
+			</nav>
+		</header>
+
+		
+
+		<article id="post-body" class="norm h-entry "><h2 id="title" class="p-name dated">nomad &amp; waypoint</h2><time class="dt-published" datetime="2020-08-11T01:03:32Z" pubdate itemprop="datePublished" content="2020-08-11 01:03:32 &#43;0000 UTC">August 11, 2020</time><div class="e-content"><p>This is just me trying out Nomad and Waypoint. This post was originally wrote in 2020.</p>
+
+<h3 id="nomad" id="nomad">nomad</h3>
+
+<p><a href="https://tech.trivago.com/2019/01/25/nomad-our-experiences-and-best-practices/">Nomad</a> acts as an online server/system to manage applications on that infra. (Alternative: k8s-terraform) Also, according to the <a href="https://www.nomadproject.io/intro">intro talk</a>, it&#39;s a really good platform for serverless compute.</p>
+
+<p>What nomad does better than kubernetes:</p>
+<ul><li>true serverless: maximizes utilization, minimizes resources needed</li>
+<li>can use windows/legacy systems, nomad isn&#39;t limited to kubernetes</li>
+<li>light: single binary</li></ul>
+
+<p>We can run a simple local server/client with <code>nomad agent -dev -config config.hcl</code>.</p>
+
+<p>Clients are basically worker nodes, and servers makes sure there&#39;s high availability (everything is running across regions); our servers and clients create a cluster of virtual machines that have instances of consul and nomad, etc. We can <a href="https://cloud.google.com/iap/docs/using-tcp-forwarding">port-forward</a> (tunnel-through-iap) virtual machine ports to local ports (similar to kubectl port-forward).</p>
+
+<p>I&#39;m connected to my nomad cluster locally and I can just schedule a docker image simply with nomad comands: run/plan/stop, etc. It&#39;s like <code>kubectl apply -f</code> but with a <code>.nomad</code> file.</p>
+
+<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201019235928035.png" alt="image-20201019235928035"/></p>
+
+<p>I scheduled a hello-world image. I see that it&#39;s running in <code>hashistack-client-1</code>. I see that consul automatically picked this guy up in services; the service mesh is all mapped out, etc.</p>
+
+<p>Kubernetes is probably still better in most cases. In terms of other alternatives, there&#39;s also <a href="https://rancher.com/products/rancher/">rancher</a>, <a href="https://docs.docker.com/get-started/swarm-deploy/">docker swarm</a>, <a href="https://www.youtube.com/watch?v=hTcZGODnyf0">mesos</a> , etc.</p>
+
+<h3 id="waypoint" id="waypoint">waypoint</h3>
+
+<p>Hashicorp also announced <a href="https://www.waypointproject.io/docs/getting-started">waypoint</a>; it’s a tool to build and deploy.</p>
+
+<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201020131628900.png" alt="image-20201020131628900"/></p>
+
+<pre><code>  deploy {
+    use &#34;exec&#34; {
+      command = [&#34;kubectl&#34;, &#34;apply&#34;, &#34;-f&#34;, &#34;&lt;TPL&gt;&#34;]
+      template {
+        path = &#34;./example-nodejs-exec.yml&#34;
+      }
+    }
+  }
+</code></pre>
+
+<p>It’s like a makefile that also connects to k8s, AWS, GCP, and also nomad.</p>
+
+<p>Other things:</p>
+<ul><li>people need to use google cloud shell or other cloud terminal equivalents more when writing tutorials like they do <a href="https://github.com/hashicorp/nomad/tree/master/terraform/gcp">here</a></li>
+<li><a href="https://www.nomadproject.io/api-docs/jobs">api</a> if you just want nomad to be some compute</li>
+<li>Nomad Links: Good <a href="https://github.com/jippi/awesome-nomad">list of tooling</a>, example with <a href="https://dev.to/admantium/application-management-with-nomad-38jg">binary</a> instead of docker, a nice <a href="https://medium.com/@obenaus.thomas/a-good-default-nomad-job-template-ea448b8a8cdd">templating walkthrough</a>, a library of reference nomad <a href="https://github.com/hashicorp/demo-nomad-101">files</a></li></ul>
+</div></article>
+
+		
+
+		
+		<footer dir="ltr"><hr><nav><p style="font-size: 0.9em">published with <a class="home pubd" href="https://write.as/">write.as</a></p></nav></footer>
+		
+
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	</body>
+	
+	
+		
+		
+	
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/posts/iqawqgyjxnc6biom/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var pinning = false;
+function unpinPost(e, postID) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var $header = document.getElementsByTagName('header')[0];
+	var callback = function() {
+		
+		var $pinnedNavLink = $header.getElementsByTagName('nav')[0].querySelector('.pinned.selected');
+		$pinnedNavLink.style.display = 'none';
+		try { _paq.push(['trackEvent', 'Post', 'unpin', 'post']); } catch(e) {}
+	};
+
+	var $pinBtn = $header.getElementsByClassName('unpin')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/unpin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+				$pinBtn.style.display = 'none';
+				$pinBtn.innerHTML = 'Pin';
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'Unpin';
+			} else {
+				$pinBtn.innerHTML = 'Unpin';
+				alert("Failed to unpin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+
+var $form = document.getElementById('emailsub');
+if ($form != null) {
+	$form.onsubmit = function() {
+		var $sub = document.getElementById('subscribe-btn');
+		$sub.disabled = true;
+		$sub.value = 'Subscribing...';
+	}
+}
+
+	
+
+	
+	try { 
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+	try { 
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {   }
+	</script>
+
+    
+</html>

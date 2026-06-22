@@ -1,0 +1,382 @@
+@charset "UTF-8";
+
+/* =========================================================================
+   cache — adaptation of the Typora "Inside" theme by FishionYu
+   https://github.com/FishionYu/typora-inside-theme
+   Self-contained: fonts live in ../fonts/inside/
+   ========================================================================= */
+
+/* ---- Fonts ---- */
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 300;
+	src: url('../fonts/inside/josefin-sans-v15-latin-300.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 400;
+	src: url('../fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 500;
+	src: url('../fonts/inside/josefin-sans-v15-latin-500.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 600;
+	src: url('../fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');
+}
+/* The Inside theme renders its heaviest weight (900) from the 700 file. */
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 700;
+	src: url('../fonts/inside/josefin-sans-v15-latin-700.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 900;
+	src: url('../fonts/inside/josefin-sans-v15-latin-700.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Cascadia Code';
+	font-style: normal;
+	src: url('../fonts/inside/CascadiaCode.woff2') format('woff2');
+}
+
+/* ---- Reset / base ---- */
+* { box-sizing: border-box; }
+
+html { font-size: 14px; }
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Josefin Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+	font-weight: 400;
+	line-height: 1.7;
+	color: #333;
+	background: #fff;
+	text-rendering: geometricPrecision;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Animate opening an article: a cross-document cross-fade where supported, plus
+   a content entrance that runs on every load as a universal fallback. */
+@view-transition { navigation: auto; }
+@keyframes cacheContentIn {
+	from { opacity: 0; transform: translateY(10px); }
+	to { opacity: 1; transform: none; }
+}
+article#post-body,
+body#collection #wrapper { animation: cacheContentIn .4s ease both; }
+@media (prefers-reduced-motion: reduce) {
+	article#post-body, body#collection #wrapper { animation: none; }
+}
+
+/* Every page region shares one centered, responsive measure: it shrinks to fit
+   small screens and widens on large ones. The index wraps its content in
+   #wrapper; post/about pages put article#post-body directly under <body>. */
+:root { --measure: 620px; --gutter: 30px; }
+@media (min-width: 1100px) { :root { --measure: 720px; } }
+@media (min-width: 1500px) { :root { --measure: 840px; } }
+@media (min-width: 1900px) { :root { --measure: 960px; } }
+@media (max-width: 560px) { :root { --gutter: 20px; } }
+
+header,
+#wrapper,
+article#post-body,
+body > footer {
+	max-width: var(--measure);
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: var(--gutter);
+	padding-right: var(--gutter);
+}
+
+/* ---- Links ---- */
+a {
+	color: #357BB3;
+	text-decoration: underline;
+	text-decoration-style: dotted;
+	text-underline-offset: 2px;
+	cursor: pointer;
+}
+a:hover { color: #1f5c8c; }
+
+/* ---- Site header ---- */
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: .5rem 1.5rem;
+	margin-top: 3rem;
+	margin-bottom: 2.5rem;
+}
+/* Individual posts drop the "cache" wordmark masthead — navigation is via the
+   tray's home icon. The homepage (body#collection) keeps it as the site title. */
+body#post header { display: none; }
+body#post article#post-body { padding-top: 2.5rem; }
+#blog-title {
+	margin: 0;
+	font-size: 28px;
+	font-weight: 900;
+	line-height: 1.2;
+	letter-spacing: .02em;
+}
+#blog-title a { color: #111; text-decoration: none; }
+#blog-title a:hover { color: #357BB3; }
+header nav a.pinned {
+	color: #777;
+	text-decoration: none;
+	font-size: 15px;
+	margin-left: 1.25rem;
+}
+header nav a.pinned:first-child { margin-left: 0; }
+header nav a.pinned:hover { color: #357BB3; }
+
+/* ---- Index: post list ---- */
+#wrapper { min-height: 50vh; }
+
+/* Feed toggle (cache | reading) — understated underline tabs, pure CSS. */
+body#collection .feed-radio { position: absolute; opacity: 0; pointer-events: none; }
+body#collection .feed-toggle { display: inline-flex; gap: 1.6rem; margin: .2rem 0 2.2rem; }
+body#collection .feed-toggle label {
+	font-size: 15px;
+	font-weight: 600;
+	color: #c4c4c4;
+	cursor: pointer;
+	padding: 0 0 5px;
+	border-bottom: 2px solid transparent;
+	user-select: none;
+	transition: color .12s, border-color .12s;
+}
+body#collection .feed-toggle label:hover { color: #8a8a8a; }
+body#collection #feed-cache:checked ~ .feed-toggle label[for="feed-cache"],
+body#collection #feed-reading:checked ~ .feed-toggle label[for="feed-reading"],
+body#collection #feed-standalone:checked ~ .feed-toggle label[for="feed-standalone"] {
+	color: #111;
+	border-bottom-color: #357BB3;
+}
+body#collection .feed { display: none; }
+body#collection #feed-cache:checked ~ .feed-cache { display: block; }
+body#collection #feed-reading:checked ~ .feed-reading { display: block; }
+body#collection #feed-standalone:checked ~ .feed-standalone { display: block; }
+
+body#collection #wrapper article.h-entry {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 1.5rem;
+	margin: 0 0 .5rem;
+}
+body#collection #wrapper article.h-entry .post-title {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 1.6;
+}
+body#collection #wrapper article.h-entry .post-title a { color: #222; text-decoration: none; }
+body#collection #wrapper article.h-entry .post-title a:hover {
+	color: #357BB3;
+	text-decoration: underline;
+	text-decoration-style: dotted;
+}
+/* Reading + standalone lists inherit the same Josefin Sans / 18px / 600 as the
+   cache list above — no per-feed override, so all three feeds look identical. */
+.dt-published {
+	flex-shrink: 0;
+	color: #757575;
+	font-size: 13px;
+	font-weight: 300;
+	white-space: nowrap;
+}
+
+/* ---- A single post / page ---- */
+article#post-body {
+	display: block;
+	padding-bottom: 4rem;
+}
+article#post-body > h2#title {
+	font-size: 25px;
+	font-weight: 900;
+	line-height: 1.3;
+	margin: 0 0 .25rem;
+	color: #111;
+}
+article#post-body > .dt-published {
+	display: block;
+	margin-bottom: 2rem;
+	font-size: 13px;
+}
+
+/* ---- Article body (the Inside look) ---- */
+.e-content { font-size: 15px; }
+.e-content p { margin: 1rem 0; }
+
+.e-content h1,
+.e-content h2,
+.e-content h3,
+.e-content h4,
+.e-content h5,
+.e-content h6 {
+	position: relative;
+	font-weight: 900;
+	font-style: normal;
+	line-height: 2;
+	margin: 1.4rem 0 .6rem;
+	color: #111;
+}
+.e-content h1 { font-size: 25px; }
+.e-content h2 { font-size: 20px; }
+.e-content h3 { font-size: 18px; }
+.e-content h4 { font-size: 16px; }
+.e-content h5,
+.e-content h6 { font-size: 14px; }
+
+
+.e-content strong,
+.e-content b { font-weight: 900; }
+.e-content em,
+.e-content i { font-style: italic; }
+
+/* Lists — red markers, regular text (Inside accent). */
+.e-content ul,
+.e-content ol { padding-left: 1.4rem; }
+.e-content li { margin: .25rem 0; }
+.e-content li::marker { color: #357BB3; }
+
+/* Images */
+.e-content img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: 1.5rem auto;
+	border-radius: 3px;
+}
+
+/* Embedded video — responsive 16:9 (lite-YouTube facade + injected player) */
+.e-content .yt-lite,
+.e-content iframe.yt-frame {
+	display: block;
+	width: 100%;
+	max-width: 540px;
+	aspect-ratio: 16 / 9;
+	height: auto;
+	margin: 1.5rem auto;
+	border: 0;
+	border-radius: 4px;
+}
+.e-content .yt-lite {
+	position: relative;
+	background-color: #000;
+	background-size: cover;
+	background-position: center;
+	cursor: pointer;
+	text-decoration: none;
+}
+.e-content .yt-lite .yt-play {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 68px;
+	height: 48px;
+	transform: translate(-50%, -50%);
+	background: rgba(0, 0, 0, .55);
+	border-radius: 12px;
+	transition: background-color .15s;
+}
+.e-content .yt-lite .yt-play::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-40%, -50%);
+	border-style: solid;
+	border-width: 11px 0 11px 19px;
+	border-color: transparent transparent transparent #fff;
+}
+.e-content .yt-lite:hover .yt-play { background: #f00; }
+
+/* Inline code + code blocks (Cascadia Code) */
+code,
+kbd,
+samp {
+	font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+	font-size: .9em;
+	color: #333;
+	background: #F3F4F4;
+	padding: .15em .35em;
+	border-radius: 5px;
+}
+pre {
+	font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+	font-size: .85em;
+	line-height: 1.6;
+	background: #f7f7f7;
+	border: 1px solid #e7e7e7;
+	border-radius: 4px;
+	padding: .8rem 1rem;
+	overflow-x: auto;
+}
+pre code {
+	background: none;
+	padding: 0;
+	border-radius: 0;
+	color: inherit;
+	font-size: 1em;
+}
+
+/* Blockquote — thin left bar */
+blockquote {
+	position: relative;
+	margin: 1.6em 0;
+	padding-left: 1.4rem;
+	color: #555;
+}
+blockquote::before {
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	background-color: currentColor;
+	opacity: .2;
+	content: "";
+}
+
+/* Horizontal rule — Inside's three-dot divider */
+hr {
+	margin: 2.5em auto;
+	width: 4px;
+	height: 4px;
+	border: 0;
+	border-radius: 3px;
+	background-color: #ccc;
+	box-shadow: 1em 0 0 0 #ccc, -1em 0 0 0 #ccc;
+	overflow: visible;
+}
+
+/* Tables */
+table { border-collapse: collapse; margin: 1.2em 0; width: 100%; }
+table tr { border-top: 1px solid #dfe2e5; }
+table tr:nth-child(2n), thead { background-color: #f8f8f8; }
+table th, table td { border: 1px solid #dfe2e5; padding: 6px 13px; }
+table th { font-weight: 900; }
+
+mark { background: #FFFD54; font-weight: 500; }
+
+/* ---- Footer ---- */
+/* The only footer content is the (already hidden) Write.as credit — drop it. */
+body > footer { display: none; }
+
+/* Hide leftover Write.as chrome */
+#overlay { display: none; }

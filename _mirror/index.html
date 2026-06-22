@@ -1,0 +1,1346 @@
+<!DOCTYPE HTML>
+<html  dir="auto">
+	<head>
+		<meta charset="utf-8">
+
+		<title>cache</title>
+		
+		<link rel="stylesheet" type="text/css" href="https://cdn.writeas.net/css/write.7a8d594726b6871de2afc.css" />
+		
+		<link rel="shortcut icon" href="https://cdn.writeas.net/favicon.ico" />
+		
+		<link rel="canonical" href="https://cache.bwang.io/">
+		
+		<link rel="next" href="/page/2">
+		<link rel="alternate" type="application/rss+xml" title="cache &raquo; Feed" href="https://cache.bwang.io/feed/" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<meta name="generator" content="Write.as">
+		<meta name="description" content="">
+		
+		<meta itemprop="name" content="cache">
+		<meta itemprop="description" content="">
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:title" content="cache">
+		<meta name="twitter:description" content="">
+		
+		<meta property="og:title" content="cache" />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://cache.bwang.io/" />
+		<meta property="og:description" content="" />
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	</head>
+	<body id="collection" itemscope itemtype="http://schema.org/WebPage">
+		
+
+		
+
+		<header>
+		<h1 dir="auto" id="blog-title"><a href="/" class="h-card p-author u-url" rel="me author">cache</a></h1>
+		
+		
+		<nav>
+			<a class="pinned" href="https://cache.bwang.io/reading">reading</a><a class="pinned" href="https://cache.bwang.io/about">about</a></nav>
+		
+		</header>
+
+		
+		
+		<section id="wrapper" itemscope itemtype="http://schema.org/Blog">
+
+			
+			
+
+			
+<article id="post-98uqyr8rka7pco9u" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/token-playbook" itemprop="url" class="u-url">token playbook</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2026-06-01T02:48:23Z" pubdate itemprop="datePublished" content="2026-06-01 02:48:23 &#43;0000 UTC">June 1, 2026</time>
+
+
+<div lang="en" dir="auto" class="book e-content"><p>A simple tokenmaxxing playbook. Briefly talk about how to increase token throughput (queues, fan-out, more context, loops) to generate high quality work (repetition, verification, evals).</p>
+
+<p><strong>Closing the software loop</strong></p>
+<ul><li>PR review agents, PR generation agent (review error logs, confirm error, reproducing error</li>
+<li>Issue triage agents (labeling, adding context to PRs), documentation agents (review code diffs to update knowledge), security/audit agents</li>
+<li>Test writing agents, refactor/migration, Q&amp;A agents, monitoring/incident/cause grouping agents, dependency audit agents, etc.</li></ul>
+
+<p><strong>Patterns</strong></p>
+<ul><li>Humans gate where being wrong is expensive</li>
+<li>Tokenmaxxing = context size x pass count x call count x frequency x io type (pdf, datasheet, diagram, text, etc.)</li>
+<li>Add context, world expansion, generate more things</li>
+<li>Multiple passes: spawn independent agent passes on the same problem, verify passes, solve same problem multiple times (fixes confidently wrong outputs, stress test pros and cons)</li>
+<li>Spawn many agents to create queues to drain them (multiple step research, crawlers, testing many ideas)</li>
+<li>Synthetic data generation: training examples, test cases, etc.</li>
+<li>Loops to revise (generate, critique, revise loop)</li>
+<li>Map-reduce over large inputs</li>
+<li>Throughput stoppers workarounds (e.g. rate limits, human intervention)</li></ul>
+
+<p><strong>Tooling</strong></p>
+<ul><li>MCPs (access layer like github, CI, sentry, etc.), Claude Code, Agent SDKs</li>
+<li>Schedule (cron), Loop (watch)</li>
+<li>Skills (how to do things; pr-review, pr-generation, etc.); use evals on skills (positive and negative cases) for consistent results</li>
+<li>skill-creator + eval-viewer to scaffold skills and review results</li></ul>
+
+<p><strong>Guardrails</strong></p>
+<ul><li>Eval set for each agent/skill (set expectations on correctness)</li>
+<li>Measure output delta with different agents and skills or without (choose best one)</li>
+<li>Check output / usage; check token usage and downstream metrics</li></ul>
+</div></article><article id="post-bvscz04gwd3uhhqz" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/some-projects" itemprop="url" class="u-url">some projects</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2026-03-11T21:26:07Z" pubdate itemprop="datePublished" content="2026-03-11 21:26:07 &#43;0000 UTC">March 11, 2026</time>
+
+
+<div lang="en" dir="auto" class="book e-content"><p>Disclaimer: all the projects mentioned in this post were created two months ago, maybe a month ago. This post was written around that time frame, and then just slowly edited.</p>
+
+<p>Humans have always distinguished themselves via their tooling. To be much more productive is empowering. But admittedly, some existentialist pangs were felt. This post is me building a couple of apps, some used by me daily, some deployed, some proof of concept, all of which are built with Opus 4.6.</p>
+
+<hr/>
+
+<p><strong>Chansey</strong> – Chansey is a RAG application that takes medical questions, translating them into PubMed queries using an LLM. The answers are classified (diagnostic, comparative, guideline, etc.) and then AI-generated using text from relevant citations. I wanted to build an OpenEvidence clone; this is a Temu version with a much simpler RAG, directly querying PubMed, no caching. You can try it out on chansey.bwang.io</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2Flz1E6KupsyU%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Dlz1E6KupsyU&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2Flz1E6KupsyU%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Diglett</strong> – I wanted to find government contract opportunities on SAM.gov. Diglett scrapes SAM.gov, uses LLM to read attachments and analyze potential procurement opportunities. Generate documents/emails to bid on contracts. Interfacing with government contracts is still laden with human involvement. It’s run locally and uses Google Sheets as back-end for someone to manage these opportunities in the future. Why SAM.gov? Website for Canadian contracts is bad and United Nations / UNGM is sort of behind a paywall. I have set up an LLC and made some submissions, fingers crossed.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FAox44oR5KMU%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DAox44oR5KMU&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FAox44oR5KMU%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Starmie</strong> – Fundamental Analysis/screening of global small-cap stocks. After reading posts such as posts from <a href="https://dirtcheapstocks.substack.com/">dirt</a>, I have had some success last year picking stocks (see my stale <a href="https://0xb11.substack.com/">substack</a>). Starmie is my effort to reproduce the process, periodically picking a few small-cap high-conviction stocks. It uses a postgresql db on neon powering Grafana, displaying a few metrics I care about: EV/EBIT, ROIC, NCAV.</p>
+
+<p>Available at <a href="https://stonks.bwang.io/">https://stonks.bwang.io/</a> (Deployed version is very slow)</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FWBollqAhYEw%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DWBollqAhYEw&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FWBollqAhYEw%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Munchlax</strong> – Some restaurants are too hard to book. Restaurant sniper that polls popular restaurants on Resy, instantly booking when the restaurant becomes available. React Frontend. Go (go-chi) + PostgreSQL backend, storing profiles, watches (snipe job), bookings (successful reservations), watch events (event log for status changes). I have used this to successfully book a restaurant in Chicago and I might use it again in the future.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FIyvn0x8D8VA%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DIyvn0x8D8VA&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FIyvn0x8D8VA%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Noctowl</strong> – I need more exposure to the Japanese language. Noctowl is a language learning chrome extension by automatically replacing English words on webpages with the target translation. It features anki-esque flashcards, click-to-pronounce, grammatical form matching, and cloud sync via Firebase/Google sign-on.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FU7k4E_jGXLo%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DU7k4E_jGXLo&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FU7k4E_jGXLo%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Omastar</strong> – A March Madness prediction that uses a 7 feature model trained with XGBoost on historical games to beat “picking the higher seed”. The front-end features a bracket that tracks how the model is currently doing. My bracket is currently under-performing.</p>
+
+<p>Available at <a href="https://www.bwang.io/omastar/index.html">https://www.bwang.io/omastar/index.html</a></p>
+
+<p><strong>Farfetch’d</strong> – A personal job search tool that scrapes job postings from many boards. Gemini scores each match and lets you review potentially good matches. Application statuses are also tracked.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2Frte6sBEABkc%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Drte6sBEABkc&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2Frte6sBEABkc%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Machop</strong> – Machop match Polymarket and Kalshi events (fuzzy matched then uses an LLM to exact match), and then surfaces arbitrage opportunities. There used to be trades that were around 50% ROI/year for a couple of hundred dollars in volume, but I’m not sure if you can find that kind of alpha anymore. The video below doesn’t capture the full capabilities of Machop. It was originally entirely in your terminal, but now you can try a read-only version on arbitrage.bwang.io.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FGRIqz7g0hIM%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DGRIqz7g0hIM&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FGRIqz7g0hIM%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Machamp</strong> – Trading bot that exploits mispriced sports market by comparing model odds to Kalshi odds. It automatically places trades when it detects sufficient edge. Features a dashboard so you can witness model edge along with game state.</p>
+
+<p><strong>Metapod</strong> – A Jackbox TV style party platform where a host displays a game on TV and people join the game on their phones using a 4-letter room code. The first game is a single-player adventure game, “Lost at Sea”. The other game is “Confidently Wrong”, a Wits and Wagers style game. This game is functional but lacking sounds and animations that makes it fun.</p>
+
+<hr/>
+
+<p>Here are a few more, briefly listed.</p>
+<ul><li><strong>Porygon</strong> – Visually steps through a btc transaction using the real Bitcoin testnet and testnet4 faucet. Generates a wallet, see your transaction in a block.</li>
+<li><strong>Scyther</strong> – Surgical video annotation tool for laparoscopic surgery using CholecSeg8k model for segmentation. Data is bad and my machine isn’t powerful enough so it’s not functional.</li>
+<li><strong>Ludicolo</strong> – Inspiration from <a href="https://midnight.pub/">https://midnight.pub/</a>. Bar simulation where you can sit next to real people at a bar and chat with them (or the bartender who is a LLM).</li>
+<li><strong>Vulpix</strong> – Tiktok content generator. Turns google sheet prompts into tiktok drafts. Not live.</li>
+<li><strong>Ninetales</strong> – Live-stream clipper. Captions clips and turns them into tiktok drafts. Not enough disk space.</li>
+<li><strong>Tangela</strong> – I realized I had an old reddit API key so I used a key to look for trendy topics on reddit.</li></ul>
+
+<hr/>
+
+<p>Software is cheap now. The role of an engineer now is a generalist, a problem solver, a token consumer. Understand technology is implied, but we now just need to increasingly interact with the ends instead of the means.</p>
+
+<p>I will continue writing code and building products in the meantime.</p>
+</div></article><article id="post-ct0gywaugncn927q" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/practical-poker" itemprop="url" class="u-url">practical poker</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2025-11-14T18:43:34Z" pubdate itemprop="datePublished" content="2025-11-14 18:43:34 &#43;0000 UTC">November 14, 2025</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><p>Across playing low stakes live and microstakes online, I have won somewhere around 15k in profit playing poker.</p>
+
+<p>I used to have a lengthier post full of EV calculation and theory. This is a much shorter post, more practical.</p>
+
+<h3 id="should-i-be-playing" id="should-i-be-playing">should I be playing</h3>
+
+<p>I recently came across describing poker tilt with Kahneman’s systems of thinking. The first system is automatic, fast, and emotional. The second system is deliberate, slow, and conscious. We use the first system when we are tilted. We abandon rational thoughts, becoming disillusioned gamblers.</p>
+
+<p>I think about 10% of players are winners in the long run. In a small enough sample, anyone can be winning. Looking at this <a href="https://www.primedope.com/poker-variance-calculator/">variance calculator</a>, we’d need hundreds of thousands of hands to get an approximate win rate. And even then, a theoretically winning player could still be losing. Therefore, poker makes an excellent hobby but a poor source of income.</p>
+
+<p>Lastly, money. How much money should I have to play? We can&#39;t make any bets if we don&#39;t have money. To calculate the <a href="https://www.investopedia.com/terms/r/risk-of-ruin.asp#:~:text=What%20Is%20Risk%20of%20Ruin,recover%20the%20losses%20or%20continue.">Risk of Ruin</a> of poker, I personally vouch for just taking a sample of your last n sessions, getting a mean/variance, and seeing how many standard deviations we are from the mean. We answer questions like “are these games too big for me?”. F(n) = e^(-2nm/v), v=variance, m=mean.</p>
+
+<p>This is <a href="https://forumserver.twoplustwo.com/174/poker-blogs-goals/deeepz-moving-up-50nl-moving-out-2014-6max-1385616/">a thread</a> from Linus, one of the greatest cash game players of all time, before his ascent to greatness. To me, he just seems indomitable even during his rise, ignoring the naysayers, always inquisitive and enjoying the game. And I think that’s how I think the game should be.</p>
+
+<h3 id="pot-odds" id="pot-odds">pot odds</h3>
+
+<p>People say poker is a game for the math-inclined, but the only equation you need is pot odds.</p>
+<ul><li>Pot odds is risk/reward or b/(p+2b); this equation is really only applicable for rivers. For example, when villain bets a half pot sized bet, the pot odds is .25. If our call generates a win over a fourth of the time, then it’s printing. Sometimes, a villain will give us a great discrepancy between pot odds and how often we should be calling. These villains are called fish.</li>
+<li>Much less useful than pot odds, but when constructing a bluff on a river with a range advantage, the theoretical bluff to value ratio should be b/(p+b). I mainly use this equation to keep me at bay from not over-bluffing. For example, a half-pot sized bet should have a bluff to value ratio of 1 to 3. Caveats: we need to have a range advantage, and this equation doesn’t account for villain having traps and raising. Consequences: this is ignoring exploit sizings … the greater the bet size, the greater the EV gained; however, even though theoretically a bigger bet will have more bluffs, when you actually have the nuts, villain is never calling your 3x shove on the river. (This <a href="https://www.youtube.com/watch?v=w_N-zaMbDok">video </a>on trapping frequency is also a relevant watch.)</li></ul>
+
+<p><strong>preflop</strong></p>
+<ul><li>In a low stack-to-pot ratio situations, we want to have a hand like AQo or 77 for immediate showdown. In a high stack-to-pot ratio situations, we can consider hands like 89s or A7s to cooler/stack someone.</li>
+<li>We should play more hands in position and less hands out of position. Ideally, in terms of where we sit, we want (1) aggressive players to the right of us so we can react and (2) passive players to the left of us so our aggression can go unchecked.</li>
+<li>I just checked my preflop values for a site, my VPIP (voluntarily put in pot %) is 26 and my PFR (preflop raise %) is 18. I don’t think these numbers will deviate very much. A low VPIP/PFR is easier to play; the solver tells us a range advantage equals carte blanche to start blasting. You can consider playing even less hands due to rake; I looked at some solver outputs for 5-7x opens in casino rake environments, and there are situations when we should be folding even JJ and TT to a single early position raise.</li>
+<li>Deviating preflop from optimal solver results is fine if you have a plan. For example, when people behind you only 3bet with premiums, it’s fine to just call in position. I also employ a light 3bet squeeze when there is a raise from a weak range and too many callers, specifically isolating a weak player.</li></ul>
+
+<p><strong>general</strong></p>
+
+<p>There are some wizards of the game, but I think a general sense of how to play optimally is good enough.</p>
+<ul><li>In general, tight aggressive is the correct style to play.</li>
+<li>People at my stake tend to call with draws and raise with made hands.</li>
+<li>Raises on the river are severely under-bluffed.</li>
+<li>Under-bluffed population lines (4 to a flush, 4 to a straight, double paired boards, etc.) are good bluff lines.</li>
+<li>Most EV is won by being in position of fish, usually a LAG type of player.</li>
+<li>There are some BXB (bet flop, check turn, bet river) and BB lines that is going to be profitable against most population villains, especially on boards like dry paired boards (villain unlikely to connect) or blind vs blind (villain range too wide). However, I personally like to be villain specific when going for these red-line exploits.</li>
+<li>Raises are going to generate more folds than bets. A small raise can be really effective against a weak polar range.</li>
+<li>Bigger bets is an exploit against villains who over call.</li>
+<li>Some players will respond to absolute sized bets more so than relative sized bets. E.g. A 300 dollar bet into a 600 dollar pot might be very big for someone. Sometimes on rivers, you might need to size down to get called.</li>
+<li>I have a smaller sizing when I am trying to be raised or if villain is under-calling. I have a larger sizing to get called by lower equity hands or to generate folds.</li>
+<li>More important than balance is knowing your image and knowing your opponent.</li></ul>
+
+<p><strong>multiway</strong></p>
+
+<p>Many hands are played multi-way with nonstandard sizing.</p>
+<ul><li>Use smaller bet sizing and bluff less in general multi-way. Against a half pot bet against 1 other player, we should call 66%. Against 5 players, we should call 20% of the time. Realistically, this number ought to be less. Half pot is big multi-way, but over-fold against even bigger bets.</li>
+<li>If we have a very strong hand and the board is likely to be bet, we just want to check (to raise) to cooler someone. If it’s unlikely to be bet, we want to bet ourselves. If we have a good hand (but not a very strong hand), we can consider betting ourselves so we can react to a raise. In general, a lot of fishy villains telegraph hand strength from bet sizing or raises. You want to play a reactionary game against fishy players. Let them act, and then you get to react almost perfectly.</li>
+<li>The person immediately calling a bet in a multi-way pot has a strong range. Given most situations, I usually just fold middle pair or worse.</li>
+<li>Obviously, shift your range to be value heavy against villain who overcall. But since people over-fold to raises, it’s often good to check raise when we block a really strong hand on boards where villain is capped or doesn’t want to put more money in.</li></ul>
+
+<p>Actual strategies are villain specific and more nuanced. But this should be a good start.</p>
+
+<p><strong>live tells</strong></p>
+
+<p>I have been getting better at live tells. Here are some examples:</p>
+<ul><li>Villain reaching for chips defensively when you start to bet is weak.</li>
+<li>A fishy player might say something regarding how weak they are. “I’m on a draw”, “I was afraid you’d snap call” are all signs of strength.</li>
+<li>A player making a nervous move when they think you are not watching is much more indicative of weakness than if they act in an obvious manner. People know they are being watched after they make a big bet so you have to look for tells they can’t control (still palpitating after a few minutes might indicate a bluff, etc.).</li>
+<li>Never believe what people have unless they show.</li></ul>
+
+<p><strong>other</strong></p>
+<ul><li>Be aware of collaboration. When two players always enter the pot together and there are suspicious betting patterns (to bully a third person out of pot or to maximize value of a player’s nutted hand to get multiple players to call). I think seeing showdown hands played in ways that don’t make sense can give you signs of collaboration.</li>
+<li>Be aware of cheating; I put cheating in a different category from collaboration. I have been cheated twice in home games (once in Asia and once in NYC) due to some sort of dealer mechanics or marked cards. I don’t play in home games anymore.</li>
+<li>PT4 is pretty good software to collect your hands. There are nice discord channels you can find to talk about hands.</li></ul>
+</div></article><article id="post-mi3zt73wk6rl9m78" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/ecom-experiments" itemprop="url" class="u-url">ecom experiments</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2025-01-15T22:36:25Z" pubdate itemprop="datePublished" content="2025-01-15 22:36:25 &#43;0000 UTC">January 15, 2025</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><p>E-commerce is growing exponentially. I frequently see overnight successes of such companies through viral marketing; globalization and software have made it trivial for someone to open a store and saturate a product.</p>
+
+<p>I spent about 1000 USD with 300 annual recurring costs (which I eventually stopped) selling on Shopify with ads on Facebook Ads, earning about 200 annually in revenue. I also had some other experiments with trying to move bulk on Amazon and trying to set up some ads on Tiktok. I lost money, and I consider this as just education fees.</p>
+
+<p>I have another product on an unmentioned platform, with about 1000-3000 in annual revenue, netting half of that as profit (this online store is ongoing).</p>
+
+<p>Here are some things learned:</p>
+<ul><li>All businesses are just trying to answer one question: “How do I get someone to give me money?” I’m very logical, so I have always thought the answer to that question was the exchange of utility. However, I have learned that in markets where there is a general surplus, the choices we make are often emotional.</li>
+<li>Everything we buy is a choice, and almost everything we buy is due to interruption marketing. Large aggregators of data make extremely accurate guesses on what we might like, and money is spent so we make decisions we might not otherwise have made.</li>
+<li>A good market fit means you’ll pay less to get someone to buy something. A good brand or story means you can get someone to pay more to buy something.</li></ul>
+
+<p>It was kind of costly to run these experiments but it’s educational to see the systems that sellers use. What surprised me the most in all of this was that a disproportionate amount of money is spent on acquisition (and not on the actual product). A pair of shoes can cost $100 on a shelf but can only cost $10 to make. With future advances in automation, AI content, and consumer data collection, it can cost even less.</p>
+</div></article><article id="post-omah4em20hatecv5" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/why-crypto" itemprop="url" class="u-url">why crypto</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2024-04-03T19:46:22Z" pubdate itemprop="datePublished" content="2024-04-03 19:46:22 &#43;0000 UTC">April 3, 2024</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><p>I’ve been getting some FOMO and mixed thoughts on BTC. This is just a quick rundown to help me think through whether I should invest.</p>
+
+<h3 id="the-weakening-fiat" id="the-weakening-fiat">The weakening fiat</h3>
+
+<p>The argument I see the most often for crypto is that it’s a hedge (<a href="https://www.reddit.com/r/Bitcoin/comments/1btnvo2/comment/kxndn8n/?utm_source=share&amp;utm_medium=web2x&amp;context=3">reserve asset</a>) against a diluted fiat currency.</p>
+
+<p>The US is using an increasing proportion of capital to service debt year over year. We are not in a recession yet (<a href="https://fred.stlouisfed.org/series/GFDEGDQ188S">debt:gdp</a> – note 2008 and 2020), which means that the US could potentially increase the money supply even more. In the short term, increasing money supply increases liquidity and assets increase. However, in the longer horizon, historically, when inflation is high, people like to buy supply-limited value stores like precious metals or real estate.</p>
+
+<p>Money will flow from the stock market and into these government securities to serve the increasing <a href="https://fred.stlouisfed.org/series/A091RC1Q027SBEA">debt</a>; for example, <a href="https://www.investopedia.com/terms/t/treasurybill.asp">t-bills</a> and <a href="https://www.newyorkfed.org/markets/desk-operations/reverse-repo">interest rate regulation</a>. As the US spends more and more money in foreign affairs and military to preserve its status as a leading superpower (e.g. billions of dollar for Ukraine.), it could be reminiscent of a downfall similar to that of the Dutch in the 1720s or the UK in the 20th century. (<a href="https://www.amazon.com/Changing-World-Order-Nations-Succeed/dp/1982160276">1</a>)</p>
+
+<p>Is crypto a reserve asset? I don’t think so yet. Within a few years, there will be overall inflation and circumstantial defaults/liquidity risks. I think it unlikely that crypto will be a hedge against inflation (like gold) in the current cycle, as people will sell crypto in times of less liquidity. Crypto peaked at Dec 2007 (great recession), dropping around from 20k to 3k. I think we are in a similar point in the cycle.</p>
+
+<h3 id="instability-and-exodus" id="instability-and-exodus">Instability and exodus</h3>
+
+<p>The global narrative of crypto is strengthened by globalization and pessimism. The wealthy will seek less tax and <a href="https://www.hollywoodreporter.com/lifestyle/lifestyle-news/bunkers-billionaires-survive-apocalypse-cost-features-1235822762/">safety</a>, while the less affluent seek freedom and reduced income inequality. In recent history, crypto has been on the forefront of many <a href="https://www.weforum.org/agenda/2023/03/the-role-cryptocurrency-crypto-huge-in-ukraine-war-russia/">monetary exoduses</a> due to national <a href="https://www.forbes.com/sites/rogerhuang/2019/08/11/as-protests-in-hong-kong-surge-so-does-demand-for-cryptocurrency/?sh=49e465e675f6">pressures</a>. For reasons mentioned above (more investment into T-bills and less into the stock market, higher taxes, etc.), companies may also want to move <a href="https://qz.com/elon-musk-world-government-summit-2023-dubai-speaking-1850098289">outside</a> of the US to seek more <a href="https://www.aljazeera.com/news/2023/11/28/elon-musks-israel-trip-what-was-the-purpose-what-did-he-tell-netanyahu">benefits</a>.</p>
+
+<p>Will there be a lot of struggles with the nation-state in the future? Maybe (<a href="https://news.stanford.edu/2017/01/24/stanford-historian-uncovers-grim-correlation-violence-inequality-millennia/">1</a>) (<a href="https://ourworldindata.org/the-history-of-global-economic-inequality">2</a>). Maybe not. Hopefully it won’t be violent, as there is a general surplus. Moreover, great social inequality already exists in the modern era without violent revolutions.</p>
+
+<p>What about nations? Historically speaking, changes in the global order results in war; if this is no <a href="https://thebulletin.org/doomsday-clock/">exception</a>, what would happen to the value of crypto in the wake of <a href="https://www.cnn.com/2024/03/09/politics/us-prepared-rigorously-potential-russian-nuclear-strike-ukraine/index.html">fallen nations</a>?</p>
+
+<h3 id="a-risky-investment" id="a-risky-investment">A risky investment</h3>
+
+<p>I see a lot of staunch advocates on Twitter and <a href="https://www.reddit.com/r/CryptoCurrency/">Reddit</a> saying that it’s risky to not hold crypto, that fiat money will be worthless in the future. After reading many articles and news on crypto, buying some on an exchange, and looking into some crypto projects, I still think that it’s a risky investment.</p>
+
+<p>On the consumer level, it’s risky because your access to it involves you remembering a secret recovery. Most entities like BlackRock and Fidelity just offer it through an <a href="https://etfs.grayscale.com/gbtc">ETF</a>, which I think is a substandard way of owning the asset. Not only is there a 1.5% fee, it’s not <a href="https://consumer.ftc.gov/consumer-alerts/2023/10/crypto-companies-touting-fdic-insurance-not-so-fast">FDIC</a> insured and you don’t get rights to the underlying asset.</p>
+
+<p>It’s also risky because of  the prevalence of “dumb money”. The <a href="https://www.investopedia.com/what-went-wrong-with-ftx-6828447#:~:text=FTX%20collapsed%20in%20early%20November,value%20from%20speculative%20cryptocurrency%20tokens.">FTX</a> exchange defaulted as a result of holding illiquid (like <a href="https://en.wikipedia.org/wiki/Collapse_of_Silicon_Valley_Bank#:~:text=On%20March%2010%2C%202023%2C%20Silicon,the%202007%E2%80%932008%20financial%20crisis.">Silicon Valley</a> bank) and fraud and volatile assets. Also, the <a href="https://www.forbes.com/sites/siladityaray/2023/03/24/terra-luna-coins-founder-do-kwon-charged-with-fraud-by-us-prosecutors/">Luna Terra</a> fraud incident. Right now, the price of Solana is really high as a result of rug-pull NFT schemes. I was unaware of the extent of <a href="https://consumer.ftc.gov/articles/what-know-about-cryptocurrency-and-scams">scams</a> related to crypto until I conducted my research.</p>
+
+<p>It’s risky for the nation-state as well. There is so <a href="https://en.wikipedia.org/wiki/Cryptocurrency#Increasing_regulation">much regulation</a> on crypto, with <a href="https://www.investopedia.com/articles/forex/041515/countries-where-bitcoin-legal-illegal.asp">countries</a> like China, Bangladesh, Qatar, Morocco, etc. banning crypto. Even many countries that have not banned crypto hold <a href="https://www.investopedia.com/terms/b/bank_secrecy_act.asp">oppressive</a> laws, maybe under, I think, the guise of <a href="https://www.google.com/url?q=https://cointelegraph.com/news/eu-enacts-ban-on-anonymous-crypto-transactions-via-self-custody-wallets&amp;sa=D&amp;source=docs&amp;ust=1712088691402191&amp;usg=AOvVaw29zamuEEqvfUH4NwnVoCXN">preventing</a> money <a href="https://amp.dw.com/en/eu-seeks-cash-payment-limit-tougher-money-laundering-rules/a-68024075">laundering</a>.</p>
+
+<h3 id="the-adoption-of-crypto" id="the-adoption-of-crypto">The adoption of crypto</h3>
+
+<p>I think many countries hold public and private positions on crypto. For example, the government of Bhutan has been <a href="https://www.forbes.com/sites/iainmartin/2023/11/22/bhutan-secret-bitcoin-mine-locations/">secretly mining BTC</a>; if a small country like Bhutan has been mining BTC privately, and if you look at the current very high <a href="https://www.blockchain.com/explorer/charts/hash-rate">hash-rate</a> and NVIDIA stock prices, you can only imagine the amount of mining done by larger countries.</p>
+
+<p>In September 2023, 29% of all people in India had crypto, 18% of HK, and 1<a href="https://buybitcoinworldwide.com/crypto-adoption-index-statistics/">3% of Americans</a>, growing at around <a href="https://news.bitcoin.com/number-of-crypto-owners-globally-reached-580-million-in-2023-report-shows/">34% year over year</a>. The number of <a href="https://studio.glassnode.com/metrics?a=BTC&amp;m=addresses.ActiveCount">active</a> / <a href="=">new</a> addresses are increasing as well. I think this gives teeth to the idea that shutting it down in a country does not kill the narrative.</p>
+
+<h3 id="tiny-data-exploration" id="tiny-data-exploration">Tiny data exploration</h3>
+
+<p>I downloaded the entire blockchain of an altcoin and did some <a href="https://www.investopedia.com/terms/m/mining-pool.asp">pool mining</a>.</p>
+
+<p>I also did some really rough multiple linear regression just to get a general idea on what determines or is well-correlated with BTC price. I created a tiny dataset consisting of a bunch of factors in the first half of 2022. I had some prices of securities, some momentum indicators, <a href="https://fred.stlouisfed.org/">FRED</a> economic data that includes GDP, <a href="https://www.tradingview.com/script/OBJPsNq1-Fed-Net-Liquidity-Indicator/">liquidity</a>, some free sentiment data, google trends data, general blockchain data like hash-rates, etc. In my data, I found that <a href="https://finance.yahoo.com/quote/COIN/">Coinbase stock price</a> and google trends for the phrase ‘<a href="https://trends.google.com/trends/explore?date=2015-01-01%202024-03-28&amp;geo=US&amp;q=crypto&amp;hl=en">crypto</a>’ are the best features to determine (or are strongly correlated by) BTC price.</p>
+
+<p>I’ll look at some other things in the future to get my feet wetter.</p>
+
+<p>I also moved a small amount of BTC to a <a href="https://www.investopedia.com/terms/c/cold-storage.asp">cold storage</a>, more so just going through the motions to see what’s it like.</p>
+
+<h3 id="conclusion" id="conclusion">Conclusion</h3>
+
+<p>Even though I don’t think BTC is the reserve asset people hype it up to be, I am bullish on the idea. The price will fluctuate as people sell and buy in different market conditions. Crypto sentiment and macroeconomic conditions will likely be the most significant factors influencing price. And staying informed is prudent.</p>
+</div></article><article id="post-hkus3vqvb0xvx6ai" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/growing-peppers" itemprop="url" class="u-url">growing peppers</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2024-01-19T02:36:41Z" pubdate itemprop="datePublished" content="2024-01-19 02:36:41 &#43;0000 UTC">January 19, 2024</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><p><img src="https://i.snap.as/XyzdjGCq.png" alt=""/></p>
+
+<p>I just wanted to grow something.</p>
+
+<p>Peppers are pretty cool; they are pretty easy to grow, they self-pollinate, requires little space, are productive, and takes about 3 or 4 months from seedling to fruit.</p>
+
+<p>I enjoy spicy food, and so I also plan on making some hot sauce and pickled peppers.</p>
+
+<p>Things learned:</p>
+<ul><li>Even though I live in excellent pepper-growing climate, cold 50 degree nights contributed to stunted growth.</li>
+<li>Broad mite infestation needs to be taken care of immediately. A month before fruiting, I discovered some curls on the leaves on my pepper plants. Broad mites are terrible because they suck the sap out of your leaves and are pretty much invisible. This product: [<a href="https://www.flyingskull.net/flying-skull-nuke-em-8-oz.html">flying skull nuke-em</a>] is only somewhat useful.</li>
+<li>Some people recommend that you should water mature plants twice a week, but I should have only watered once a week. Over-watering plus the overall lack of indoor air-circulation results in plant edema.</li>
+<li>I probably also didn’t need to go so deep into growing peppers. I consumed tens if not hundreds of hours of pepper content. There are videos on variables affecting germination rates, fertilizers, etc. However, in the end, it really doesn&#39;t matter that much as mother nature will take care most of it.</li></ul>
+
+<h4 id="varieties" id="varieties">varieties</h4>
+
+<p>Some varieties I grew: Jalapeno, Cayenne, Jimmy Nardeloo, Tabasco, Black Pearl, Cayenetta, Santaka, Fish, Jigsaw.</p>
+
+<p>I ended up sharing a lot of my seedlings to friends.</p>
+
+<p><img src="https://i.snap.as/bgVIDufr.png" alt=""/></p>
+
+<p><img src="https://i.snap.as/p6jiYmeC.png" alt=""/></p>
+</div></article><article id="post-ga0trrqzwdunwj64" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/book-reviews" itemprop="url" class="u-url">book reviews</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2023-12-04T20:29:41Z" pubdate itemprop="datePublished" content="2023-12-04 20:29:41 &#43;0000 UTC">December 4, 2023</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><p>Here are some quick takeaways of some books I read this year.</p>
+
+<p>Million Dollar Weekend – Noah Hagan</p>
+<ul><li>Nice lessons: Always ask for what you want. Quantity &gt; Quality. Visualize. A nice book to be put into a productive gear.</li></ul>
+
+<p>Sapiens – Yuval Noah Harari</p>
+<ul><li>Sample theses: Physical communities are being replaced by virtual communities. Natural religions (nationalism, capitalism, moral frameworks, etc.) are replacing traditional deities. Real peace is the implausibility of war.</li>
+<li>In the last chapter, Harari describes Sapiens as god-like, but also perpetually dissatisfied and irresponsible. It’s less of a history textbook and more of a book using history to justify commentary on human behavior.</li></ul>
+
+<p>Zero to One – Peter Theil</p>
+<ul><li>This is a book for the contrarian. What important truth do very few people agree with you on? Some main ideas are (1) Competition is bad. (2) Start small and don’t disrupt. (3) The power law – hedge in winners.</li>
+<li>I have reread this book once every few years. I can think about recent changes (AI, tech companies, competition, etc.) within the context of some simple ideas provided by this book.</li></ul>
+
+<p>The Best American Essays 2023 – Vivian Gornick</p>
+<ul><li>This is basically an anthology of eclectic voices (e.g. a doctor treating an unusually unstable drug addict, a young adult in maximum security prison turned writer due to solitude, a girl finding out her mom is gay at the very end of her mom’s life through old photos, etc.)</li></ul>
+</div></article><article id="post-yu4yfrn3dgd3edon" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/wasted-time" itemprop="url" class="u-url">dumb poker</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2023-01-10T02:53:42Z" pubdate itemprop="datePublished" content="2023-01-10 02:53:42 &#43;0000 UTC">January 10, 2023</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><p>I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.</p>
+
+<p>Demo: <iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FyzJxsdWZHnQ%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DyzJxsdWZHnQ&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FyzJxsdWZHnQ%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p>The first deployment of this was over on GCP. I redid it on Heroku. I used <a href="https://github.com/cookiecutter/cookiecutter-django">cookiecutter django</a> for easy setup, with mailgun/maildev, sentry, postgres, redis (managed by heroku).</p>
+
+<p>I bought a domain (dysk.app).</p>
+
+<p>I gave up working on this project because as I learned more about poker, the less I thought what I was working on made sense. I wanted to create an app that saves key poker hands, and would theoretically help me play hands like a flow chart.</p>
+
+<p>There are also excellent existing free-tier apps that does what my app set out or can pivot to. Why create a lesser version of something that&#39;s already so good available free?</p>
+<ul><li><a href="https://app.gtowizard.com/">GTO Wizard</a> (free) 100bb pre-flop charts and simple solutions.</li>
+<li><a href="https://www.pokertracker.com/">PokerTraker</a> (paid) for poker hand bookkeeper and statistics</li>
+<li><a href="https://pokerbankrolltracker.net/">Poker Bankroll Tracker</a> (free) to record key hands, do bankroll management</li>
+<li><a href="https://github.com/b-inary/desktop-postflop">WASM postflop</a> (free) GTO solver</li>
+<li>Some MDA apps I think the author doesn’t want me sharing. Some MDA stuff I was parsing myself. (Parse over 1M hands to see where we can exploit).</li></ul>
+</div></article><article id="post-1g89mag38ld8gtc9" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/trading-automation" itemprop="url" class="u-url">trading automation</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2022-11-15T01:38:40Z" pubdate itemprop="datePublished" content="2022-11-15 01:38:40 &#43;0000 UTC">November 15, 2022</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><p>I spent 90% of my time doing stuff that I ended up scrapping.</p>
+
+<p>Products like Zapier are restrictive (no external libs, at least at the time of writing this) and also very expensive; the cost is on another order of magnitude.</p>
+
+<p>I also could have set up automation with <a href="https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx/">mac crons</a>. However this is a hard restriction as my machine can&#39;t be shut down or sleeping.</p>
+
+<p>There are out-of-the-box solutions like <a href="https://cloud.google.com/ai-platform-notebooks">AI Platform Notebooks</a> or <a href="https://colab.research.google.com/notebooks/intro.ipynb#recent=true">Colab</a> for writing and running code with live machines. Google also offers other managed products like <a href="https://cloud.google.com/composer">Cloud Composer</a>, not to mention the plethora of other non-Google solutions out there. These are great, I even tried a few of these out, but for one reason or the other (wrong use case, too many bells and whistles, expensive, restrictive, etc.), I decided to play with other toys.</p>
+
+<p>I almost went with <a href="https://papermill.readthedocs.io/en/latest/">Papermill</a> as writing code in Jupyter is easy and fast. Papermill gives <code>.ipynb</code> files a level of productionization by allowing parameterization and execution. You can run something like <code>papermill gs://bucket-name/input.ipynb gs://bucket-name/output.ipynb -f parameters.yaml</code> to run and store (integrations include Google Cloud Storage).</p>
+
+<p>There&#39;s are also <a href="https://cloud.google.com/blog/products/ai-machine-learning/best-practices-that-can-improve-the-life-of-any-developer-using-jupyter-notebooks">best practices</a> that go with productionizing Jupyter (<a href="https://github.com/nteract/testbook">testbook</a> for tests, <a href="https://nbdime.readthedocs.io/en/latest/">nbdime</a> for diffs, etc.). Jupyter is super easy to write in, and it supports many different programming languages. This is essentially the process that <a href="https://netflixtechblog.com/scheduling-notebooks-348e6c14cfd6">Netflix</a> and <a href="https://medium.com/bliblidotcom-techblog/how-to-deploy-and-schedule-jupyter-notebook-on-google-cloud-18a7ca23b463">Bilibili</a> use (+ <a href="https://www.youtube.com/watch?v=xU_xdogXFeE&amp;t=1768s&amp;ab_channel=GoogleWorkspace">this talk</a> and <a href="https://cloud.google.com/blog/products/ai-machine-learning/let-deep-learning-vms-and-jupyter-notebooks-to-burn-the-midnight-oil-for-you-robust-and-automated-training-with-papermill">this post</a>).</p>
+
+<p>The tradeoffs for using Jupyter are speed, size (install notebook/kernel, papermill, apis), and money (VMs can be expensive). I created an MVP for this (pubsub –&gt; papermill).</p>
+
+<p>In the end, the stuff that was productionized was just a rust API, a tiny CLI tool in rust with <code>reqwest</code> and <code>clap</code> that is basically a wrapper around another library.</p>
+
+<pre><code>fn buy_asps(reqs: Endpoint) {
+   let get_request = reqs.post_request(&#34;/orders&#34;, body);
+}
+</code></pre>
+
+<p>When we get an event from PubSub, we trigger this business logic with a command like <code>cargo run -- --date 20210517 --function account --is_live</code>. There is enough flexibility to run different functions on different dates, using a live account or a paper account, and even more, depending on the PubSub signal. The signal is created by Cloud Scheduler, which is basically a cron. All of this is controlled in GCP&#39;s UI. The binary gets run by Cloud Functions.</p>
+
+<p>Disclosure: this is no longer running.</p>
+
+<p>This project costs less than a 30 cents a year. Note that all software is glorified automation, and there are other great options for other use cases.</p>
+</div></article><article id="post-9aoah21bao686vym" class="norm h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+	
+	<h2 class="post-title" itemprop="name" class="p-name"><a href="https://cache.bwang.io/api-in-rust" itemprop="url" class="u-url">api in rust</a>
+		
+	</h2>
+	
+	<time class="dt-published" datetime="2021-05-23T23:30:21Z" pubdate itemprop="datePublished" content="2021-05-23 23:30:21 &#43;0000 UTC">May 23, 2021</time>
+
+
+<div lang="en" dir="ltr" class="book e-content"><p>After some notes in rust, I created a rust app in rust deployed on Google Kubernetes Engine (GKE).</p>
+
+<p>Here are some of the tooling/stack I went with. I started with the basic diesel example in <a href="https://github.com/actix/examples/tree/master/diesel">actix/examples/diesel</a> to bring up something with basic get/post features.</p>
+<ul><li>Dev Tooling
+<ul><li>Use <code>systemfd cargo-watch</code> to automatically rebuild your code and watch for change. <code>systemfd</code> works by creating a parallel process, and then works with conjunction with <code>cargo watch</code> to reload your app whenever you save. Sometimes the reload doesn&#39;t work as intended; I had a weird bug where I had to restart whenever I added a new endpoint.</li></ul></li></ul>
+
+<pre><code>  &gt; cargo install systemfd cargo-watch
+  &gt; systemfd --no-pid -s http::5000 -- cargo watch -x run
+  
+</code></pre>
+
+<p>I also created a tiny frontend to support the functionality. I also added an auth so that people. Ask me for the auth token if you&#39;d like to play with it!</p>
+<ul><li>Create:</li></ul>
+
+<pre><code>  &gt; curl -S -X POST --header &#34;Content-Type: application/json&#34; --data &#39;{&#34;text&#34;:&#34;Hello World!&#34;}&#39; http://localhost:8080/post --header &#39;Authorization: Bearer ######&#39;
+  
+  {&#34;id&#34;:&#34;3afdebd0-673f-4a93-96f0-69e2ab99c756&#34;,&#34;text&#34;:&#34;Hello World!&#34;}
+  
+</code></pre>
+<ul><li>Get:</li></ul>
+
+<pre><code>  &gt; curl -X GET http://localhost:8080/post/3afdebd0-673f-4a93-96f0-69e2ab99c756 --header &#39;Authorization: Bearer ######&#39;
+  
+  {&#34;id&#34;:&#34;3afdebd0-673f-4a93-96f0-69e2ab99c756&#34;,&#34;text&#34;:&#34;Hello World!&#34;}
+  
+</code></pre>
+<ul><li>List:</li></ul>
+
+<pre><code>  &gt; curl -X GET http://localhost:8080/post/list --header &#39;Authorization: Bearer ######&#39;
+  
+  [{&#34;id&#34;: &#34;3afdebd0-673f-4a93-96f0-69e2ab99c756&#34;, &#34;text&#34;: &#34;Hello World!&#34;}]
+  
+</code></pre>
+<ul><li>Delete</li></ul>
+
+<pre><code>&gt; curl -X DELETE http://localhost:8080/post/3afdebd0-673f-4a93-96f0-69e2ab99c756 --header &#39;Authorization: Bearer ######&#39;
+
+{&#34;id&#34;:&#34;3afdebd0-673f-4a93-96f0-69e2ab99c756&#34;,&#34;text&#34;:&#34;Hello World!&#34;}
+</code></pre>
+
+<h2 id="deployment" id="deployment">deployment</h2>
+
+<p>We dockerize our application and load it into gcp&#39;s container registry. Cool!</p>
+
+<pre><code>&gt; docker run gcr.io/rust-post/rust-post-crud:v1
+Starting server at: 127.0.0.1:8080
+</code></pre>
+
+<p>I clicked some buttons in the gcp UI, mapped the LoadBalancerIP to <code>A record</code>of my domain, and it just worked, live on rust.bwang.io.</p>
+
+<p><img src="https://i.snap.as/CXlsPLE6.png" alt=""/></p>
+
+<hr/>
+
+<p>Below are some notes I took when I was looking into rust, no idea where else to post it.</p>
+
+<p>Rust comes included with some nice modern tooling. <strong>Cargo</strong> is the dependency manager and build tool. <strong>Rustfmt</strong> is like gofmt, opinionated coding style across developers.</p>
+
+<p>I thought that it could also be a good opportunity to document and learn.</p>
+
+<h2 id="1-rust" id="1-rust">1. Rust</h2>
+
+<p>I&#39;m following the docs from <a href="https://doc.rust-lang.org/">doc.rust-lang.org</a> with references from other parts of the internet. There&#39;s also <a href="https://github.com/rust-lang/rustlings/">rustlings</a> and <a href="https://doc.rust-lang.org/stable/rust-by-example/">rust-lang/examples</a> that I&#39;m also looking at for code examples. Here&#39;s are some popular <a href="https://wiki.alopex.li/RustStarterKit2020#dev-tools">tooling</a>.</p>
+
+<h3 id="1-1-hello-world" id="1-1-hello-world">1.1 Hello World</h3>
+<ul><li>[x] <a href="https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html">Guessing game tutorial done</a></li></ul>
+
+<p>Do <code>cargo new</code> to intiate a project, and <code>cargo run</code> (builds if there are diffs and runs) to see what&#39;s up. The <code>cargo.toml</code> file is called the <a href="https://doc.rust-lang.org/cargo/reference/manifest.html">manifest</a>. You can use it as a dependency manager, add meta information, specify build details (path, tests, etc), etc. The cargo command takes advantage of this manifest file to coordinate more complex projects (as opposed to just using rustc).</p>
+
+<p>Other information:</p>
+<ul><li>Use <code>cargo check</code> to check your code to see if it compiles (faster than actually building). Builds debug executables are stored in <code>./target/debug</code>. Build release executables are stored in <code>./target/release</code></li>
+<li>The <code>main</code> function is the entry point into a program.</li>
+<li>Use <code>let</code> to assign variables. Variables are immutable by default, use <code>mut</code> to make a variable mutable. Apparently there are a lot of nice things for handling reading by references in rust. We&#39;ll see about that later.</li>
+<li><code>std::io::Result</code> is a type a user uses to handle exceptions. It has two states (enums <code>Ok</code> and <code>Err</code>), <code>.expect()</code> checks for the error and handles it somehow.</li>
+<li><code>std::cmp::Ordering</code> is another enum that returns <code>Less</code>, <code>Greater</code>, and <code>Equal</code> when you compare two values. The <code>match</code> expression uses a arms pattern, similar to case. This seems to be a pattern, you can combine Result and match for error handling. See below (note that <code>parse</code> is a method to convert type to an annotated type, in this case, u32):</li></ul>
+
+<pre><code>  // example 1
+  let guess: u32 = match guess.trim().parse() {
+      Ok(num) =&gt; num,
+      Err(_) =&gt; continue,
+  };
+  
+</code></pre>
+
+<h3 id="1-2-rust-concepts" id="1-2-rust-concepts">1.2 Rust Concepts</h3>
+
+<h4 id="1-2-1-mutability" id="1-2-1-mutability">1.2.1 Mutability</h4>
+
+<p>In rust, variables are immutable by default (aside: however, because rust allows variable shadowing, we can <a href="https://stackoverflow.com/questions/53235334/in-rust-whats-the-difference-between-shadowing-and-mutability">bind a variable twice</a> with a different value but at a different memory, we&#39;re basically creating a new variable). Mutating (<code>mut</code>) an instance in place maybe faster than creating a new instance at a different memory, but creating another instance might have higher clarity when writing code.</p>
+
+<p>Constants (<code>const</code>) are a little <a href="https://stackoverflow.com/questions/37877381/what-is-the-difference-between-immutable-and-const-variables-in-rust">different</a> from immutable variables (<code>let</code>). Constant types must be annotated and are evaluated at compile-time, whereas a <code>let</code> binding is about a run-time computed value.</p>
+
+<h4 id="1-2-2-data-types" id="1-2-2-data-types">1.2.2 Data types</h4>
+
+<p>Rust is a <em>statically typed</em> language so we know all the types of variables at compile time. Even when converting a variable to a different type (example 1), we need to annotate it.</p>
+
+<p>Rust has four primitive <strong>scalar</strong> types: integer (defaults to <code>i32</code>), floats (defaults to <code>f64</code>), bools, and characters. You can do basic mathematical operations on number types. <code>char</code> literals (4 bytes of a unicode scalar value) are specified with single quotes, string literals uses double quotes.</p>
+
+<p>Rust has two primitive <strong>compound</strong> types: tuples (fixed length, assorted types), arrays (fixed length, single type). Note that arrays are different from vectors (variable length).</p>
+
+<pre><code>// example 2
+
+// tuples
+let x: (i32, f64, u8) = (500, 6.4, 1);
+let first = x.0;
+
+// arrays
+let mut y: [i32; 3] = [0; 3];
+let first = y[0]
+</code></pre>
+
+<h4 id="1-2-3-functions" id="1-2-3-functions">1.2.3 Functions</h4>
+
+<p>For <strong>functions</strong>, I think is pretty standard. <code>()</code> evaluates to expressions where as <code>{}</code> is an expression (returns something). Statements have semicolons, expressions don&#39;t. Functions return the last expression implicitly.</p>
+
+<pre><code>// example 3
+
+fn function(x: i32) {
+    let y = {
+        let x = 3;
+        x + 1
+    };
+
+    // returns y implicitly
+}
+</code></pre>
+
+<h4 id="1-2-4-ownership" id="1-2-4-ownership">1.2.4 Ownership</h4>
+
+<p>Ownership is one of the key concepts of rust.</p>
+
+<p>For starters, a stack is a part of memory that&#39;s last in, first out, everything fixed size. When you exit a function, you&#39;re popping off plates off the stack, and all the variables with it. (C++ uses RAII, which is rust&#39;s <code>drop</code> function). A heap is for data with unknown size at compile time (for example, a string), and the heap returns some information (pointer, size, etc) to store on the stack.</p>
+
+<p>For rust, each value has an owner. There can only be one owner at a time. when the owner goes out of scope, the value is also gone with it. Let&#39;s say we have two variables referencing the same string:</p>
+
+<pre><code>// example 4
+
+// s1 not valid
+let s1 = String::from(&#34;hello&#34;);
+let s2 = s1;
+
+// s1 valid
+let s1 = String::from(&#34;hello&#34;);
+let s2 = s1.clone();
+</code></pre>
+
+<p>Traditionally, <code>s1</code> and <code>s2</code> point to the same reference. To ensure memory safety, rust no longer considers <code>s1</code> here valid after <code>s2</code> is created. There are no double memory free errors when there&#39;s a one to one relationship between references and resource. If we really wanted to, we can do a <code>.clone()</code> for heap variables to copy data.</p>
+
+<p>Likewise, for exiting and entering functions, the ownership of a heap variable changes, and the previous variable is decommissioned.</p>
+
+<p>The ownership of some stack variable, for example, integer or a memory reference, can still be used after the owernship changes. It doesn&#39;t use the <code>.drop()</code> function, it uses <code>.Copy()</code> instead.</p>
+
+<pre><code>// example 5
+
+fn main() {
+  let s = String::from(&#34;hello&#34;);
+  takes_ownership(s);
+  // s is no longer valid here
+  
+  let s1 = String::from(&#34;hello&#34;);
+  borrows_reference(&amp;s1)
+  // s is still valid here
+  
+}
+
+fn takes_ownership(some_string: String) {
+  println!(&#34;{}&#34;, some_string);
+}
+
+fn borrows_reference(some_string: String) {
+  s.len()
+}
+</code></pre>
+
+<p>But how do we use some heap variable after it enters a function? We can borrow the variable via reference. Because memory addresses (references) are stored on the stack and uses <code>.Copy()</code>, the ownership of the resource is still in the main function, nothing gets decommissioned. Pretty cool design.</p>
+
+<h4 id="1-2-5-slice-type" id="1-2-5-slice-type">1.2.5 Slice Type</h4>
+
+<p>This piece of code returns the first word in a string:</p>
+
+<pre><code>// example 6
+
+fn first_word(s: &amp;String) -&gt; &amp;str {
+    let bytes = s.as_bytes();
+    for (i, &amp;item) in bytes.iter().enumerate() {
+        if item == b&#39; &#39; {
+            return &amp;s[0..i];
+        }
+    }
+    &amp;s[..]
+}
+
+fn main() {
+    let mut s = String::from(&#34;hello world&#34;);
+    let word = first_word(&amp;s); // immutable reference
+    s.clear(); // error!
+    println!(&#34;the first word is: {}&#34;, word);
+}
+</code></pre>
+
+<p>It turns the string into an array of bytes, and then looks for the <code>b&#39; &#39;</code> byte, and returns the slice of a string. Notice that in the example above, <code>&amp;s</code> is an immutable reference to the string, and <code>s.clear()</code>is a mutable reference (modifies the value), and fails.</p>
+
+<p>Other information:</p>
+<ul><li>Rust uses snake case for functions and variable names.</li>
+<li>Double quotations <code>//</code> denotes the start of a comment.</li>
+<li>Control flows are also pretty self-explanatory. Truthiness for control flows must evaluate to a bool. Similar to golang. Rustacians prefer for loops due to safety and conciseness.</li>
+<li>References are not mutable by default, but it CAN be mutable ...</li>
+<li>“Only one person borrow at a time” to ensure no data races. You can have multiple immutable references to data, but you can only have one mutable reference to a piece of data. You also can&#39;t have a mutable reference while you have an immutable one.</li></ul>
+
+<pre><code>  // example 7
+  
+  let mut s = String::from(&#34;hello&#34;);
+  let r1 = &amp;mut s;
+  let r2 = &amp;mut s;
+  
+  // fails, simultaneous borrow
+  println!(&#34;{}, {}&#34;, r1, r2);
+  
+</code></pre>
+<ul><li>Dangling references: you can&#39;t have references to nothing; compile error.</li></ul>
+
+<h3 id="1-3-structs" id="1-3-structs">1.3 Structs</h3>
+
+<p>Structs are similar to tuples. Here&#39;s how you would create an instance of a struct:</p>
+
+<pre><code>// example 8
+
+struct User {
+	username: String,
+  email: String,
+  sign_in_count: u64,
+  active: bool,
+}
+
+let mut user1 = User {
+	email: String::from(&#34;someone@example.com&#34;),
+	username: String::from(&#34;someusername123&#34;),
+	active: true,
+	sign_in_count: 1,
+};
+
+user1.email = String::from(&#34;anotheremail@example.com&#34;);
+</code></pre>
+
+<p>If the instance is mutable, all the fields of a struct are mutable. You can also have tuple structs: no names, just types of the fields, but their types of are of the type defined by the struct.</p>
+
+<h4 id="1-3-1-example-with-structs" id="1-3-1-example-with-structs">1.3.1 Example with Structs</h4>
+
+<pre><code>// example 9
+
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    fn area(&amp;self) -&gt; u32 {
+        self.width * self.height
+    }
+
+    fn can_hold(&amp;self, other: &amp;Rectangle) -&gt; bool {
+        self.width &gt; other.width &amp;&amp; self.height &gt; other.height
+    }
+}
+
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    let rect2 = Rectangle {
+        width: 10,
+        height: 40,
+    };
+    println!(&#34;rect1 is {:#?}&#34;, rect1);
+    println!(
+        &#34;The area of the rectangle is {} square pixels.&#34;,
+        rect1.area()
+    );
+
+    println!(&#34;Can rect1 hold rect2? {}&#34;, rect1.can_hold(&amp;rect2));
+}
+
+</code></pre>
+
+<p>Need to add <code>#[derive(Debug)]</code> so that Rectangle gets the Debug trait when printing structs. Traits are like interfaces. In this example, we also added two methods, the latter to use another Rectangle struct for the syntax.</p>
+
+<p>Other information:</p>
+<ul><li><code>{:#?}</code> for pretty formatting structs</li>
+<li>If you need to deference in C/C++, you need to use an –&gt; operator, but in rust, referencing and dereferencing is automatic.</li>
+<li>You don&#39;t need <code>&amp;self</code> as a parameter for methods; these are called associated functions.</li>
+<li>You can split up <code>impl</code> blocks</li></ul>
+
+<h3 id="1-4-enums" id="1-4-enums">1.4 Enums</h3>
+
+<p>Here&#39;s how the <a href="https://doc.rust-lang.org/std/net/enum.IpAddr.html">standard library</a> defines the enum for <code>IpAddr</code>:</p>
+
+<pre><code>// example 10
+
+struct Ipv4Addr {
+    // --snip--
+}
+
+struct Ipv6Addr {
+    // --snip--
+}
+
+pub enum IpAddrKind {
+    V4(Ipv4Addr),
+    V6(Ipv6Addr),
+}
+
+enum IpAddr {
+    V4(String),
+    V6(String),
+}
+
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+impl Message {
+    fn call(&amp;self) {
+            //
+        }
+    }
+
+let m = Message::Write(String::from(&#34;hello&#34;));
+m.call();
+</code></pre>
+
+<p>With this, we can define a function to take any <code>IpAddrKind</code>, like so: <code>fn route(ip_kind: IpAddrKind) {}</code>. We can also create instances of specific IpAddrKinds: <code>let four = IpAddrKind::V4;</code>. Within an Enum, we can have a wide variety of types, like <code>Message</code>, given above. You can also define methods on enums.</p>
+
+<p>You can use the <code>match</code> control flow operator on enums like in the random number guessing example. This allows the compile to confirm all possible cases are handled.</p>
+
+<h4 id="1-4-1-option" id="1-4-1-option">1.4.1 Option</h4>
+
+<p>There&#39;s a useful <code>Option</code> <a href="https://doc.rust-lang.org/std/option/enum.Option.html">enum</a> that you can use to define nullable objects. The <code>&lt;T&gt;</code> syntax is used to denote that the <code>Some</code> variant of the <code>Option</code> enum can hold one piece of data of any type. If we use <code>None</code> rather than <code>Some</code>, we need to tell rust what type of <code>Option&lt;t&gt;</code>.</p>
+
+<pre><code>// example 11
+
+enum Option&lt;T&gt; {
+    Some(T),
+    None,
+}
+
+let x: i8 = 5;
+let y: Option&lt;i8&gt; = Some(5);
+let sum = x + y;
+</code></pre>
+
+<p>The above code won&#39;t work because you can&#39;t add an <code>i8</code> to a value that might not be a <code>i8</code>.</p>
+
+<p>Other information:</p>
+<ul><li>A common pattern to handle nulls is to use <code>match</code> like so:</li></ul>
+
+<pre><code>  // example 12
+  
+  fn plus_one(x: Option&lt;i32&gt;) -&gt; Option&lt;i32&gt; {
+  	match x {
+  		None =&gt; None,
+  		Some(i) =&gt; Some(i + 1),
+  	}
+  }
+  
+  let five = Some(5);
+  let six = plus_one(five);
+  let none = plus_one(None);
+  
+</code></pre>
+<ul><li>You have to cover all the cases when matching enum, else compile error.</li>
+<li>You can use <code>_</code> to match any value that aren&#39;t specified before it.</li>
+<li>The following two pieces of code are the same. You can use <code>if let</code> to match one value. You can also do a <code>if let</code> and <code>else</code> to specify a non-trivial function for the <code>_</code> condition.</li></ul>
+
+<pre><code>  // example 13
+  
+  let some_u8_value = Some(0u8);
+  match some_u8_value {
+  	Some(3) =&gt; println!(&#34;three&#34;),
+  	_ =&gt; (),
+  }
+  
+  if let Some(3) = some_u8_value {
+  	println!(&#34;three&#34;);
+  }
+  
+</code></pre>
+
+<h3 id="1-5-project-management" id="1-5-project-management">1.5 Project Management</h3>
+
+<p>This is <a href="https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html">chapter 7</a> in the rust-lang book. Rust comes with the <em>module system</em> to manage your code&#39;s organization. <a href="https://www.youtube.com/watch?v=AN9FoZgLcFg&amp;ab_channel=Rust">More about it</a>. <code>cargo.toml</code> defines a package and contains information on how to build crates. The top level module is usually <code>main.rs</code> or <code>lib.rs</code> depending on if you&#39;re writing a program or library.</p>
+
+<p><strong>Packages</strong> are a cargo feature that lets you build, test, and share crates. You create a package with the command <code>cargo new</code>; it contains a cargo.toml that describes how to build crates. <strong>Crates</strong> are like bundled functionality for <strong>modules</strong>, mapping to a single executable. Everything is private by default including functions, modules, and structs.</p>
+
+<h4 id="1-5-1-use" id="1-5-1-use">1.5.1 Use</h4>
+
+<p>Here&#39;s an example of an <a href="https://github.com/RustScan/RustScan/blob/master/src/main.rs">actual project</a> I found on github that uses <code>mod</code> and <code>use</code>, <code>use</code> brings the module into scope.</p>
+
+<p>Use the <code>as</code> keyword to alias a new name, for example <code>use std::io::Result as IoResult;</code>. The name available in the new scope is by default private. Use <code>pub use</code>to make it public.</p>
+
+<p>You can use nested paths to put a bunch of use things together like so: <code>use std::{cmp::Ordering, io};</code> or <code>use std::io::{self, Write};</code> (<code>self</code> references itself). You can also use the glob operator to bring all public items into scope like so: <code>use std::collections::*;</code></p>
+
+<p>Put external packages into <code>Cargo.toml</code> under dependencies. A bunch of them are available at <a href="https://blog.bwang.io/notes-on-rust-part-1/crates.io">crates.io</a>. The standard library (e.g. <code>use std::collections:Hashmap;</code>) is automatically imported.</p>
+<ul><li>Start relative paths with the <code>super</code> keyword, e.g:</li></ul>
+
+<pre><code>  // example 14
+  
+  fn serve_order() {}
+  
+  mod back_of_house {
+      fn fix_incorrect_order() {
+          cook_order();
+          super::serve_order();
+      }
+      fn cook_order() {}
+  }
+  
+</code></pre>
+<ul><li>It&#39;s not idiomatic to bring the function to scope, only the module that has the function.</li></ul>
+
+<h3 id="1-6-standard-library" id="1-6-standard-library">1.6 Standard Library</h3>
+
+<h4 id="1-6-1-vector-example" id="1-6-1-vector-example">1.6.1 Vector Example</h4>
+<ul><li>Create: <code>let v: Vec&lt;i32&gt; = Vec::new();</code>. or <code>let v = vec![0];</code>
+<ul><li><code>vec!</code> is a macro for convenience</li></ul></li>
+<li>Add: <code>v.push(5);</code>
+<ul><li>note that push uses a mutable reference, so while this is happening you can&#39;t hold another reference</li>
+<li>Remember that variables are immutable by default</li></ul></li>
+<li>Drop: go out of scope</li>
+<li>Get:</li></ul>
+
+<pre><code>  // example 15
+  
+  let v = vec![1, 2, 3, 4, 5];
+  let third: &amp;i32 = &amp;v[2];
+  println!(&#34;The third element is {}&#34;, third);
+  
+  match v.get(2) {
+  	Some(third) =&gt; println!(&#34;The third element is {}&#34;, third),
+    None =&gt; println!(&#34;There is no third element.&#34;),
+  }
+  
+</code></pre>
+<ul><li>Iterating: <code>for i in &amp;v {}</code>or <code>for i in &amp;mut v {}</code> to change elements</li></ul>
+
+<p>You can use vectors in conjunction with enums to store data of multiple types:</p>
+
+<pre><code>// example 16
+
+enum SpreadsheetCell {
+	Int(i32),
+	Float(f64),
+	Text(String),
+}
+let row = vec![
+	SpreadsheetCell::Int(3),
+	SpreadsheetCell::Float(10.12),
+];
+</code></pre>
+
+<p>There is also an introduction to <a href="https://doc.rust-lang.org/book/ch08-02-strings.html">strings</a> and <a href="https://doc.rust-lang.org/book/ch08-03-hash-maps.html">hashmaps</a> in the rust-lang book but I figured one is enough. I can just google as I go along. I didn&#39;t expect this book to be this fucking long.</p>
+
+<h3 id="1-7-errors" id="1-7-errors">1.7 Errors</h3>
+
+<p>There are two classes of errors:</p>
+<ol><li><p>Recoverable errors</p>
+<ul><li>handle with <code>Result&lt;T, E&gt;</code> like how we have in the past.</li></ul></li>
+
+<li><p>Unrecoverable errors</p>
+<ul><li>calls <code>panic!</code></li></ul></li></ol>
+
+<p>You can use <code>unwrap</code> to <a href="https://learning-rust.github.io/docs/e4.unwrap_and_expect.html">directly</a> access the <code>Some()</code> value of a result. Likewise, you <code>expect</code> is the same but can also return a custom panic statement.</p>
+
+<p>Another super common pattern in rust is error propagation. The code below are the same. We can place the <code>?</code> operator after a <code>Result</code> value to return an Error value, else return an Ok value.</p>
+
+<pre><code>// example 17
+
+fn read_username_from_file() -&gt; Result&lt;String, io::Error&gt; {
+    let f = File::open(&#34;hello.txt&#34;);
+
+    let mut f = match f {
+        Ok(file) =&gt; file,
+        Err(e) =&gt; return Err(e),
+    };
+
+    let mut s = String::new();
+    match f.read_to_string(&amp;mut s) {
+        Ok(_) =&gt; Ok(s),
+        Err(e) =&gt; Err(e),
+    }
+}
+
+fn read_username_from_file() -&gt; Result&lt;String, io::Error&gt; {
+    let mut f = File::open(&#34;hello.txt&#34;)?;
+    let mut s = String::new();
+    f.read_to_string(&amp;mut s)?;
+    Ok(s)
+}
+
+fn read_username_from_file() -&gt; Result&lt;String, io::Error&gt; {
+    let mut s = String::new();
+    File::open(&#34;hello.txt&#34;)?.read_to_string(&amp;mut s)?;
+    Ok(s)
+}
+</code></pre>
+
+<p>Other information:</p>
+<ul><li>Attempting to access information that doesn&#39;t exist, for example, beyond the end of a vector, will also call <code>panic!</code></li>
+<li>Common pattern:<code>error.kind</code> returns an error enum which you can use to handle different types of errors.</li></ul>
+
+<pre><code>  // example 18
+  
+  let f = match f {
+    Ok(file) =&gt; file,
+    Err(error) =&gt; match error.kind() {
+      ErrorKind::NotFound =&gt; match File::create(&#34;hello.txt&#34;) {
+        Ok(fc) =&gt; fc,
+        Err(e) =&gt; panic!(&#34;Problem creating the file: {:?}&#34;, e),
+  	  },
+      other_error =&gt; {
+        panic!(&#34;Problem opening the file: {:?}&#34;, other_error)
+  	  }
+  	},
+  };
+  
+</code></pre>
+
+<h3 id="1-8-generics-traits-lifetimes" id="1-8-generics-traits-lifetimes">1.8 Generics, Traits, Lifetimes</h3>
+
+<p>Duplicating code is added work, looks shitty, and can lead to errors. One way to remove the duplication of code is to write reusable functions. But in a typed language, what if you wanted to have a function to handle multiple types? In our signature we can use a generic type <code>fn get_some&lt;T&gt;(list: &amp;[T]) -&gt; &amp;T {</code>. We can also define types in structs with the generic type; you can define single, multiple types like so:</p>
+
+<pre><code>// example 19
+
+struct Point&lt;T&gt; {
+    x: T,
+    y: T,
+}
+
+struct Point&lt;T, U&gt; {
+    x: T,
+    y: U,
+}
+</code></pre>
+
+<p>Similarly with structs, like with the <code>Option</code> enum, it&#39;s also possible to hold generic data types.</p>
+
+<p>Traits are a collection of methods defined for an unknown type; it&#39;s like generic types but for functions (it&#39;s really similar to interfaces, but there are a few differences). Here&#39;s an example in <a href="https://doc.rust-lang.org/rust-by-example/trait.html">rust-by-example</a> that I think is pretty good. <code>impl Trait</code> is straightforward for me, but there are more complex things you can do, described <a href="https://doc.rust-lang.org/book/ch10-02-traits.html">here</a>. There&#39;s a <code>where</code> clause and a <code>+</code> syntax.</p>
+
+<p>The scope of which that reference is valid (lifetime) is inferred in rust most of the time. Lifetime generics is created to prevent dangling references, which means that a program is trying to reference data other than the data it&#39;s intending to reference. The longest function below doesn&#39;t work, but the longest_2 function works. Why? We don&#39;t know whether we&#39;re returning a borrowed value <code>.as_str()</code>or not.</p>
+
+<pre><code>// example 20
+
+fn main() {
+    let string1 = String::from(&#34;abcd&#34;);
+    let string2 = &#34;xyz&#34;;
+
+    let result = longest(string1.as_str(), string2);
+    println!(&#34;The longest string is {}&#34;, result);
+}
+
+fn longest(x: &amp;str, y: &amp;str) -&gt; &amp;str {
+    if x.len() &gt; y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+fn longest_2&lt;&#39;a&gt;(x: &amp;&#39;a str, y: &amp;&#39;a str) -&gt; &amp;&#39;a str {
+    if x.len() &gt; y.len() {
+        x
+    } else {
+        y
+    }
+}
+</code></pre>
+
+<p>There&#39;s also rust lifetime <a href="https://doc.rust-lang.org/nomicon/lifetime-elision.html">elision rules/exceptions</a> so I&#39;m just omit that in my notes for now. If I find something interesting, I might write about it later.</p>
+
+<p>Other information</p>
+<ul><li>For generics, you&#39;ll need to make sure it works for all types, else you get a compile error</li>
+<li>Rust uses monomorphization which is the process of filling in specific types at compile time</li>
+<li>Most people use the name <code>&amp;&#39;a</code> when denoting a lifetime</li></ul>
+
+<h3 id="1-9-tests" id="1-9-tests">1.9 Tests</h3>
+
+<p>In this format:</p>
+
+<pre><code>fn prints_and_returns_10(a: i32) -&gt; i32 {
+    println!(&#34;I got the value {}&#34;, a);
+    10
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn this_test_will_pass() {
+        let value = prints_and_returns_10(4);
+        assert_eq!(10, value);
+    }
+}
+</code></pre>
+
+<p>Do <code>cargo test -- --test-threads=2 --show-output</code> to run all tests in the project with 2 threads. At the top level, it&#39;s customary to create a tests directory next to src. Cargo will know to look for integration tests in that directory.</p>
+
+<h3 id="1-10-sample-projects" id="1-10-sample-projects">1.10 Sample Projects</h3>
+
+<p>Reading from <a href="https://doc.rust-lang.org/book/ch12-00-an-io-project.html">this</a>, just writing some stuff down, nothing too comprehensive.</p>
+
+<h4 id="1-10-1-grep-project" id="1-10-1-grep-project">1.10.1 Grep Project</h4>
+<ul><li>use <code>std::env:args</code> to read command line arguments</li>
+<li>separate of concerns by having a <code>main.rs</code> and business logic in <code>lib.rs</code></li>
+<li>use <code>eprintln!</code> to print errors</li></ul>
+</div></article>
+
+
+		<nav id="paging" class="content-container clearfix">
+			
+				<a href="/page/2">&#8672; Older</a>
+				
+			
+		</nav>
+
+		
+	
+
+
+		</section>
+
+		
+		<footer>
+			<hr />
+			
+			<nav>
+				published with <a class="home pubd" href="https://write.as/">write.as</a>
+			</nav>
+			
+		</footer>
+		
+
+		
+			<iframe src="https://write.as/me/iframe" scrolling="no" frameborder="0" allowtransparency="true" style="position: absolute; top: 0.75em; left: 1.5em; border: 0; width: 46px; height: 46px;"></iframe>
+		
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	</body>
+
+	
+		
+		
+	
+	<script src="https://cdn.writeas.net/js/h.6913452.js" integrity="sha384-gzAEDS5p0coF6LNwWlQYV2Hm4lHYr/OAXJBZqeHzTCFw4Hj6LNgYV2stS+Y77FuS" crossorigin="anonymous"></script>
+	<script src="https://cdn.writeas.net/js/postactions.8532dc2.js" integrity="sha384-0CdjNfYuZCswXbq2nM3x8397yvUlWSHFXhwJXUx5Bf8E7u+BqXphLHrJSp7qB38K" crossorigin="anonymous"></script>
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/menu.94518a2.js"></script>
+	<script type="text/javascript">
+	
+
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var deleting = false;
+function delPost(e, id, owned) {
+	e.preventDefault();
+	if (deleting) {
+		return;
+	}
+
+	
+	if (window.confirm('Are you sure you want to delete this post?')) {
+		
+		deletePost(id, "", function() {
+			
+			var $postEl = document.getElementById('post-' + id);
+			$postEl.parentNode.removeChild($postEl);
+			try { _paq.push(['trackEvent', 'Post', 'delete', 'collection']); } catch(e) {}
+			
+		});
+	}
+}
+
+var deletePost = function(postID, token, callback) {
+	deleting = true;
+
+	var $delBtn = document.getElementById('post-' + postID).getElementsByClassName('delete action')[0];
+	$delBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/posts/" + postID;
+	http.open("DELETE", url, true);
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			deleting = false;
+			if (http.status == 204) {
+				callback();
+			} else if (http.status == 409) {
+				$delBtn.innerHTML = 'delete';
+				alert("Post is synced to another account. Delete the post from that account instead.");
+				
+				
+				
+			} else {
+				$delBtn.innerHTML = 'delete';
+				alert("Failed to delete." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send();
+};
+
+var pinning = false;
+function pinPost(e, postID, slug, title) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var callback = function() {
+		
+		var $postEl = document.getElementById('post-' + postID);
+		$postEl.parentNode.removeChild($postEl);
+		var $header = document.getElementsByTagName('header')[0];
+		var $pinnedNavs = $header.getElementsByTagName('nav');
+		
+		var link = '<a class="pinned" href="/benson/'+slug+'">'+title+'</a>';
+		if ($pinnedNavs.length == 0) {
+			$header.insertAdjacentHTML("beforeend", '<nav>'+link+'</nav>');
+		} else {
+			$pinnedNavs[0].insertAdjacentHTML("beforeend", link);
+		}
+		try { _paq.push(['trackEvent', 'Post', 'pin', 'collection']); } catch(e) {}
+	};
+
+	var $pinBtn = document.getElementById('post-' + postID).getElementsByClassName('pin action')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/pin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'pin';
+				alert("Post is synced to another account. Delete the post from that account instead.");
+				
+				
+				
+			} else {
+				$pinBtn.innerHTML = 'pin';
+				alert("Failed to pin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+	
+	try { 
+	  var _paq = _paq || [];
+	  
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+
+	try {
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {}
+	</script>
+</html>

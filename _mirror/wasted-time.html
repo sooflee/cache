@@ -1,0 +1,289 @@
+<!DOCTYPE HTML>
+<html lang="en" dir="ltr">
+	<head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+		<meta charset="utf-8">
+
+		<title>dumb poker &mdash; cache</title>
+		
+		<link rel="stylesheet" type="text/css" href="https://cdn.writeas.net/css/write.7a8d594726b6871de2afc.css" />
+		
+		<link rel="shortcut icon" href="https://cdn.writeas.net/favicon.ico" />
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<link rel="canonical" href="https://cache.bwang.io/wasted-time" />
+		<link rel="alternate" type="application/rss+xml" title="cache &raquo; Feed" href="https://cache.bwang.io/feed/" />
+		<meta name="generator" content="Write.as">
+		<meta name="title" content="dumb poker &mdash; cache">
+		<meta name="description" content="I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/...">
+		
+		<meta name="twitter:label1" value="Views">
+		<meta name="twitter:data1" value="21">
+		<link rel="author" href="http://cache.bwang.io/" />
+		<meta name="author" content="cache" />
+		<meta itemprop="description" content="I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/...">
+		<meta itemprop="datePublished" content="2023-01-10" />
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:description" content="I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/...">
+		<meta name="twitter:title" content="dumb poker &mdash; cache">
+		<meta name="twitter:image" content="https://cdn.writeas.net/img/w-sq-light.png">
+		<meta property="og:title" content="dumb poker" />
+		<meta property="og:description" content="I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/..." />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://cache.bwang.io/wasted-time" />
+		<meta property="og:updated_time" content="2023-01-10T02:53:42Z" />
+		<meta property="og:image" content="https://cdn.writeas.net/img/w-sq-light.png">
+		<meta property="article:published_time" content="2023-01-10T02:53:42Z">
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	</head>
+	<body id="post">
+		
+		<div id="overlay"></div>
+
+		<header>
+		<h1 dir="ltr" id="blog-title"><a rel="author" href="/" class="h-card p-author">cache</a></h1>
+			<nav>
+				
+				<a class="pinned" href="https://cache.bwang.io/reading">reading</a><a class="pinned" href="https://cache.bwang.io/about">about</a>
+				
+				
+			</nav>
+		</header>
+
+		
+
+		<article id="post-body" class="norm h-entry "><h2 id="title" class="p-name dated">dumb poker</h2><time class="dt-published" datetime="2023-01-10T02:53:42Z" pubdate itemprop="datePublished" content="2023-01-10 02:53:42 &#43;0000 UTC">January 10, 2023</time><div class="e-content"><p>I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.</p>
+
+<p>Demo: <iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FyzJxsdWZHnQ%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DyzJxsdWZHnQ&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FyzJxsdWZHnQ%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p>The first deployment of this was over on GCP. I redid it on Heroku. I used <a href="https://github.com/cookiecutter/cookiecutter-django">cookiecutter django</a> for easy setup, with mailgun/maildev, sentry, postgres, redis (managed by heroku).</p>
+
+<p>I bought a domain (dysk.app).</p>
+
+<p>I gave up working on this project because as I learned more about poker, the less I thought what I was working on made sense. I wanted to create an app that saves key poker hands, and would theoretically help me play hands like a flow chart.</p>
+
+<p>There are also excellent existing free-tier apps that does what my app set out or can pivot to. Why create a lesser version of something that&#39;s already so good available free?</p>
+<ul><li><a href="https://app.gtowizard.com/">GTO Wizard</a> (free) 100bb pre-flop charts and simple solutions.</li>
+<li><a href="https://www.pokertracker.com/">PokerTraker</a> (paid) for poker hand bookkeeper and statistics</li>
+<li><a href="https://pokerbankrolltracker.net/">Poker Bankroll Tracker</a> (free) to record key hands, do bankroll management</li>
+<li><a href="https://github.com/b-inary/desktop-postflop">WASM postflop</a> (free) GTO solver</li>
+<li>Some MDA apps I think the author doesn’t want me sharing. Some MDA stuff I was parsing myself. (Parse over 1M hands to see where we can exploit).</li></ul>
+</div></article>
+
+		
+
+		
+		<footer dir="ltr"><hr><nav><p style="font-size: 0.9em">published with <a class="home pubd" href="https://write.as/">write.as</a></p></nav></footer>
+		
+
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	</body>
+	
+	
+		
+		
+	
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/posts/yu4yfrn3dgd3edon/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var pinning = false;
+function unpinPost(e, postID) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var $header = document.getElementsByTagName('header')[0];
+	var callback = function() {
+		
+		var $pinnedNavLink = $header.getElementsByTagName('nav')[0].querySelector('.pinned.selected');
+		$pinnedNavLink.style.display = 'none';
+		try { _paq.push(['trackEvent', 'Post', 'unpin', 'post']); } catch(e) {}
+	};
+
+	var $pinBtn = $header.getElementsByClassName('unpin')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/unpin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+				$pinBtn.style.display = 'none';
+				$pinBtn.innerHTML = 'Pin';
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'Unpin';
+			} else {
+				$pinBtn.innerHTML = 'Unpin';
+				alert("Failed to unpin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+
+var $form = document.getElementById('emailsub');
+if ($form != null) {
+	$form.onsubmit = function() {
+		var $sub = document.getElementById('subscribe-btn');
+		$sub.disabled = true;
+		$sub.value = 'Subscribing...';
+	}
+}
+
+	
+
+	
+	try { 
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+	try { 
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {   }
+	</script>
+
+    
+</html>

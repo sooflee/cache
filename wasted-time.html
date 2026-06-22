@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<html lang="en" dir="ltr">
+	<head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+		<meta charset="utf-8">
+
+		<title>Dumb Poker &mdash; cache</title>
+		
+		<link rel="stylesheet" type="text/css" href="assets/css/inside.css" />
+		
+		<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%204%2028%2010%2016%2016%204%2010Z%27/%3E%3Cpath%20d%3D%27M4%2016%2016%2022%2028%2016%27/%3E%3Cpath%20d%3D%27M4%2022%2016%2028%2028%2022%27/%3E%3C/svg%3E">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<link rel="canonical" href="wasted-time.html" />
+		<meta name="generator" content="Write.as">
+		<meta name="title" content="dumb poker &mdash; cache">
+		<meta name="description" content="I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/...">
+		
+		<meta name="twitter:label1" value="Views">
+		<meta name="twitter:data1" value="21">
+		<link rel="author" href="index.html" />
+		<meta name="author" content="cache" />
+		<meta itemprop="description" content="I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/...">
+		<meta itemprop="datePublished" content="2023-01-10" />
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:description" content="I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/...">
+		<meta name="twitter:title" content="Dumb Poker &mdash; cache">
+		<meta name="twitter:image" content="https://cdn.writeas.net/img/w-sq-light.png">
+		<meta property="og:title" content="Dumb Poker" />
+		<meta property="og:description" content="I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/..." />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="wasted-time.html" />
+		<meta property="og:updated_time" content="2023-01-10T02:53:42Z" />
+		<meta property="og:image" content="https://cdn.writeas.net/img/w-sq-light.png">
+		<meta property="article:published_time" content="2023-01-10T02:53:42Z">
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	</head>
+	<body id="post">
+<style>
+@view-transition{navigation:auto;}
+.nav-float{position:fixed;top:22px;left:22px;z-index:2147483647;pointer-events:none;
+	font:400 14px/1.45 'Josefin Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-min-cb{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.nav-card{width:230px;max-height:calc(100vh - 44px);overflow-y:auto;
+	background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.16);
+	border-radius:13px;padding:14px 0 16px;pointer-events:auto;transform-origin:top left;
+	transition:opacity .24s ease,transform .24s ease;}
+.nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;}
+.nav-home{display:inline-flex;align-items:center;color:#9a9a9a;text-decoration:none;
+	padding:2px;transition:color .15s;}
+.nav-home:hover{color:#333;}
+.nav-mini{cursor:pointer;color:#c4c4c4;font-size:21px;line-height:.5;padding:0 3px 6px;
+	user-select:none;transition:color .15s;}
+.nav-mini:hover{color:#333;}
+.nav-restore{position:absolute;top:0;left:0;display:inline-flex;align-items:center;gap:8px;
+	cursor:pointer;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.2);
+	color:#555;border-radius:11px;padding:8px 14px;font-size:13px;user-select:none;
+	opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.nav-restore::before{content:"";width:15px;height:11px;flex:none;color:#888;
+	background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left center/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left bottom/100% 1.5px no-repeat;}
+.nav-restore:hover{color:#111;}
+.nav-min-cb:checked ~ .nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+.nav-min-cb:checked ~ .nav-restore{opacity:1;pointer-events:auto;}
+.nav-card a.item{display:block;padding:7px 20px;color:#333;text-decoration:none;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-card a.item:hover{background:#f6f6f6;color:#111;}
+.nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-radio{position:absolute;opacity:0;pointer-events:none;}
+.nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
+.nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
+	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
+.nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
+.nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+	color:#111;border-bottom-color:#357BB3;}
+.nav-feed{display:none;}
+.nav-card #nav-cache:checked ~ .nf-cache{display:block;}
+.nav-card #nav-reading:checked ~ .nf-reading{display:block;}
+.nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+/* The panel is a left rail beside the centered column. Until the viewport is
+   wide enough for it to clear that column (same breakpoint as the article
+   outline), start it minimized: the pill shows by default and tapping it
+   expands the list. Otherwise the card slides out over the post text. */
+@media (max-width:1330px){
+	.nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+	.nav-restore{opacity:1;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-card{opacity:1;transform:none;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-restore{opacity:0;pointer-events:none;}
+}
+@media (max-width:700px){
+	.nav-card{width:min(230px,calc(100vw - 36px));}
+}
+@media (prefers-reduced-motion: reduce){
+	.nav-card,.nav-restore{transition:none;}
+}
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio"><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label></div><div class="nav-feed nf-cache"><a class="item" href="token-playbook.html">Token Playbook</a><a class="item" href="some-projects.html">Some Projects</a><a class="item" href="practical-poker.html">Practical Poker</a><a class="item" href="ecom-experiments.html">Ecom Experiments</a><a class="item" href="why-crypto.html">Why Crypto</a><a class="item" href="growing-peppers.html">Growing Peppers</a><a class="item" href="book-reviews.html">Book Reviews</a><a class="item active" href="wasted-time.html">Dumb Poker</a><a class="item" href="trading-automation.html">Trading Automation</a><a class="item" href="api-in-rust.html">API in Rust</a><a class="item" href="cicd-on-gcp.html">CI/CD on GCP + SQL</a><a class="item" href="nomad-and-waypoint.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="reading/poker-pros/index.html">High Roller Ledger</a><a class="item" href="reading/spacs/index.html">Understanding SPACs</a><a class="item" href="reading/ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="reading/making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="reading/world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="reading/watches/index.html">Watches That Beat Retail</a><a class="item" href="reading/wine/index.html">Wine as an Investment Asset</a><a class="item" href="reading/real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="reading/ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a></div></div></div>
+		
+		<div id="overlay"></div>
+
+		<header>
+		<h1 dir="ltr" id="blog-title"><a rel="author" href="index.html" class="h-card p-author">cache</a></h1>
+			<nav>
+				
+				
+				
+				
+			</nav>
+		</header>
+
+		
+
+		<article id="post-body" class="norm h-entry "><h2 id="title" class="p-name dated">Dumb Poker</h2><time class="dt-published" datetime="2023-01-10T02:53:42Z" pubdate itemprop="datePublished" content="2023-01-10 02:53:42 &#43;0000 UTC">January 10, 2023</time><div class="e-content"><p>I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.</p>
+
+<p>Demo: <a class="yt-lite" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=yzJxsdWZHnQ" data-id="yzJxsdWZHnQ" style="background-image:url('assets/img/yt/yzJxsdWZHnQ.jpg')"><span class="yt-play"></span></a></p>
+
+<p>The first deployment of this was over on GCP. I redid it on Heroku. I used <a href="https://github.com/cookiecutter/cookiecutter-django">cookiecutter django</a> for easy setup, with mailgun/maildev, sentry, postgres, redis (managed by heroku).</p>
+
+<p>I bought a domain (dysk.app).</p>
+
+<p>I gave up working on this project because as I learned more about poker, the less I thought what I was working on made sense. I wanted to create an app that saves key poker hands, and would theoretically help me play hands like a flow chart.</p>
+
+<p>There are also excellent existing free-tier apps that does what my app set out or can pivot to. Why create a lesser version of something that&#39;s already so good available free?</p>
+<ul><li><a href="https://app.gtowizard.com/">GTO Wizard</a> (free) 100bb pre-flop charts and simple solutions.</li>
+<li><a href="https://www.pokertracker.com/">PokerTraker</a> (paid) for poker hand bookkeeper and statistics</li>
+<li><a href="https://pokerbankrolltracker.net/">Poker Bankroll Tracker</a> (free) to record key hands, do bankroll management</li>
+<li><a href="https://github.com/b-inary/desktop-postflop">WASM postflop</a> (free) GTO solver</li>
+<li>Some MDA apps I think the author doesn’t want me sharing. Some MDA stuff I was parsing myself. (Parse over 1M hands to see where we can exploit).</li></ul>
+</div></article>
+
+		
+
+		
+		<footer dir="ltr"><hr><nav><p style="font-size: 0.9em">published with <a class="home pubd" href="https://write.as/">write.as</a></p></nav></footer>
+		
+
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+		<script id="yt-lite-script">
+	document.addEventListener('click', function (e) {
+		var a = e.target.closest('.yt-lite');
+		if (!a) return;
+		if (location.protocol === 'file:') return;  // let it open on YouTube
+		e.preventDefault();
+		var f = document.createElement('iframe');
+		f.className = 'yt-frame';
+		f.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
+		f.setAttribute('allowfullscreen', '');
+		f.src = 'https://www.youtube-nocookie.com/embed/' + a.dataset.id + '?autoplay=1';
+		a.replaceWith(f);
+	}, false);
+	</script>
+	<a href="#top" class="to-top" aria-label="Back to top" title="Back to top">↑</a>
+<style>
+.to-top{position:fixed;bottom:22px;right:22px;z-index:2147483646;width:40px;height:40px;
+	display:flex;align-items:center;justify-content:center;border-radius:50%;
+	background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+	border:1px solid rgba(140,140,140,.28);color:#555;font-size:19px;line-height:1;text-decoration:none;
+	opacity:0;pointer-events:none;transition:opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.to-top.show{opacity:1;pointer-events:auto;}
+.to-top:hover{color:#111;border-color:rgba(140,140,140,.5);}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none;}html{scroll-behavior:auto;}}
+</style>
+<script>(function(){var b=document.querySelector('.to-top');if(!b)return;
+function f(){b.classList.toggle('show',window.scrollY>500);}
+window.addEventListener('scroll',f,{passive:true});f();
+b.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});})();</script>
+</body>
+	
+	
+		
+		
+	
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/posts/yu4yfrn3dgd3edon/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var pinning = false;
+function unpinPost(e, postID) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var $header = document.getElementsByTagName('header')[0];
+	var callback = function() {
+		
+		var $pinnedNavLink = $header.getElementsByTagName('nav')[0].querySelector('.pinned.selected');
+		$pinnedNavLink.style.display = 'none';
+		try { _paq.push(['trackEvent', 'Post', 'unpin', 'post']); } catch(e) {}
+	};
+
+	var $pinBtn = $header.getElementsByClassName('unpin')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/unpin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+				$pinBtn.style.display = 'none';
+				$pinBtn.innerHTML = 'Pin';
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'Unpin';
+			} else {
+				$pinBtn.innerHTML = 'Unpin';
+				alert("Failed to unpin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+
+var $form = document.getElementById('emailsub');
+if ($form != null) {
+	$form.onsubmit = function() {
+		var $sub = document.getElementById('subscribe-btn');
+		$sub.disabled = true;
+		$sub.value = 'Subscribing...';
+	}
+}
+
+	
+
+	
+	try { 
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+	try { 
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {   }
+	</script>
+
+    
+</html>

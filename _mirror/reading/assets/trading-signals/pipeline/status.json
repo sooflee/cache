@@ -1,0 +1,23 @@
+{
+  "loops": {
+    "idea_scout": {
+      "last_run": "2026-06-13T00:42:17.775644+00:00",
+      "status": "running",
+      "job_id": "2279e0a5",
+      "interval": "10m"
+    },
+    "strategy_developer": {
+      "last_run": "2026-06-13T00:51:11.956079+00:00",
+      "status": "running",
+      "job_id": "dedda771",
+      "interval": "10m"
+    },
+    "backtester": {
+      "last_run": "2026-06-13T01:02:47.858607+00:00",
+      "status": "running",
+      "job_id": "07d31082",
+      "interval": "10m"
+    }
+  },
+  "status": "running"
+}

@@ -1,0 +1,332 @@
+<!DOCTYPE HTML>
+<html lang="en" dir="auto">
+	<head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+		<meta charset="utf-8">
+
+		<title>some projects &mdash; cache</title>
+		
+		<link rel="stylesheet" type="text/css" href="https://cdn.writeas.net/css/write.7a8d594726b6871de2afc.css" />
+		
+		<link rel="shortcut icon" href="https://cdn.writeas.net/favicon.ico" />
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<link rel="canonical" href="https://cache.bwang.io/some-projects" />
+		<link rel="alternate" type="application/rss+xml" title="cache &raquo; Feed" href="https://cache.bwang.io/feed/" />
+		<meta name="generator" content="Write.as">
+		<meta name="title" content="some projects &mdash; cache">
+		<meta name="description" content="Disclaimer: all the projects mentioned in this post were created two months ago, maybe a month ago. This post was written around that tim...">
+		
+		<meta name="twitter:label1" value="Views">
+		<meta name="twitter:data1" value="17">
+		<link rel="author" href="http://cache.bwang.io/" />
+		<meta name="author" content="cache" />
+		<meta itemprop="description" content="Disclaimer: all the projects mentioned in this post were created two months ago, maybe a month ago. This post was written around that tim...">
+		<meta itemprop="datePublished" content="2026-03-11" />
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:description" content="Disclaimer: all the projects mentioned in this post were created two months ago, maybe a month ago. This post was written around that tim...">
+		<meta name="twitter:title" content="some projects &mdash; cache">
+		<meta name="twitter:image" content="https://cdn.writeas.net/img/w-sq-light.png">
+		<meta property="og:title" content="some projects" />
+		<meta property="og:description" content="Disclaimer: all the projects mentioned in this post were created two months ago, maybe a month ago. This post was written around that tim..." />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://cache.bwang.io/some-projects" />
+		<meta property="og:updated_time" content="2026-03-11T21:26:07Z" />
+		<meta property="og:image" content="https://cdn.writeas.net/img/w-sq-light.png">
+		<meta property="article:published_time" content="2026-03-11T21:26:07Z">
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	</head>
+	<body id="post">
+		
+		<div id="overlay"></div>
+
+		<header>
+		<h1 dir="auto" id="blog-title"><a rel="author" href="/" class="h-card p-author">cache</a></h1>
+			<nav>
+				
+				<a class="pinned" href="https://cache.bwang.io/reading">reading</a><a class="pinned" href="https://cache.bwang.io/about">about</a>
+				
+				
+			</nav>
+		</header>
+
+		
+
+		<article id="post-body" class="norm h-entry "><h2 id="title" class="p-name dated">some projects</h2><time class="dt-published" datetime="2026-03-11T21:26:07Z" pubdate itemprop="datePublished" content="2026-03-11 21:26:07 &#43;0000 UTC">March 11, 2026</time><div class="e-content"><p>Disclaimer: all the projects mentioned in this post were created two months ago, maybe a month ago. This post was written around that time frame, and then just slowly edited.</p>
+
+<p>Humans have always distinguished themselves via their tooling. To be much more productive is empowering. But admittedly, some existentialist pangs were felt. This post is me building a couple of apps, some used by me daily, some deployed, some proof of concept, all of which are built with Opus 4.6.</p>
+
+<hr/>
+
+<p><strong>Chansey</strong> – Chansey is a RAG application that takes medical questions, translating them into PubMed queries using an LLM. The answers are classified (diagnostic, comparative, guideline, etc.) and then AI-generated using text from relevant citations. I wanted to build an OpenEvidence clone; this is a Temu version with a much simpler RAG, directly querying PubMed, no caching. You can try it out on chansey.bwang.io</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2Flz1E6KupsyU%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Dlz1E6KupsyU&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2Flz1E6KupsyU%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Diglett</strong> – I wanted to find government contract opportunities on SAM.gov. Diglett scrapes SAM.gov, uses LLM to read attachments and analyze potential procurement opportunities. Generate documents/emails to bid on contracts. Interfacing with government contracts is still laden with human involvement. It’s run locally and uses Google Sheets as back-end for someone to manage these opportunities in the future. Why SAM.gov? Website for Canadian contracts is bad and United Nations / UNGM is sort of behind a paywall. I have set up an LLC and made some submissions, fingers crossed.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FAox44oR5KMU%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DAox44oR5KMU&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FAox44oR5KMU%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Starmie</strong> – Fundamental Analysis/screening of global small-cap stocks. After reading posts such as posts from <a href="https://dirtcheapstocks.substack.com/">dirt</a>, I have had some success last year picking stocks (see my stale <a href="https://0xb11.substack.com/">substack</a>). Starmie is my effort to reproduce the process, periodically picking a few small-cap high-conviction stocks. It uses a postgresql db on neon powering Grafana, displaying a few metrics I care about: EV/EBIT, ROIC, NCAV.</p>
+
+<p>Available at <a href="https://stonks.bwang.io/">https://stonks.bwang.io/</a> (Deployed version is very slow)</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FWBollqAhYEw%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DWBollqAhYEw&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FWBollqAhYEw%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Munchlax</strong> – Some restaurants are too hard to book. Restaurant sniper that polls popular restaurants on Resy, instantly booking when the restaurant becomes available. React Frontend. Go (go-chi) + PostgreSQL backend, storing profiles, watches (snipe job), bookings (successful reservations), watch events (event log for status changes). I have used this to successfully book a restaurant in Chicago and I might use it again in the future.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FIyvn0x8D8VA%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DIyvn0x8D8VA&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FIyvn0x8D8VA%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Noctowl</strong> – I need more exposure to the Japanese language. Noctowl is a language learning chrome extension by automatically replacing English words on webpages with the target translation. It features anki-esque flashcards, click-to-pronounce, grammatical form matching, and cloud sync via Firebase/Google sign-on.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FU7k4E_jGXLo%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DU7k4E_jGXLo&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FU7k4E_jGXLo%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Omastar</strong> – A March Madness prediction that uses a 7 feature model trained with XGBoost on historical games to beat “picking the higher seed”. The front-end features a bracket that tracks how the model is currently doing. My bracket is currently under-performing.</p>
+
+<p>Available at <a href="https://www.bwang.io/omastar/index.html">https://www.bwang.io/omastar/index.html</a></p>
+
+<p><strong>Farfetch’d</strong> – A personal job search tool that scrapes job postings from many boards. Gemini scores each match and lets you review potentially good matches. Application statuses are also tracked.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2Frte6sBEABkc%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Drte6sBEABkc&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2Frte6sBEABkc%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Machop</strong> – Machop match Polymarket and Kalshi events (fuzzy matched then uses an LLM to exact match), and then surfaces arbitrage opportunities. There used to be trades that were around 50% ROI/year for a couple of hundred dollars in volume, but I’m not sure if you can find that kind of alpha anymore. The video below doesn’t capture the full capabilities of Machop. It was originally entirely in your terminal, but now you can try a read-only version on arbitrage.bwang.io.</p>
+
+<p><iframe allow="monetization" class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FGRIqz7g0hIM%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DGRIqz7g0hIM&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FGRIqz7g0hIM%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="640" height="360" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe></p>
+
+<p><strong>Machamp</strong> – Trading bot that exploits mispriced sports market by comparing model odds to Kalshi odds. It automatically places trades when it detects sufficient edge. Features a dashboard so you can witness model edge along with game state.</p>
+
+<p><strong>Metapod</strong> – A Jackbox TV style party platform where a host displays a game on TV and people join the game on their phones using a 4-letter room code. The first game is a single-player adventure game, “Lost at Sea”. The other game is “Confidently Wrong”, a Wits and Wagers style game. This game is functional but lacking sounds and animations that makes it fun.</p>
+
+<hr/>
+
+<p>Here are a few more, briefly listed.</p>
+<ul><li><strong>Porygon</strong> – Visually steps through a btc transaction using the real Bitcoin testnet and testnet4 faucet. Generates a wallet, see your transaction in a block.</li>
+<li><strong>Scyther</strong> – Surgical video annotation tool for laparoscopic surgery using CholecSeg8k model for segmentation. Data is bad and my machine isn’t powerful enough so it’s not functional.</li>
+<li><strong>Ludicolo</strong> – Inspiration from <a href="https://midnight.pub/">https://midnight.pub/</a>. Bar simulation where you can sit next to real people at a bar and chat with them (or the bartender who is a LLM).</li>
+<li><strong>Vulpix</strong> – Tiktok content generator. Turns google sheet prompts into tiktok drafts. Not live.</li>
+<li><strong>Ninetales</strong> – Live-stream clipper. Captions clips and turns them into tiktok drafts. Not enough disk space.</li>
+<li><strong>Tangela</strong> – I realized I had an old reddit API key so I used a key to look for trendy topics on reddit.</li></ul>
+
+<hr/>
+
+<p>Software is cheap now. The role of an engineer now is a generalist, a problem solver, a token consumer. Understand technology is implied, but we now just need to increasingly interact with the ends instead of the means.</p>
+
+<p>I will continue writing code and building products in the meantime.</p>
+</div></article>
+
+		
+
+		
+		<footer dir="ltr"><hr><nav><p style="font-size: 0.9em">published with <a class="home pubd" href="https://write.as/">write.as</a></p></nav></footer>
+		
+
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	</body>
+	
+	
+		
+		
+	
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/posts/bvscz04gwd3uhhqz/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var pinning = false;
+function unpinPost(e, postID) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var $header = document.getElementsByTagName('header')[0];
+	var callback = function() {
+		
+		var $pinnedNavLink = $header.getElementsByTagName('nav')[0].querySelector('.pinned.selected');
+		$pinnedNavLink.style.display = 'none';
+		try { _paq.push(['trackEvent', 'Post', 'unpin', 'post']); } catch(e) {}
+	};
+
+	var $pinBtn = $header.getElementsByClassName('unpin')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/unpin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+				$pinBtn.style.display = 'none';
+				$pinBtn.innerHTML = 'Pin';
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'Unpin';
+			} else {
+				$pinBtn.innerHTML = 'Unpin';
+				alert("Failed to unpin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+
+var $form = document.getElementById('emailsub');
+if ($form != null) {
+	$form.onsubmit = function() {
+		var $sub = document.getElementById('subscribe-btn');
+		$sub.disabled = true;
+		$sub.value = 'Subscribing...';
+	}
+}
+
+	
+
+	
+	try { 
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+	try { 
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {   }
+	</script>
+
+    
+</html>

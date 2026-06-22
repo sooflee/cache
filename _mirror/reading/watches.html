@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Watches that beat retail: scarcity, allocation, and the secondary market</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%232c5282' stroke-width='2.5'/%3E%3Cpath d='M16 12 V16 L19 18 M12.5 9 L11.5 3.5 H20.5 L19.5 9 M12.5 23 L11.5 28.5 H20.5 L19.5 23' fill='none' stroke='%232c5282' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+  <meta name='description' content="A plain, evidence-based look at which watches beat retail and why: the lotteries, drops, and waitlists that allocate supply below demand, what actually holds value, and the costs that offset returns.">
+  <meta property='og:type' content='article'>
+  <meta property='og:title' content="Watches that beat retail: scarcity, allocation, and the secondary market">
+  <meta property='og:description' content="Which watches resell above retail and why: how scarcity and allocation drive value, and the costs that offset it.">
+  <style>
+    body { font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, Cambria, 'Times New Roman', serif;
+            margin: 0; color: #262320; line-height: 1.7; font-size: 16px; background: #fcfbf8;
+            -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    .layout { max-width: 780px; margin: 2.4em auto; padding: 0 1.3em; }
+    article { min-width: 0; }
+    .dek { font-size: 1.18em; line-height: 1.5; color: #5a544c; font-style: italic; margin: .15em 0 1em; }
+    .textsize { display: flex; align-items: center; gap: .4em; font-size: .8em; color: #777; margin: 0 0 1.8em; flex-wrap: wrap; }
+    .textsize button { font: inherit; padding: .2em .65em; border: 1px solid #d8d3c8; background: #fff;
+                        color: #2c5282; border-radius: 100px; cursor: pointer; }
+    .textsize button.active { background: #2c5282; color: #fff; border-color: #2c5282; }
+    figure.chart { margin: 1.6em 0 2.2em; }
+    figure.chart figcaption { font-size: .82em; color: #5a544c; margin-bottom: .8em; font-style: italic; }
+    .chart .row { display: grid; grid-template-columns: 9em 1fr 3.4em; align-items: center; gap: .6em; margin: .35em 0; font-size: .86em; }
+    .chart .name { text-align: right; color: #333; }
+    .chart .track { position: relative; height: 1.2em; background: #f0ede6; border-radius: 3px; }
+    .chart .track::before { content: ''; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: #cabfa6; }
+    .chart .fill { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
+    .chart .fill.pos { left: 50%; background: #3a9568; }
+    .chart .fill.neg { right: 50%; background: #cc6258; }
+    .chart .val { font-variant-numeric: tabular-nums; text-align: left; }
+    .chart .val.pos { color: #276749; } .chart .val.neg { color: #c53030; }
+    .chart .fill.grey { background: #b9b3a6; }
+    .chart.bars .track::before { display: none; }
+    .chart.bars .fill { left: 0; right: auto; }
+    .chart.bars .row { grid-template-columns: 11.5em 1fr 4.2em; }
+    .stackbar { display: flex; height: 1.7em; border-radius: 4px; overflow: hidden; margin: 1em 0 .5em; font-size: .8em; }
+    .stackbar > span { display: flex; align-items: center; justify-content: center; color: #fff; min-width: 0; }
+    .stack-up { background: #3a9568; } .stack-flat { background: #5a7fa8; } .stack-down { background: #cc6258; } .stack-unk { background: #b9b3a6; }
+    figure.scatter { margin: 1.6em 0 2.2em; }
+    figure.scatter .cap { font-size: .82em; color: #5a544c; font-style: italic; margin-bottom: .5em; }
+    figure.scatter svg { width: 100%; height: auto; display: block; }
+    figure.scatter .lgd { font-size: .8em; color: #5a544c; margin-top: .4em; display: flex; gap: 1.1em; flex-wrap: wrap; }
+    .dot { display: inline-block; width: .7em; height: .7em; border-radius: 50%; vertical-align: middle; margin-right: .25em; }
+    .scatter-tip { position: fixed; pointer-events: none; z-index: 50; background: #2b2b2b; color: #fff;
+                    font-size: .78em; line-height: 1.3; padding: .35em .6em; border-radius: 5px;
+                    max-width: 18em; opacity: 0; transition: opacity .08s; }
+    .scatter-tip.show { opacity: .96; }
+    h1 { border-bottom: 2px solid #1a1a1a; padding-bottom: .3em; margin-bottom: .2em;
+          font-size: 1.5em; line-height: 1.2; }
+    h2 { margin-top: 2.6em; color: #2c5282; padding-bottom: .25em; font-size: 1.4em;
+          border-bottom: 1px solid #ddd6c8; scroll-margin-top: 1em; }
+    h3 { color: #2c5282; margin-top: 1.9em; font-size: 1.12em; scroll-margin-top: 1em; }
+    p { margin: .8em 0; }
+    table { border-collapse: collapse; margin: 1.4em 0; width: 100%; }
+    th, td { padding: .5em .85em; border-bottom: 1px solid #e7e3da; text-align: left; font-size: .88em;
+              font-variant-numeric: tabular-nums; }
+    th { background: #efece4; font-weight: 700; }
+    td a { color: inherit; text-decoration: none; border-bottom: 1px dotted #bcae93; }
+    td a:hover { color: #2c5282; border-bottom-color: #2c5282; }
+    table.sortable th { cursor: pointer; user-select: none; position: relative; padding-right: 1.4em; }
+    table.sortable th::after { content: '\2195'; position: absolute; right: .4em; color: #aaa; font-size: .85em; }
+    table.sortable th.sort-asc::after { content: '\25B2'; color: #2c5282; }
+    table.sortable th.sort-desc::after { content: '\25BC'; color: #2c5282; }
+    .price-filter { display: flex; flex-wrap: wrap; gap: .4em; align-items: center;
+                     margin: 1.1em 0 .2em; font-size: .9em; }
+    .price-filter span { color: #666; margin-right: .2em; }
+    .price-filter button { font: inherit; font-size: .88em; padding: .25em .75em;
+                            border: 1px solid #cdd6e4; background: #fff; color: #2c5282;
+                            border-radius: 100px; cursor: pointer; }
+    .price-filter button:hover { border-color: #2c5282; }
+    .price-filter button.active { background: #2c5282; color: #fff; border-color: #2c5282; }
+    .takeaway { background: #eef4fb; border-left: 4px solid #2c5282;
+                 padding: .8em 1.1em; margin: .8em 0 1.4em 0; border-radius: 0 4px 4px 0; font-size: .96em; }
+    .takeaway b { color: #2c5282; }
+    .meta { color: #666; font-size: .9em; margin-bottom: 1.8em; }
+    .summary { background: #f3f5f9; border-left: 4px solid #2c5282;
+                padding: 1em 1.4em; margin: 1.5em 0; border-radius: 0 4px 4px 0; }
+    .summary h3 { margin-top: 0; color: #2c5282; }
+    .caveat { background: #fff8e6; border-left: 4px solid #c9a227;
+               padding: .9em 1.2em; margin: 1.2em 0; font-size: .93em; border-radius: 0 4px 4px 0; }
+    code { background: #f3f5f9; padding: 1px 5px; border-radius: 3px; font-size: .9em; }
+    .footnote { color: #666; font-size: .85em; margin-top: 3em; border-top: 1px solid #eee; padding-top: 1em; }
+    ul { margin: .4em 0; } li { margin: .2em 0; }
+    div[style*='overflow-x:auto'] { -webkit-overflow-scrolling: touch; }
+    .pos { color: #276749; font-weight: 600; }
+    .neg { color: #c53030; font-weight: 600; }
+    .neu { color: #2c5282; font-weight: 600; }
+    .bar { display: inline-block; height: .85em; background: #2c5282; border-radius: 2px;
+            vertical-align: middle; margin-right: .4em; opacity: .7; }
+    /* Desktop table polish: zebra, hover, sticky headers, right-aligned numbers */
+    @media (min-width: 641px) {
+      div[style*='overflow-x:auto'] { overflow: visible; }
+      table.sortable th { position: sticky; top: 0; z-index: 2; box-shadow: inset 0 -1px 0 #d8d3c8; }
+      table.sortable tr:nth-child(even) td { background: #f6f4ee; }
+      table.sortable tr:hover td { background: #ebeef4; }
+      [id$='-table'] td:nth-child(2), [id$='-table'] td:nth-child(3), [id$='-table'] td:nth-child(4),
+      [id$='-table'] th:nth-child(2), [id$='-table'] th:nth-child(3), [id$='-table'] th:nth-child(4) { text-align: right; }
+    }
+    @media (max-width: 640px) {
+      .layout { margin: 1.1em auto; padding: 0 .9em; gap: 0; }
+      h1 { font-size: 1.3em; line-height: 1.25; }
+      h2 { font-size: 1.12em; margin-top: 1.7em; }
+      h3 { font-size: 1em; }
+      .meta { font-size: .82em; }
+      .summary, .takeaway, .caveat { padding: .8em 1em; }
+      .price-filter { font-size: .82em; gap: .35em; }
+      .price-filter button { padding: .25em .65em; }
+      /* Stack each table row as a labelled card instead of a cramped grid */
+      div[style*='overflow-x:auto'] { overflow-x: visible; }
+      table { width: 100%; min-width: 0; display: block; margin: 1em 0; }
+      table tr { display: block; border: 1px solid #e0e6ef; border-radius: 8px;
+                  padding: .45em .2em; margin: .7em 0; background: #fff; }
+      table tr:first-child { display: none; }
+      table td { display: flex; justify-content: space-between; gap: 1.2em;
+                  align-items: baseline; border: none; padding: .28em .8em;
+                  font-size: .86em; text-align: right; }
+      table td::before { content: attr(data-label); color: #5b6472; font-weight: 600;
+                          text-align: left; white-space: nowrap; }
+      table td:first-child { display: block; text-align: left; font-weight: 700;
+                              color: #1a1a1a; font-size: .98em; padding: .1em .55em .45em;
+                              margin-bottom: .25em; border-bottom: 1px solid #eef1f6; }
+      table td:first-child::before { content: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class='layout'>
+  <article>
+
+  <header>
+  <div class="kick">Market Research · Watches</div>
+  <h1>Watches that beat retail: scarcity, allocation, and the secondary market</h1>
+  <p class='dek'>Almost every watch loses money. The few that gain are kept scarcer than people want (a lottery, a drop, a years-long waitlist), so the upside goes to whoever buys at the store price, not to whoever buys it later.</p>
+  <p class='meta'>~8 min read &middot; compiled June 2026 &middot; data from WatchCharts, Chrono24, StockX, and auction records (Phillips, Christie's, Sotheby's, Loupe This)</p>
+  </header>
+<nav class="outline" aria-label="Outline">
+  <a href="#factors">Value retention</a>
+  <a href="#accessible">Lotteries &amp; drops</a>
+  <a href="#verified">Above retail</a>
+  <a href="#established">Established brands</a>
+  <a href="#caution">Caution</a>
+  <a href="#costs">Costs &amp; returns</a>
+  <a href="#principles">Buying principles</a>
+  <a href="#caveats">Caveats</a>
+</nav>
+  <div class='summary' id='summary'>
+    <h3>Summary</h3>
+    <ul>
+      <li>Most watches lose money. Step outside Rolex, Patek, and AP and the typical one sells for about <b>31% less</b> than you paid.</li>
+      <li>The winners are scarce by design, with fewer made than people want. At the top of the market that's a years-long <b>waitlist</b>; among the independents, a <b>lottery, raffle, or drop</b>. The money is the gap between store and resale price, and you keep it only if you bought at retail.</li>
+      <li>The same holds at <b>normal prices</b>, where a handful of sub-$10,000 watches resell for <b>1.3&ndash;4.4&times;</b> retail. It scales into six figures, but the higher you go the harder the sale, and most small brands still trade <i>below</i> retail.</li>
+      <li>Fees eat <b>11&ndash;30%</b> of a round trip, and a buyer isn't always waiting. A watch <i>might</i> hold its value; it isn't a stock.</li>
+    </ul>
+  </div>
+
+  <h2 id='factors'>1. What predicts value retention</h2>
+  <div class='takeaway'>
+    <b>In short:</b> brand and scarcity do the heavy lifting. The rest are tiebreakers.
+  </div>
+  <p>Will a watch be worth more or less than you paid a few years out? These traits, in rough order of how much they matter, cover most of the answer.</p>
+  <div style='overflow-x:auto'><table class='sortable'>
+    <tr><th>Factor</th><th>Direction</th><th>Effect</th></tr>
+    <tr><td>Brand</td><td>Top three &gt; all others</td><td class='pos'>+15% to +32% retention (top three) vs. &minus;31% (rest)</td></tr>
+    <tr><td>Scarcity / discontinuation</td><td>Frozen or limited supply &gt; in production</td><td class='pos'>Large, durable premiums once supply stops</td></tr>
+    <tr><td>Case material</td><td>Steel &gt; precious metal</td><td class='pos'>Steel sports models hold value; gold dress watches drop 10&ndash;20% at once</td></tr>
+    <tr><td>Category</td><td>Sports &gt; dress</td><td class='pos'>Divers and chronographs see the broadest demand</td></tr>
+    <tr><td>Waitlist length</td><td>Longer &gt; shorter</td><td class='pos'>If retail is effectively unavailable, resale rises to clear demand</td></tr>
+    <tr><td>Condition &amp; completeness</td><td>Original, full set &gt; modified</td><td class='neu'>Box and papers add value; polishing or modification can remove it</td></tr>
+  </table></div>
+
+  <figure class='chart'>
+    <figcaption>Average value retention vs. retail, by brand; only the top three are positive</figcaption>
+    <div class='row'><span class='name'>Patek Philippe</span><span class='track'><i class='fill pos' style='width:50%'></i></span><span class='val pos'>+32%</span></div>
+    <div class='row'><span class='name'>Rolex</span><span class='track'><i class='fill pos' style='width:34%'></i></span><span class='val pos'>+22%</span></div>
+    <div class='row'><span class='name'>Audemars Piguet</span><span class='track'><i class='fill pos' style='width:23%'></i></span><span class='val pos'>+15%</span></div>
+    <div class='row'><span class='name'>Omega</span><span class='track'><i class='fill neg' style='width:39%'></i></span><span class='val neg'>&minus;25%</span></div>
+    <div class='row'><span class='name'>All others (avg)</span><span class='track'><i class='fill neg' style='width:48%'></i></span><span class='val neg'>&minus;31%</span></div>
+  </figure>
+
+  <p>It all comes back to one thing: fewer watches than people want, whether that's a waitlist, a discontinued model, or a tiny production run. Everything else is a footnote to that.</p>
+
+  <h2 id='accessible'>2. Lotteries, raffles, and drops</h2>
+  <div class='takeaway'>
+    <b>In short:</b> to end up with a watch worth more than you paid, win a lottery or raffle, or pounce on a drop before it's gone. Land one at retail and you're already ahead; stray outside this and most watches just lose money.
+  </div>
+  <p>A maker builds far fewer than people want, then hands them out by a draw or a release gone in minutes. The prices below are what watches <b>actually sold for</b> in 2024&ndash;2026, not asking prices. Filter by price, or click a heading to sort. The makers who allocate by multi-year <em>waitlist</em> (F.P. Journe, Voutilainen, Dufour and company) are in the next section.</p>
+
+  <div class='price-filter' role='group' aria-label='Filter by entry price' data-target='#accessible-table'>
+    <span>Filter by entry price:</span>
+    <button type='button' data-min='0' data-max='1000'>$0&ndash;$1K</button>
+    <button type='button' data-min='1000' data-max='3000'>$1K&ndash;$3K</button>
+    <button type='button' data-min='3000' data-max='5000'>$3K&ndash;$5K</button>
+    <button type='button' data-min='5000' data-max='10000'>$5K&ndash;$10K</button>
+    <button type='button' data-min='10000' data-max='100000'>$10K&ndash;$100K</button>
+    <button type='button' data-min='100000'>$100K+</button>
+    <button type='button' class='active'>All prices</button>
+  </div>
+
+  <div style='overflow-x:auto'><table class='sortable' id='accessible-table'>
+    <tr><th>Watch</th><th>Entry price</th><th>Resale (realized)</th><th>Multiple</th><th>How to get</th></tr>
+    <tr data-price='130'><td>Casio 50th Anniversary Ring Watch (CRW-001)</td><td>~$130</td><td>$285&ndash;$320</td><td class='pos'>~2.2&ndash;2.5&times;</td><td>Lottery (Japan)</td></tr>
+    <tr data-price='180'><td>G-Shock &times; Hodinkee &times; John Mayer "SK-5" (2020)</td><td>$180</td><td>$620&ndash;$965</td><td class='pos'>~3.5&ndash;4.4&times;</td><td>Timed online release; sold out</td></tr>
+    <tr data-price='1350'><td>Ming 17.06</td><td>~$1,350</td><td>~$3,400</td><td class='pos'>~2.2&ndash;2.6&times;</td><td>Timed online drop; sold out</td></tr>
+    <tr data-price='2000'><td>Kurono Tokyo (limited editions)</td><td>~$2,000</td><td>$3.5K&ndash;$4.7K</td><td class='pos'>~1.8&ndash;2.3&times;</td><td>Timed drop, one per customer</td></tr>
+    <tr data-price='2800'><td>Anoma A1 (limited drops)</td><td>~$2,800</td><td>~$3,740</td><td class='pos'>~1.3&times;</td><td>Sold-out LE drops; the Core line restocks at MSRP</td></tr>
+    <tr data-price='3000'><td>Louis Erard &times; Alain Silberstein R&eacute;gulateur (2019)</td><td>~$3,000</td><td>~$7,500</td><td class='pos'>~2.5&times;</td><td>Sold-out release; now secondary</td></tr>
+    <tr data-price='3000'><td>Otsuka Lotec No.&nbsp;6</td><td>~$3,000</td><td>$7K&ndash;$12K</td><td class='pos'>~2.5&ndash;4&times;</td><td>Japan-only lottery; non-residents need a proxy</td></tr>
+    <tr data-price='3100'><td>MB&amp;F M.A.D.1</td><td>~$3,100</td><td>modest (varies)</td><td class='neu'>~1.2&ndash;1.8&times;</td><td>Free public raffle, one entry per person</td></tr>
+    <tr data-price='4000'><td>Toledano &amp; Chan B/1</td><td>$4,000</td><td>$8K&ndash;$9K</td><td class='pos'>~2.2&times;</td><td>Sold out in under an hour; now via auction</td></tr>
+    <tr data-price='4000'><td>Omega Speedmaster Snoopy Award (2003 LE)</td><td>~$4,000</td><td>$15K&ndash;$19K</td><td class='pos'>~4&times;</td><td>AD-allocated limited edition</td></tr>
+    <tr data-price='5700'><td>Omega Speedmaster "Tokyo 2020" (blue LE)</td><td>~$5,700</td><td>~$7,710</td><td class='pos'>~1.35&times;</td><td>AD-allocated limited edition</td></tr>
+    <tr data-price='6000'><td>Massena LAB &times; Habring&sup2; Erwin (bronze, 50 pcs)</td><td>~$6,000</td><td>~$10K</td><td class='pos'>~1.7&times;</td><td>Sold out; occasional auction supply</td></tr>
+    <tr data-price='6050'><td>Tudor Black Bay Chrono "Pink" (Inter Miami)</td><td>$6,050</td><td>~$8,950</td><td class='pos'>~1.48&times;</td><td>Drop allocation; sold out</td></tr>
+    <tr data-price='6400'><td>Otsuka Lotec No.&nbsp;8</td><td>~$6,400 (raffle)</td><td>limited data (2026)</td><td class='neu'>developing</td><td>Japan raffle (Mar 2026); same restrictions as No.&nbsp;6</td></tr>
+    <tr data-price='7650'><td>Omega Speedmaster Silver Snoopy 45th (2015, LE 1,970)</td><td>~$7,650</td><td>$20K&ndash;$40K</td><td class='pos'>~3&ndash;4&times;</td><td>AD-allocated limited edition</td></tr>
+    <tr data-price='19000'><td>Naoya Hida &amp; Co. Type 2C (steel)</td><td>~$19,000</td><td>$36K&ndash;$41K</td><td class='pos'>~2.2&ndash;2.5&times;</td><td>Application lottery</td></tr>
+    <tr data-price='42000'><td>Naoya Hida &amp; Co. Type 1D-2 (yellow gold)</td><td>~$42,000</td><td>~$82K</td><td class='pos'>~2&times;</td><td>Application lottery (gold; very limited)</td></tr>
+    <tr data-price='67000'><td>Simon Brette Chronom&egrave;tre Artisans (titanium)</td><td>~$67,000</td><td>$247K&ndash;$398K</td><td class='pos'>~3.4&ndash;5.8&times;</td><td>Subscription; sold out</td></tr>
+  </table></div>
+  <p>The premium goes to whoever got one at retail; buy it on the secondary market and you're the one paying it. For drop-driven pieces it's biggest right after release and fades from there. Two entries here are context, not settled results: the MB&amp;F M.A.D.1, a free raffle whose premium is smaller and shakier than the lottery indies', and the Otsuka Lotec No.&nbsp;8, a March 2026 release that barely has a resale history yet.</p>
+
+  <h2 id='verified'>3. Verified above retail, by waitlist and relationship</h2>
+  <div class='takeaway'>
+    <b>In short:</b> the same idea at the top of the market, except here you get in through a multi-year order book or a dealer who knows you, not a draw. This tier is mostly independent watchmakers, plus a few maison limited editions and the shaped Cartiers. They do sell above their original price on real sales, but they trade rarely, and the eye-watering multiples are usually one record auction, not something you can count on repeating.
+  </div>
+  <p>Here a sought-after maker is booked years out, or quietly places pieces with collectors it already knows; there's no public ballot you can enter. The prices below come almost entirely from auctions, so a single sale can set the number. Read the biggest multiples (Dufour, Rexhepi, the gold Voutilainens) as records, not the going rate, and the whole tier as slow to sell; cashing out can take years and the right room.</p>
+
+  <div class='price-filter' role='group' aria-label='Filter by entry price' data-target='#verified-table'>
+    <span>Filter by entry price:</span>
+    <button type='button' data-min='0' data-max='50000'>under $50K</button>
+    <button type='button' data-min='50000' data-max='100000'>$50K&ndash;$100K</button>
+    <button type='button' data-min='100000' data-max='250000'>$100K&ndash;$250K</button>
+    <button type='button' data-min='250000'>$250K+</button>
+    <button type='button' class='active'>All prices</button>
+  </div>
+
+  <div style='overflow-x:auto'><table class='sortable' id='verified-table'>
+    <tr><th>Watch</th><th>Entry price</th><th>Resale (realized)</th><th>Multiple</th><th>How to get</th></tr>
+    <tr data-price='20000'><td>F.P. Journe &Eacute;l&eacute;gante (titanium)</td><td>~$20,000</td><td>$60K&ndash;$160K</td><td class='neu'>~3&ndash;8&times;</td><td>Order-book waitlist</td></tr>
+    <tr data-price='21500'><td>Keaton Myrick "1 in 30"</td><td>~$21,500</td><td>~$38,100</td><td class='pos'>~1.77&times;</td><td>Waitlist; series of 30</td></tr>
+    <tr data-price='27000'><td>J.N. Shapiro Infinity</td><td>~$27,000</td><td>$34K&ndash;$44K</td><td class='pos'>~1.2&ndash;1.3&times;</td><td>Waitlist (US-made)</td></tr>
+    <tr data-price='30000'><td>Hajime Asaoka Tsunami</td><td>~$30,000</td><td>~$284K</td><td class='neu'>~9&times; (one sale)</td><td>Atelier waitlist</td></tr>
+    <tr data-price='37400'><td>F.P. Journe Chronom&egrave;tre Bleu (tantalum)</td><td>~$37,400</td><td>~$160K</td><td class='pos'>~4.3&times;</td><td>Order-book waitlist</td></tr>
+    <tr data-price='43000'><td>Cartier Pebble re-edition (2022, YG, LE 150)</td><td>~$43,000</td><td>~$106K</td><td class='neu'>~2.4&times;</td><td>Relationship; boutique LE</td></tr>
+    <tr data-price='45000'><td>VC Cornes de Vache &times; Hodinkee (steel, LE 36)</td><td>~$45,000</td><td>$60K&ndash;$94K</td><td class='pos'>~1.5&ndash;2.1&times;</td><td>Relationship; sold-out LE</td></tr>
+    <tr data-price='45000'><td>Philippe Dufour Simplicity</td><td>~$45,000</td><td>$450K&ndash;$1.2M</td><td class='neu'>~10&ndash;25&times;</td><td>Relationship; ~200 ever made</td></tr>
+    <tr data-price='50000'><td>F.P. Journe Chronom&egrave;tre Souverain</td><td>~$50,000</td><td>$100K&ndash;$200K</td><td class='pos'>~2&ndash;4.5&times;</td><td>Order-book waitlist</td></tr>
+    <tr data-price='56500'><td>A. Lange Odysseus Titanium (LE 250)</td><td>~$56,500</td><td>~$159K</td><td class='neu'>~2.8&times;</td><td>Relationship; limited edition</td></tr>
+    <tr data-price='60000'><td>Cartier Crash (modern reissue)</td><td>~$60,000+</td><td>$255K&ndash;$351K</td><td class='neu'>~3.7&ndash;6&times;</td><td>Relationship; boutique only</td></tr>
+    <tr data-price='62000'><td>Berneron Mirage (white gold)</td><td>~$62,000</td><td>~$299K</td><td class='pos'>~4.8&times;</td><td>Closed waitlist (~24/yr)</td></tr>
+    <tr data-price='68000'><td>Berneron Mirage Sienna (yellow gold)</td><td>~$68,000</td><td>~$190K</td><td class='pos'>~2.8&times;</td><td>Closed waitlist</td></tr>
+    <tr data-price='70000'><td>Rexhep Rexhepi Chronom&egrave;tre Contemporain I</td><td>~$70,000</td><td>$924K&ndash;$1.27M</td><td class='neu'>~13&ndash;18&times;</td><td>Waitlist; auction-record outlier</td></tr>
+    <tr data-price='72000'><td>Sylvain Pinaud Origine</td><td>~$72,000</td><td>~$189K</td><td class='pos'>~2.6&times;</td><td>Order book (~3-yr wait)</td></tr>
+    <tr data-price='90000'><td>Kari Voutilainen Vingt-8</td><td>~$90,000</td><td>$200K&ndash;$235K</td><td class='pos'>~2.5&times;</td><td>Order book (multi-year)</td></tr>
+    <tr data-price='90000'><td>Charles Frodsham Double Impulse Chronometer</td><td>~$90,000</td><td>$185K&ndash;$355K</td><td class='pos'>~2.2&ndash;4&times;</td><td>Waitlist</td></tr>
+    <tr data-price='90000'><td>Masahiro Kikuno Tourbillon</td><td>~$90,000</td><td>~$294K</td><td class='pos'>~3.3&times;</td><td>Atelier waitlist</td></tr>
+    <tr data-price='60000'><td>Kari Voutilainen Observatoire</td><td>~$55&ndash;70K</td><td>$209K&ndash;$533K</td><td class='neu'>~3.5&ndash;9&times;</td><td>Order book</td></tr>
+    <tr data-price='120000'><td>Hajime Asaoka Tourbillon</td><td>~$120,000</td><td>~$348K</td><td class='pos'>~2.9&times;</td><td>Atelier waitlist</td></tr>
+    <tr data-price='63000'><td>Cartier Crash Skeleton (platinum)</td><td>~$63K (plain Pt)</td><td>~$279K</td><td class='neu'>~4.4&times;</td><td>Relationship; boutique LE</td></tr>
+    <tr data-price='130000'><td>Richard Mille RM 35-01 Nadal</td><td>~$130,000</td><td>$280K&ndash;$384K</td><td class='pos'>~2&ndash;2.3&times;</td><td>Long waitlist; relationship</td></tr>
+    <tr data-price='140000'><td>F.P. Journe Chronom&egrave;tre &agrave; R&eacute;sonance</td><td>~$140,000</td><td>$535K&ndash;$778K</td><td class='pos'>~3.8&ndash;5.5&times;</td><td>Order-book waitlist</td></tr>
+    <tr data-price='150000'><td>Roger W. Smith Series 1</td><td>~$150,000</td><td>~$432K</td><td class='pos'>~2.5&ndash;3.3&times;</td><td>Order book</td></tr>
+    <tr data-price='100000'><td>Philippe Dufour Duality</td><td>~$100K (1996)</td><td>$700K&ndash;$3.1M</td><td class='neu'>~7&ndash;31&times;</td><td>Relationship; ~9 made</td></tr>
+    <tr data-price='195000'><td>Beat Haldimann H1 (platinum)</td><td>~$195,000</td><td>$248K&ndash;$262K</td><td class='pos'>~1.2&ndash;1.25&times;</td><td>Relationship; ~10 made</td></tr>
+    <tr data-price='125000'><td>Roger W. Smith Series 2</td><td>~$125K</td><td>$286K&ndash;$573K</td><td class='pos'>~2.3&ndash;4.6&times;</td><td>Order book; among the longest waits</td></tr>
+    <tr data-price='200000'><td>AkriviA AK-05 Tourbillon</td><td>~$200,000</td><td>~$700K</td><td class='neu'>~3&ndash;5&times;</td><td>Relationship; near-unique</td></tr>
+    <tr data-price='250000'><td>F.P. Journe Tourbillon Souverain</td><td>~$250,000</td><td>$640K+</td><td class='pos'>~2.6&times;</td><td>Order-book waitlist</td></tr>
+    <tr data-price='250000'><td>Philippe Dufour Grande &amp; Petite Sonnerie</td><td>~$250K (1992)</td><td>$3.7M&ndash;$7.6M</td><td class='neu'>~15&ndash;30&times;</td><td>Relationship; ~8 pieces ever</td></tr>
+  </table></div>
+  <p>Real ballots barely exist up here: F.P. Journe, Voutilainen, Roger W. Smith, Richard Mille, Berneron and the rest go by order book or relationship, not a draw. A few of these numbers lean on one recent sale; the next one could land higher or lower and move the multiple a lot.</p>
+
+  <figure class='scatter'>
+    <div class='cap'>Every allocated watch, plotted: entry price (log scale) vs. resale multiple. Anything above the dashed 1&times; line sells over retail. Hover a dot for the watch.</div>
+    <div id='scatterplot'></div>
+    <div class='lgd'><span><span class='dot' style='background:#2f8f5b'></span>rising</span><span><span class='dot' style='background:#5a7fa8'></span>flat</span><span><span class='dot' style='background:#c95b54'></span>cooling</span></div>
+  </figure>
+
+  <figure class='chart'>
+    <figcaption>Secondary-market direction across the whole list: acclaim-driven independents rising, hype-driven pieces cooling</figcaption>
+    <div id='trendsplit'></div>
+  </figure>
+
+  <h2 id='established'>4. The established brands</h2>
+  <div class='takeaway'>
+    <b>In short:</b> the same game plays out at the top of the market. Rolex, Patek, and AP (plus a few peers like Lange and Vacheron) hold their value in steel sports models, but only the buyer who's allocated one at retail captures the premium. The hard part is access, not money.
+  </div>
+  <p>It's the lottery in a suit. These brands keep retail supply tight the same way the indie makers do, just through waitlists and your purchase history instead of a draw, so the resale price sits well above the sticker. The return is that gap, and you only get it by being handed one at store price.</p>
+  <div style='overflow-x:auto'><table class='sortable' id='established-table'>
+    <tr><th>Reference</th><th>Retail</th><th>Secondary</th><th>Premium</th></tr>
+    <tr><td>Rolex GMT-Master II "Pepsi" (discontinued)</td><td>was ~$11,800</td><td>$22K&ndash;$29K</td><td class='pos'>+85&ndash;147%</td></tr>
+    <tr><td>Rolex Daytona "Panda"</td><td>~$16,800</td><td>$32K&ndash;$40K</td><td class='pos'>+90&ndash;140%</td></tr>
+    <tr><td>Rolex Submariner Date</td><td>$11,350</td><td>$15.7K&ndash;$16.3K</td><td class='pos'>+38&ndash;43%</td></tr>
+    <tr><td>Patek Philippe Nautilus 5711 (discontinued)</td><td>was ~$30,000</td><td>$89K&ndash;$145K</td><td class='pos'>+197&ndash;383%</td></tr>
+    <tr><td>AP Royal Oak Jumbo 15202 (discontinued)</td><td>was ~$33,300</td><td>$64K&ndash;$65K</td><td class='pos'>+91&ndash;95%</td></tr>
+    <tr><td>Patek Philippe Aquanaut 5167A (current, waitlist)</td><td>$27,255</td><td>$50K&ndash;$68K</td><td class='pos'>+85&ndash;150%</td></tr>
+    <tr><td>AP Royal Oak Jumbo 16202 (current, waitlist)</td><td>~$40,100</td><td>$74K&ndash;$90K</td><td class='pos'>+85&ndash;120%</td></tr>
+    <tr><td>Patek Philippe Aquanaut Chrono 5968A (waitlist)</td><td>~$61,766</td><td>~$131K</td><td class='pos'>~+110%</td></tr>
+    <tr><td>A. Lange &amp; S&ouml;hne Odysseus steel (waitlist)</td><td>~$41,200</td><td>~$55K</td><td class='pos'>+34%</td></tr>
+    <tr><td>Vacheron Constantin Historiques 222 steel (waitlist)</td><td>~$32,000</td><td>~$52K</td><td class='pos'>~+60%</td></tr>
+    <tr><td>Patek Philippe Nautilus 5811/1G (relationship)</td><td>~$89,767</td><td>~$150K</td><td class='pos'>~+65&ndash;90%</td></tr>
+  </table></div>
+  <p>Lower down, without that access edge, the math is ordinary: a standard Omega Speedmaster Moonwatch goes for a bit under retail pre-owned (its limited editions, like the Snoopy above, are the exception), and a Tudor Black Bay holds around 85&ndash;95% of retail. Lovely watches to own, just not the ones that make you money.</p>
+
+  <h2 id='caution'>5. What to treat with caution</h2>
+  <div class='takeaway'>
+    <b>In short:</b> most affordable brands sell at or below retail, and a lot of the eye-popping "multiples" online are wishful asking prices, not sales that actually happened.
+  </div>
+  <p><b>Below retail.</b> Most accessible brands carry no premium at all. Tudor, Grand Seiko, Ressence, Czapek, and the affordable dive-watch crowd (Lorier, Serica, Nodus) usually resell for about <b>60&ndash;95%</b> of retail. Buy them to wear, not to flip.</p>
+  <p><b>Asking vs. sold.</b> A lot of the numbers that get passed around are listings (what someone <i>hopes</i> to get), not what actually changed hands. A few favorites fell apart once we checked them against real sales:</p>
+  <ul>
+    <li>A reported ~10&times; for Furlan Marri is not supported by realized sales; the premium is modest.</li>
+    <li>A "~4.5&times;" Autodromo Monoposto traces to a single atypical auction lot; ordinary examples sell below retail (~$375&ndash;$500).</li>
+    <li>"~2&times;" figures for various MoonSwatch, Halios, and Unimatic models are asking prices; completed sales sit near retail.</li>
+    <li>Studio Underd0g's "Watermel0n," sometimes cited as a ~1.7&times; flip, is in stock at retail (&pound;550 / ~$750) on the brand's own site, a premium you can simply decline to pay. Only sold-out earlier editions trade meaningfully above retail.</li>
+  </ul>
+  <p>A simple rule of thumb: trust prices someone actually paid (auction results, platform last-sale data) and ignore anything that's still for sale.</p>
+
+  <h2 id='costs'>6. Costs &amp; net returns</h2>
+  <div class='takeaway'>
+    <b>In short:</b> the cost of selling, and the wait to find a buyer, swallow most of the gain, so the real case is much narrower than the headline multiples make it look.
+  </div>
+  <p>To make money you have to sell, and selling is expensive. A round trip runs <b>11&ndash;30%</b> once you count dealer spreads or platform fees, and finding a buyer can take weeks or months; a watch isn't a stock you can dump in a click. Insurance and servicing quietly add another 2&ndash;3% a year. A watch that climbs 5% a year but costs 3% to hold doesn't leave much once inflation has its say.</p>
+  <figure class='chart'>
+    <figcaption>A 5-year hold at +5%/yr, after costs; the gain is largely consumed</figcaption>
+    <div class='row'><span class='name'>Gross (5 yr)</span><span class='track'><i class='fill pos' style='width:50%'></i></span><span class='val pos'>+25%</span></div>
+    <div class='row'><span class='name'>&minus; carrying</span><span class='track'><i class='fill neg' style='width:20%'></i></span><span class='val neg'>&minus;10%</span></div>
+    <div class='row'><span class='name'>&minus; sell spread</span><span class='track'><i class='fill neg' style='width:30%'></i></span><span class='val neg'>&minus;15%</span></div>
+    <div class='row'><span class='name'>Net (real)</span><span class='track'><i class='fill grey' style='width:1.5%'></i></span><span class='val'>&asymp;0%</span></div>
+  </figure>
+
+  <p>The watches that actually clear those costs are a short list: blue-chips bought at retail, and the lottery- or drop-allocated indies above, again only if you got them at retail. Everything else, at best, breaks even.</p>
+
+  <h2 id='principles'>7. Buying principles</h2>
+  <ol>
+    <li><b>The money's in the retail-to-resale gap.</b> Buy at the store and you capture it; buy on the secondary market and you're paying it to someone else.</li>
+    <li><b>Trust sold prices, not listings.</b> Judge a watch by what people paid, not by what's on offer.</li>
+    <li><b>Scarcity lasts; hype doesn't.</b> A lottery or a capped run holds a premium; buzz burns off.</li>
+    <li><b>For drop pieces, move fast.</b> The premium is usually biggest in the first weeks after release.</li>
+    <li><b>Keep it original and complete.</b> Box and papers hold value; a polish or a swapped part can quietly erase it.</li>
+  </ol>
+
+  <h2 id='caveats'>Caveats</h2>
+  <div class='caveat'>
+    <b>This is informational, not financial advice.</b>
+    <ul style='margin-top:.4em; margin-bottom:0;'>
+      <li><b>Survivorship bias.</b> This leans toward the watches that held value; plenty of similar ones quietly sank and stopped being tracked.</li>
+      <li><b>Prices move.</b> These reflect 2024&ndash;2026, and they'll drift with the market and exchange rates.</li>
+      <li><b>Selling is slow.</b> It can take a while to find a buyer, and the gap between bid and ask widens when the market dips.</li>
+      <li><b>Condition is everything.</b> Every figure here assumes an original, full-set, excellent example.</li>
+    </ul>
+  </div>
+
+  <p class='footnote'>Sources: WatchCharts indices and model pricing; Chrono24 and EveryWatch listings (treated as asking unless noted); StockX last-sale data; auction results from Phillips, Christie's, Sotheby's, Loupe This, and Bezel; reporting from Monochrome and SJX. Compiled June 2026 from public market data and multi-round research with fact-checking against completed-sale records. Prices reflect conditions as of mid-2026.</p>
+
+  </article>
+  </div>
+
+  <script>
+    // Parse a leading number with optional K/M suffix; handles ranges like "$7K-$12K"
+    function numKey(t) {
+      const m = t.replace(/,/g, '').match(/(-?\d+(?:\.\d+)?)\s*([KkMm])?/);
+      if (!m) return NaN;
+      let v = parseFloat(m[1]);
+      if (m[2]) v *= (m[2].toLowerCase() === 'm' ? 1e6 : 1e3);
+      return v;
+    }
+
+    // --- Secondary-market trend column: up (▲) / down (▼) / flat (→) / n/a (·) ---
+    const TREND = [
+      ['Ring Watch','down','~-35% off peak'],['SK-5','down','cooling, off peak'],['Watermel0n','up','+20-30%'],
+      ['Ming 17.06','down','-7% YoY'],['Kurono','flat','flat/softening'],['Anoma','up','above retail'],
+      ['Silberstein','flat','flat (~+60% vs retail)'],['Lotec No. 6','up','+25% YoY'],['M.A.D.1','down','-15-25%'],
+      ['Toledano','up','+5-10% YoY'],['Snoopy Award (2003','flat','off 2023 peak'],['Tokyo 2020','flat','+1% YoY'],
+      ['Massena','flat','flat, thin'],['Inter Miami','flat','flat ~$9-10k'],['Lotec No. 8','unknown','new (2026)'],
+      ['Silver Snoopy','up','+28% YoY'],['Type 2C','up','+20-35% YoY'],['Type 1D-2','up','rising (thin)'],
+      ['Simon Brette','up','+60% YoY'],['gante','up','sharply up'],['Keaton Myrick','up','rising'],
+      ['Shapiro','up','+30% YoY'],['Asaoka Tsunami','up','rising'],['Bleu','up','+20-25% YoY'],
+      ['Cartier Pebble','up','~4x launch, rising'],['Cornes de Vache','flat','flat, above retail'],
+      ['Dufour Simplicity','up','rising'],['tre Souverain','up','strong'],['Odysseus Titanium','down','premium cooling'],
+      ['Crash (modern','up','records'],['Mirage (white','up','rising'],['Mirage Sienna','up','rising'],
+      ['Contemporain','unknown','auction-only'],['Pinaud','up','~2.5x retail'],['Vingt-8','up','up (orders closed)'],
+      ['Frodsham','up','strong (~3x)'],['Kikuno','unknown','near-zero supply'],['Observatoire','up','strong'],
+      ['Asaoka Tourbillon','up','far above retail'],['Crash Skeleton','up','rising'],['RM 35-01','down','softening'],
+      ['sonance','flat','flat-to-soft (off 2021)'],['Smith Series 1','up','rising (thin)'],['Duality','up','$2M->$3.1M'],
+      ['Haldimann','up','rising'],['Smith Series 2','up','+30% ($440k->573k)'],['AK-05','up','sharply up'],
+      ['Tourbillon Souverain','flat','flat-to-soft'],['Grande &','up','multi-million'],['Pepsi','up','+12% YoY (disc.)'],
+      ['Daytona','down','-12-15%'],['Submariner','flat','flat ~$13-15k'],['Nautilus 5711','flat','flat/soft'],
+      ['Jumbo 15202','up','+12% YoY'],['Aquanaut 5167A','up','+30% YoY'],['Jumbo 16202','up','+10% YoY'],
+      ['5968A','up','+8% YoY'],['Odysseus steel','up','+4% YoY'],['Historiques 222','down','off launch peak'],
+      ['5811','up','+24% YoY'],
+    ];
+    function trendFor(name) {
+      const t = (name || '').replace(/ /g, ' ');
+      for (const e of TREND) if (t.indexOf(e[0]) !== -1) return e;
+      return null;
+    }
+    const TARW = { up: '▲', down: '▼', flat: '→', unknown: '·' };
+    const TCOL = { up: '#276749', down: '#c53030', flat: '#2c5282', unknown: '#999' };
+    const TRANK = { up: 3, flat: 2, down: 1, unknown: 0 };
+    ['#accessible-table', '#verified-table', '#established-table'].forEach(sel => {
+      const tbl = document.querySelector(sel);
+      if (!tbl) return;
+      const trs = Array.from(tbl.querySelectorAll('tr'));
+      const th = document.createElement('th'); th.textContent = 'Trend'; trs[0].appendChild(th);
+      trs.slice(1).forEach(r => {
+        const e = trendFor(r.children[0] ? r.children[0].textContent : '');
+        const dir = e ? e[1] : 'unknown';
+        const td = document.createElement('td');
+        td.dataset.sort = TRANK[dir];
+        td.dataset.label = 'Trend';
+        td.style.color = TCOL[dir];
+        td.style.whiteSpace = 'nowrap';
+        td.innerHTML = '<b>' + TARW[dir] + '</b> ' + (e ? e[2] : 'n/a');
+        r.appendChild(td);
+        r.dataset.trend = dir.charAt(0).toUpperCase() + dir.slice(1);
+      });
+    });
+
+    // Sortable tables
+    document.querySelectorAll('table.sortable').forEach(table => {
+      const headers = table.querySelectorAll('th');
+      headers.forEach((th, colIdx) => {
+        th.addEventListener('click', () => {
+          const rows = Array.from(table.querySelectorAll('tr')).slice(1);
+          const isAsc = th.classList.contains('sort-asc');
+          headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+          th.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+          rows.sort((a, b) => {
+            const ac = a.children[colIdx], bc = b.children[colIdx];
+            const aText = ac?.textContent.trim() || '';
+            const bText = bc?.textContent.trim() || '';
+            if (colIdx > 0) {
+              const aNum = ac && ac.dataset.sort !== undefined ? parseFloat(ac.dataset.sort) : numKey(aText);
+              const bNum = bc && bc.dataset.sort !== undefined ? parseFloat(bc.dataset.sort) : numKey(bText);
+              if (!isNaN(aNum) && !isNaN(bNum)) return isAsc ? bNum - aNum : aNum - bNum;
+            }
+            return isAsc ? bText.localeCompare(aText) : aText.localeCompare(bText);
+          });
+          const parent = rows[0]?.parentNode;
+          rows.forEach(r => parent.appendChild(r));
+        });
+      });
+    });
+
+    // --- Combined filters: price + status + origin, per table (all AND together) ---
+    const REGION = [
+      [/casio|g-shock|otsuka|naoya hida|kurono|asaoka|kikuno/, 'Japan'],
+      [/studio underd0g|frodsham|roger w\.? smith/, 'UK'],
+      [/toledano|massena|keaton myrick|shapiro/, 'US'],
+      [/simon brette|pinaud|cartier/, 'France'],
+      [/lange/, 'Germany'],
+      [/journe|dufour|berneron|rexhep|akrivia|voutilainen|richard mille|haldimann|louis erard|mb&f|omega|tudor|vacheron|patek|royal oak|audemars/, 'Switzerland'],
+      [/ming|anoma/, 'Other'],
+    ];
+    const STATUS = [
+      [/watermel0n|kurono|otsuka|naoya hida|journe|berneron|pinaud|frodsham|asaoka|kikuno|keaton myrick|shapiro|cartier crash|haldimann/, 'In production'],
+      [/ring watch|toledano|inter miami|simon brette|cartier pebble|odysseus titanium|ming|anoma/, 'Sold out'],
+      [/sk-5|louis erard|m\.a\.d|omega|massena|dufour|rexhep|voutilainen|richard mille|roger w\.? smith|akrivia|cornes de vache/, 'Discontinued'],
+    ];
+    function classify(name, map, dflt) {
+      const t = (name || '').toLowerCase();
+      for (const pair of map) if (pair[0].test(t)) return pair[1];
+      return dflt;
+    }
+    document.querySelectorAll('.price-filter[data-target]').forEach(pf => { pf.dataset.kind = 'price'; });
+    ['#accessible-table', '#verified-table'].forEach(sel => {
+      const tbl = document.querySelector(sel);
+      if (!tbl) return;
+      const rows = Array.from(tbl.querySelectorAll('tr[data-price]'));
+      rows.forEach(r => {
+        const name = r.children[0] ? r.children[0].textContent : '';
+        r.dataset.status = classify(name, STATUS, 'Sold out');
+        r.dataset.region = classify(name, REGION, 'Other');
+      });
+      const priceGroup = document.querySelector('.price-filter[data-target="' + sel + '"]');
+      const groups = priceGroup ? [priceGroup] : [];
+      let anchor = priceGroup;
+      [['Status', 'status'], ['Origin', 'region'], ['Trend', 'trend']].forEach(pair => {
+        const lbl = pair[0], attr = pair[1];
+        const vals = Array.from(new Set(rows.map(r => r.dataset[attr]))).sort();
+        const g = document.createElement('div');
+        g.className = 'price-filter';
+        g.dataset.kind = 'attr';
+        g.dataset.attr = attr;
+        g.dataset.target = sel;
+        g.innerHTML = '<span>' + lbl + ':</span>';
+        const defVal = (attr === 'status' && vals.includes('In production')) ? 'In production' : '';
+        ['', ...vals].forEach(v => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = v || 'All';
+          b.dataset.val = v;
+          if (v === defVal) b.className = 'active';
+          g.appendChild(b);
+        });
+        if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(g, anchor.nextSibling);
+        anchor = g;
+        groups.push(g);
+      });
+      const apply = () => {
+        rows.forEach(r => {
+          let show = true;
+          for (const g of groups) {
+            const btn = g.querySelector('button.active');
+            if (!btn) continue;
+            if (g.dataset.kind === 'price') {
+              const min = btn.dataset.min ? parseFloat(btn.dataset.min) : -Infinity;
+              const max = btn.dataset.max ? parseFloat(btn.dataset.max) : Infinity;
+              const p = parseFloat(r.dataset.price);
+              if (!(p >= min && p < max)) show = false;
+            } else {
+              const val = btn.dataset.val || '';
+              if (val && (r.dataset[g.dataset.attr] || '') !== val) show = false;
+            }
+          }
+          r.style.display = show ? '' : 'none';
+        });
+      };
+      groups.forEach(g => g.addEventListener('click', e => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        g.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        apply();
+      }));
+      apply();
+    });
+
+    // Label each cell with its column header (drives the mobile card layout)
+    document.querySelectorAll('table').forEach(t => {
+      const head = t.querySelector('tr');
+      if (!head) return;
+      const labels = Array.from(head.children).map(c => c.textContent.trim());
+      Array.from(t.querySelectorAll('tr')).forEach((row, i) => {
+        if (i === 0) return;
+        Array.from(row.children).forEach((td, c) => {
+          if (labels[c]) td.setAttribute('data-label', labels[c]);
+        });
+      });
+    });
+
+    // Acquisition difficulty: rate each row from its allocation method, default easiest-first
+    function difficulty(text) {
+      const t = (text || '').toLowerCase();
+      if (/free.*raffle/.test(t)) return [1, 'Easy'];
+      if (/near-unique|auction-record|boutique only|~8 pieces|~9 made|~10 made/.test(t)) return [6, 'Almost impossible'];
+      if (/relationship|closed|near-unique|boutique/.test(t)) return [5, 'Very hard'];
+      if (/waitlist|order[- ]book/.test(t)) return [4, 'Hard'];
+      if (/application|subscription|proxy|japan/.test(t)) return [3, 'Hard-ish'];
+      if (/drop|timed|release|registration|ad-allocated|lottery|sold out/.test(t)) return [2, 'Moderate'];
+      return [3, 'Hard-ish'];
+    }
+    ['#accessible-table', '#verified-table'].forEach(sel => {
+      const tbl = document.querySelector(sel);
+      if (!tbl) return;
+      const rows = Array.from(tbl.querySelectorAll('tr')).slice(1);
+      rows.forEach(r => {
+        const cell = r.children[4];
+        if (!cell) return;
+        const d = difficulty(cell.textContent);
+        cell.dataset.sort = d[0];
+        cell.innerHTML = '<b>' + d[1] + '</b> &middot; ' + cell.innerHTML;
+      });
+      rows.sort((a, b) => {
+        const da = +a.children[4].dataset.sort || 9;
+        const db = +b.children[4].dataset.sort || 9;
+        return da !== db ? da - db : (+a.dataset.price || 0) - (+b.dataset.price || 0);
+      });
+      const parent = rows[0] && rows[0].parentNode;
+      if (parent) rows.forEach(r => parent.appendChild(r));
+      const lastTh = tbl.querySelector('tr').lastElementChild;
+      if (lastTh) lastTh.classList.add('sort-asc');
+    });
+
+    // Scatter: entry price (log x) vs resale multiple (log y), colored by trend
+    (function () {
+      const host = document.getElementById('scatterplot');
+      if (!host) return;
+      const COL = { up: '#2f8f5b', flat: '#5a7fa8', down: '#c95b54', unknown: '#9a958b' };
+      const pts = [];
+      ['#accessible-table', '#verified-table'].forEach(sel => {
+        const t = document.querySelector(sel); if (!t) return;
+        Array.from(t.querySelectorAll('tr[data-price]')).forEach(r => {
+          const price = +r.dataset.price;
+          const mm = (r.children[3] ? r.children[3].textContent : '').match(/(\d+(?:\.\d+)?)/);
+          const mult = mm ? parseFloat(mm[1]) : NaN;
+          if (!price || isNaN(mult) || mult < 1) return;
+          pts.push({ name: (r.children[0].textContent || '').replace(/ /g, ' '), price, mult, trend: (r.dataset.trend || 'unknown').toLowerCase() });
+        });
+      });
+      const W = 720, H = 380, L = 46, R = 14, T = 14, B = 32;
+      const lg = v => Math.log(v) / Math.LN10;
+      const x0 = lg(100), x1 = lg(500000), y0 = lg(1), y1 = lg(35);
+      const xs = v => L + (lg(v) - x0) / (x1 - x0) * (W - L - R);
+      const ys = v => H - B - (lg(v) - y0) / (y1 - y0) * (H - T - B);
+      let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" font-size="11" font-family="inherit">';
+      [[100, '$100'], [1000, '$1k'], [10000, '$10k'], [100000, '$100k']].forEach(t => {
+        const x = xs(t[0]);
+        s += '<line x1="' + x + '" y1="' + T + '" x2="' + x + '" y2="' + (H - B) + '" stroke="#efece4"/>';
+        s += '<text x="' + x + '" y="' + (H - B + 16) + '" text-anchor="middle" fill="#888">' + t[1] + '</text>';
+      });
+      [1, 2, 5, 10, 20].forEach(v => {
+        const y = ys(v);
+        s += '<line x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '" stroke="' + (v === 1 ? '#b9b3a6' : '#efece4') + '"' + (v === 1 ? ' stroke-dasharray="4 3"' : '') + '/>';
+        s += '<text x="' + (L - 6) + '" y="' + (y + 3) + '" text-anchor="end" fill="#888">' + v + '×</text>';
+      });
+      pts.forEach(p => {
+        const info = (p.name + '  ·  ~' + p.mult + '×  ·  $' + p.price.toLocaleString())
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        s += '<circle cx="' + xs(p.price).toFixed(1) + '" cy="' + ys(p.mult).toFixed(1) + '" r="6" fill="' +
+          (COL[p.trend] || COL.unknown) + '" fill-opacity="0.82" stroke="#fff" stroke-width="0.9" ' +
+          'style="cursor:pointer" data-info="' + info + '"></circle>';
+      });
+      s += '</svg>';
+      host.innerHTML = s;
+      const svg = host.querySelector('svg');
+      const tip = document.createElement('div'); tip.className = 'scatter-tip'; document.body.appendChild(tip);
+      svg.addEventListener('mousemove', e => {
+        const c = e.target.closest('circle');
+        if (!c || !c.dataset.info) { tip.classList.remove('show'); return; }
+        tip.textContent = c.dataset.info;
+        tip.style.left = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8) + 'px';
+        tip.style.top = (e.clientY + 14) + 'px';
+        tip.classList.add('show');
+      });
+      svg.addEventListener('mouseleave', () => tip.classList.remove('show'));
+    })();
+
+    // Trend split: stacked bar of rising / flat / cooling; hover a segment for the watch list
+    (function () {
+      const host = document.getElementById('trendsplit');
+      if (!host) return;
+      const names = { up: [], flat: [], down: [], unknown: [] };
+      ['#accessible-table', '#verified-table', '#established-table'].forEach(sel => {
+        const t = document.querySelector(sel); if (!t) return;
+        Array.from(t.querySelectorAll('tr')).slice(1).forEach(r => {
+          const tr = (r.dataset.trend || 'unknown').toLowerCase();
+          if (names[tr]) names[tr].push((r.children[0].textContent || '').trim());
+        });
+      });
+      const tot = names.up.length + names.flat.length + names.down.length + names.unknown.length || 1;
+      const seg = (arr, cls, lbl) => arr.length
+        ? '<span class="' + cls + '" style="width:' + (arr.length / tot * 100).toFixed(1) + '%" title="' +
+          lbl + ' (' + arr.length + '): ' + arr.join(', ').replace(/"/g, '&quot;') + '">' + arr.length + ' ' + lbl + '</span>'
+        : '';
+      host.innerHTML = '<div class="stackbar">' +
+        seg(names.up, 'stack-up', '▲ rising') + seg(names.flat, 'stack-flat', '→ flat') +
+        seg(names.down, 'stack-down', '▼ cooling') + seg(names.unknown, 'stack-unk', '· n/a') + '</div>';
+    })();
+
+    // Make every watch name link to the maker's own page (model page where one exists)
+    const LINKS = [
+      ['Ring Watch', 'https://www.chrono24.com/casio/ref-crw0011jr.htm'],
+      ['SK-5', 'https://www.casio.com/us/watches/gshock/product.DW-6900JM20-8/'],
+      ['Ming 17.06', 'https://www.ming.watch/featured-product/ming-17-06-special-edition'],
+      ['Kurono', 'https://www.chrono24.com/kuronotokyo/index.htm'],
+      ['Anoma', 'https://anomawatches.com/products/anoma-a1'],
+      ['Silberstein', 'https://www.louiserard.com/products/le-regulateur-louis-erard-x-alain-silberstein-3'],
+      ['Lotec No. 6', 'https://otsuka-lotec.com/models/277/'],
+      ['M.A.D.1', 'https://www.mbandf.com/madeditions/mad1'],
+      ['Toledano', 'https://toledanoandchan.com/products/the-b-1'],
+      ['Snoopy Award (2003', 'https://www.chrono24.com/omega/ref-35785100.htm'],
+      ['Tokyo 2020', 'https://www.chrono24.com/omega/ref-52230423003001.htm'],
+      ['Massena', 'https://massenalab.com/products/habring2-erwin-lab01'],
+      ['Inter Miami', 'https://www.tudorwatch.com/en/watch-family/daring-watches/m79360n-0019'],
+      ['Lotec No. 8', 'https://otsuka-lotec.com/models/674/'],
+      ['Silver Snoopy', 'https://www.chrono24.com/omega/ref-31132423004003.htm'],
+      ['Type 2C', 'https://naoyahidawatch.com/new-release/nh-type-2c-2/?lang=en'],
+      ['Type 1D-2', 'https://www.chrono24.com/search/index.htm?query=Naoya%20Hida%20Type%201D'],
+      ['Simon Brette', 'https://simonbrette.com/en/product/timepiece-chronometre-artisans-subscription/'],
+      ['gante', 'https://www.chrono24.com/fpjourne/ref-elegante.htm'],
+      ['Keaton Myrick', 'http://www.keatonmyrick.com/caliber2930'],
+      ['Shapiro', 'https://www.jnshapirowatches.com/infinity-series/'],
+      ['Asaoka Tsunami', 'http://www.hajimeasaoka.com/timepieces_tsunami.html'],
+      ['Bleu', 'https://www.fpjourne.com/en/collection/classique-collection/chronometre-bleu'],
+      ['Cartier Pebble', 'https://www.cartier.com/en-us/pebble-shaped-watch-CRWGPB0003.html'],
+      ['Cornes de Vache', 'https://www.chrono24.com/search/index.htm?query=Vacheron%20Cornes%20de%20Vache%20Hodinkee'],
+      ['Dufour Simplicity', 'https://www.chrono24.com/search/index.htm?query=Philippe%20Dufour%20Simplicity'],
+      ['tre Souverain', 'https://www.fpjourne.com/en/collection/classique-collection/chronometre-souverain'],
+      ['Odysseus Titanium', 'https://www.alange-soehne.com/us-en/timepieces/odysseus/odysseus/odysseus-in-titanium-363-117'],
+      ['Crash Skeleton', 'https://www.chrono24.com/search/index.htm?query=Cartier%20Crash%20Skeleton%20Platinum'],
+      ['Crash (modern', 'https://www.chrono24.com/cartier/crash--mod1049.htm'],
+      ['Mirage (white', 'https://www.berneron.ch/mirage-38-prussian-blue'],
+      ['Mirage Sienna', 'https://www.berneron.ch/mirage-38-sienna'],
+      ['Contemporain', 'https://www.rexheprexhepi.com/collections/chronometre-contemporain-platine'],
+      ['Pinaud', 'https://www.sylvain-pinaud.com/origine/'],
+      ['Vingt-8', 'https://www.voutilainen.ch/the-ultimate-vingt-8-28mpr/'],
+      ['Frodsham', 'https://frodsham.com/wristwatch/'],
+      ['Kikuno', 'https://www.masahirokikuno.jp/watches/tourbillon-2012/'],
+      ['Observatoire', 'https://www.voutilainen.ch/portfolio/1699/'],
+      ['Asaoka Tourbillon', 'http://www.hajimeasaoka.com/timepieces_pura.html'],
+      ['RM 35-01', 'https://www.richardmille.com/historical-models/rm-35-01-rafael-nadal'],
+      ['sonance', 'https://www.fpjourne.com/en/collection/souveraine-collection/chronometre-resonance'],
+      ['Smith Series 1', 'https://www.chrono24.com/search/index.htm?query=Roger%20W.%20Smith%20Series%201'],
+      ['Duality', 'https://www.chrono24.com/all/philippe-dufour-duality--id36302736.htm'],
+      ['Haldimann', 'https://www.haldimann.swiss/en/collections/clock/haldimann-h1'],
+      ['Smith Series 2', 'https://www.chrono24.com/search/index.htm?query=Roger%20W.%20Smith%20Series%202'],
+      ['AK-05', 'https://www.rexheprexhepi.com/collections/ak-05'],
+      ['Tourbillon Souverain', 'https://www.fpjourne.com/en/collection/souveraine-collection/tourbillon-souverain'],
+      ['Grande &', 'https://philippedufour.ch/en/mes-creations/'],
+      ['Pepsi', 'https://www.chrono24.com/rolex/ref-126710blro.htm'],
+      ['Daytona', 'https://www.rolex.com/en-us/watches/cosmograph-daytona/m126500ln-0001'],
+      ['Submariner', 'https://www.rolex.com/en-us/watches/submariner/m126610ln-0001'],
+      ['Nautilus 5711', 'https://www.chrono24.com/patekphilippe/ref-5711.htm'],
+      ['Jumbo 15202', 'https://www.audemarspiguet.com/com/en/watch-collection/royal-oak/15202ST.OO.1240ST.01.A.html'],
+      ['Aquanaut 5167A', 'https://www.patek.com/en/collection/aquanaut/5167a-001'],
+      ['Jumbo 16202', 'https://www.audemarspiguet.com/com/en/watch-collection/royal-oak/16202ST.OO.1240ST.01.html'],
+      ['5968A', 'https://www.patek.com/en/collection/aquanaut/5968A-001'],
+      ['Odysseus steel', 'https://www.alange-soehne.com/us-en/timepieces/odysseus/odysseus/odysseus-in-stainless-steel-363-179'],
+      ['Historiques 222', 'https://www.chrono24.com/vacheronconstantin/ref-4200h222ab934.htm'],
+      ['5811', 'https://www.patek.com/en/collection/nautilus/5811-1g-001'],
+    ];
+    function linkFor(name) {
+      const t = (name || '').replace(/ /g, ' ');
+      for (const e of LINKS) if (t.indexOf(e[0]) !== -1) return e[1];
+      return null;
+    }
+    ['#accessible-table', '#verified-table', '#established-table'].forEach(sel => {
+      const t = document.querySelector(sel); if (!t) return;
+      Array.from(t.querySelectorAll('tr')).slice(1).forEach(r => {
+        const cell = r.children[0];
+        if (!cell || cell.querySelector('a')) return;
+        const url = linkFor(cell.textContent || '');
+        if (!url) return;
+        cell.innerHTML = '<a href="' + url + '" target="_blank" rel="noopener">' + cell.innerHTML + '</a>';
+      });
+    });
+
+    // Text-size control (persisted)
+    (function () {
+      const ts = document.querySelector('.textsize');
+      if (!ts) return;
+      let saved = null; try { saved = localStorage.getItem('mag-textsize'); } catch (e) {}
+      const apply = px => {
+        document.body.style.fontSize = px + 'px';
+        ts.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.size === px));
+      };
+      if (saved) apply(saved);
+      ts.addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        apply(b.dataset.size);
+        try { localStorage.setItem('mag-textsize', b.dataset.size); } catch (e) {}
+      });
+    })();
+
+  </script>
+<script>
+(function () {
+  var links = [].slice.call(document.querySelectorAll('nav.outline a'));
+  if (!links.length) return;
+  var map = links.map(function (a) {
+    var el = document.querySelector(a.getAttribute('href'));
+    return el ? { a: a, el: el } : null;
+  }).filter(Boolean);
+  function onScroll() {
+    var cur = null;
+    map.forEach(function (m) { if (m.el.getBoundingClientRect().top <= 140) cur = m; });
+    links.forEach(function (a) { a.classList.remove('active'); });
+    if (cur) cur.a.classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>

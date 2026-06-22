@@ -1,0 +1,891 @@
+<!DOCTYPE HTML>
+<html lang="en" dir="ltr">
+	<head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+		<meta charset="utf-8">
+
+		<title>api in rust &mdash; cache</title>
+		
+		<link rel="stylesheet" type="text/css" href="https://cdn.writeas.net/css/write.7a8d594726b6871de2afc.css" />
+		
+		<link rel="shortcut icon" href="https://cdn.writeas.net/favicon.ico" />
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<link rel="canonical" href="https://cache.bwang.io/api-in-rust" />
+		<link rel="alternate" type="application/rss+xml" title="cache &raquo; Feed" href="https://cache.bwang.io/feed/" />
+		<meta name="generator" content="Write.as">
+		<meta name="title" content="api in rust &mdash; cache">
+		<meta name="description" content="After some notes in rust, I created a rust app in rust deployed on Google Kubernetes Engine (GKE).  Here are some of the tooling/stack I ...">
+		
+		<meta name="twitter:label1" value="Views">
+		<meta name="twitter:data1" value="44">
+		<link rel="author" href="http://cache.bwang.io/" />
+		<meta name="author" content="cache" />
+		<meta itemprop="description" content="After some notes in rust, I created a rust app in rust deployed on Google Kubernetes Engine (GKE).  Here are some of the tooling/stack I ...">
+		<meta itemprop="datePublished" content="2021-05-23" />
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:description" content="After some notes in rust, I created a rust app in rust deployed on Google Kubernetes Engine (GKE).  Here are some of the tooling/stack I ...">
+		<meta name="twitter:title" content="api in rust &mdash; cache">
+		<meta name="twitter:image" content="https://i.snap.as/CXlsPLE6.png">
+		<meta property="og:title" content="api in rust" />
+		<meta property="og:description" content="After some notes in rust, I created a rust app in rust deployed on Google Kubernetes Engine (GKE).  Here are some of the tooling/stack I ..." />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://cache.bwang.io/api-in-rust" />
+		<meta property="og:updated_time" content="2021-05-23T23:30:21Z" />
+		<meta property="og:image" content="https://i.snap.as/CXlsPLE6.png" />
+		<meta property="article:published_time" content="2021-05-23T23:30:21Z">
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	</head>
+	<body id="post">
+		
+		<div id="overlay"></div>
+
+		<header>
+		<h1 dir="ltr" id="blog-title"><a rel="author" href="/" class="h-card p-author">cache</a></h1>
+			<nav>
+				
+				<a class="pinned" href="https://cache.bwang.io/reading">reading</a><a class="pinned" href="https://cache.bwang.io/about">about</a>
+				
+				
+			</nav>
+		</header>
+
+		
+
+		<article id="post-body" class="norm h-entry "><h2 id="title" class="p-name dated">api in rust</h2><time class="dt-published" datetime="2021-05-23T23:30:21Z" pubdate itemprop="datePublished" content="2021-05-23 23:30:21 &#43;0000 UTC">May 23, 2021</time><div class="e-content"><p>After some notes in rust, I created a rust app in rust deployed on Google Kubernetes Engine (GKE).</p>
+
+<p>Here are some of the tooling/stack I went with. I started with the basic diesel example in <a href="https://github.com/actix/examples/tree/master/diesel">actix/examples/diesel</a> to bring up something with basic get/post features.</p>
+<ul><li>Dev Tooling
+<ul><li>Use <code>systemfd cargo-watch</code> to automatically rebuild your code and watch for change. <code>systemfd</code> works by creating a parallel process, and then works with conjunction with <code>cargo watch</code> to reload your app whenever you save. Sometimes the reload doesn&#39;t work as intended; I had a weird bug where I had to restart whenever I added a new endpoint.</li></ul></li></ul>
+
+<pre><code>  &gt; cargo install systemfd cargo-watch
+  &gt; systemfd --no-pid -s http::5000 -- cargo watch -x run
+  
+</code></pre>
+
+<p>I also created a tiny frontend to support the functionality. I also added an auth so that people. Ask me for the auth token if you&#39;d like to play with it!</p>
+<ul><li>Create:</li></ul>
+
+<pre><code>  &gt; curl -S -X POST --header &#34;Content-Type: application/json&#34; --data &#39;{&#34;text&#34;:&#34;Hello World!&#34;}&#39; http://localhost:8080/post --header &#39;Authorization: Bearer ######&#39;
+  
+  {&#34;id&#34;:&#34;3afdebd0-673f-4a93-96f0-69e2ab99c756&#34;,&#34;text&#34;:&#34;Hello World!&#34;}
+  
+</code></pre>
+<ul><li>Get:</li></ul>
+
+<pre><code>  &gt; curl -X GET http://localhost:8080/post/3afdebd0-673f-4a93-96f0-69e2ab99c756 --header &#39;Authorization: Bearer ######&#39;
+  
+  {&#34;id&#34;:&#34;3afdebd0-673f-4a93-96f0-69e2ab99c756&#34;,&#34;text&#34;:&#34;Hello World!&#34;}
+  
+</code></pre>
+<ul><li>List:</li></ul>
+
+<pre><code>  &gt; curl -X GET http://localhost:8080/post/list --header &#39;Authorization: Bearer ######&#39;
+  
+  [{&#34;id&#34;: &#34;3afdebd0-673f-4a93-96f0-69e2ab99c756&#34;, &#34;text&#34;: &#34;Hello World!&#34;}]
+  
+</code></pre>
+<ul><li>Delete</li></ul>
+
+<pre><code>&gt; curl -X DELETE http://localhost:8080/post/3afdebd0-673f-4a93-96f0-69e2ab99c756 --header &#39;Authorization: Bearer ######&#39;
+
+{&#34;id&#34;:&#34;3afdebd0-673f-4a93-96f0-69e2ab99c756&#34;,&#34;text&#34;:&#34;Hello World!&#34;}
+</code></pre>
+
+<h2 id="deployment" id="deployment">deployment</h2>
+
+<p>We dockerize our application and load it into gcp&#39;s container registry. Cool!</p>
+
+<pre><code>&gt; docker run gcr.io/rust-post/rust-post-crud:v1
+Starting server at: 127.0.0.1:8080
+</code></pre>
+
+<p>I clicked some buttons in the gcp UI, mapped the LoadBalancerIP to <code>A record</code>of my domain, and it just worked, live on rust.bwang.io.</p>
+
+<p><img src="https://i.snap.as/CXlsPLE6.png" alt=""/></p>
+
+<hr/>
+
+<p>Below are some notes I took when I was looking into rust, no idea where else to post it.</p>
+
+<p>Rust comes included with some nice modern tooling. <strong>Cargo</strong> is the dependency manager and build tool. <strong>Rustfmt</strong> is like gofmt, opinionated coding style across developers.</p>
+
+<p>I thought that it could also be a good opportunity to document and learn.</p>
+
+<h2 id="1-rust" id="1-rust">1. Rust</h2>
+
+<p>I&#39;m following the docs from <a href="https://doc.rust-lang.org/">doc.rust-lang.org</a> with references from other parts of the internet. There&#39;s also <a href="https://github.com/rust-lang/rustlings/">rustlings</a> and <a href="https://doc.rust-lang.org/stable/rust-by-example/">rust-lang/examples</a> that I&#39;m also looking at for code examples. Here&#39;s are some popular <a href="https://wiki.alopex.li/RustStarterKit2020#dev-tools">tooling</a>.</p>
+
+<h3 id="1-1-hello-world" id="1-1-hello-world">1.1 Hello World</h3>
+<ul><li>[x] <a href="https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html">Guessing game tutorial done</a></li></ul>
+
+<p>Do <code>cargo new</code> to intiate a project, and <code>cargo run</code> (builds if there are diffs and runs) to see what&#39;s up. The <code>cargo.toml</code> file is called the <a href="https://doc.rust-lang.org/cargo/reference/manifest.html">manifest</a>. You can use it as a dependency manager, add meta information, specify build details (path, tests, etc), etc. The cargo command takes advantage of this manifest file to coordinate more complex projects (as opposed to just using rustc).</p>
+
+<p>Other information:</p>
+<ul><li>Use <code>cargo check</code> to check your code to see if it compiles (faster than actually building). Builds debug executables are stored in <code>./target/debug</code>. Build release executables are stored in <code>./target/release</code></li>
+<li>The <code>main</code> function is the entry point into a program.</li>
+<li>Use <code>let</code> to assign variables. Variables are immutable by default, use <code>mut</code> to make a variable mutable. Apparently there are a lot of nice things for handling reading by references in rust. We&#39;ll see about that later.</li>
+<li><code>std::io::Result</code> is a type a user uses to handle exceptions. It has two states (enums <code>Ok</code> and <code>Err</code>), <code>.expect()</code> checks for the error and handles it somehow.</li>
+<li><code>std::cmp::Ordering</code> is another enum that returns <code>Less</code>, <code>Greater</code>, and <code>Equal</code> when you compare two values. The <code>match</code> expression uses a arms pattern, similar to case. This seems to be a pattern, you can combine Result and match for error handling. See below (note that <code>parse</code> is a method to convert type to an annotated type, in this case, u32):</li></ul>
+
+<pre><code>  // example 1
+  let guess: u32 = match guess.trim().parse() {
+      Ok(num) =&gt; num,
+      Err(_) =&gt; continue,
+  };
+  
+</code></pre>
+
+<h3 id="1-2-rust-concepts" id="1-2-rust-concepts">1.2 Rust Concepts</h3>
+
+<h4 id="1-2-1-mutability" id="1-2-1-mutability">1.2.1 Mutability</h4>
+
+<p>In rust, variables are immutable by default (aside: however, because rust allows variable shadowing, we can <a href="https://stackoverflow.com/questions/53235334/in-rust-whats-the-difference-between-shadowing-and-mutability">bind a variable twice</a> with a different value but at a different memory, we&#39;re basically creating a new variable). Mutating (<code>mut</code>) an instance in place maybe faster than creating a new instance at a different memory, but creating another instance might have higher clarity when writing code.</p>
+
+<p>Constants (<code>const</code>) are a little <a href="https://stackoverflow.com/questions/37877381/what-is-the-difference-between-immutable-and-const-variables-in-rust">different</a> from immutable variables (<code>let</code>). Constant types must be annotated and are evaluated at compile-time, whereas a <code>let</code> binding is about a run-time computed value.</p>
+
+<h4 id="1-2-2-data-types" id="1-2-2-data-types">1.2.2 Data types</h4>
+
+<p>Rust is a <em>statically typed</em> language so we know all the types of variables at compile time. Even when converting a variable to a different type (example 1), we need to annotate it.</p>
+
+<p>Rust has four primitive <strong>scalar</strong> types: integer (defaults to <code>i32</code>), floats (defaults to <code>f64</code>), bools, and characters. You can do basic mathematical operations on number types. <code>char</code> literals (4 bytes of a unicode scalar value) are specified with single quotes, string literals uses double quotes.</p>
+
+<p>Rust has two primitive <strong>compound</strong> types: tuples (fixed length, assorted types), arrays (fixed length, single type). Note that arrays are different from vectors (variable length).</p>
+
+<pre><code>// example 2
+
+// tuples
+let x: (i32, f64, u8) = (500, 6.4, 1);
+let first = x.0;
+
+// arrays
+let mut y: [i32; 3] = [0; 3];
+let first = y[0]
+</code></pre>
+
+<h4 id="1-2-3-functions" id="1-2-3-functions">1.2.3 Functions</h4>
+
+<p>For <strong>functions</strong>, I think is pretty standard. <code>()</code> evaluates to expressions where as <code>{}</code> is an expression (returns something). Statements have semicolons, expressions don&#39;t. Functions return the last expression implicitly.</p>
+
+<pre><code>// example 3
+
+fn function(x: i32) {
+    let y = {
+        let x = 3;
+        x + 1
+    };
+
+    // returns y implicitly
+}
+</code></pre>
+
+<h4 id="1-2-4-ownership" id="1-2-4-ownership">1.2.4 Ownership</h4>
+
+<p>Ownership is one of the key concepts of rust.</p>
+
+<p>For starters, a stack is a part of memory that&#39;s last in, first out, everything fixed size. When you exit a function, you&#39;re popping off plates off the stack, and all the variables with it. (C++ uses RAII, which is rust&#39;s <code>drop</code> function). A heap is for data with unknown size at compile time (for example, a string), and the heap returns some information (pointer, size, etc) to store on the stack.</p>
+
+<p>For rust, each value has an owner. There can only be one owner at a time. when the owner goes out of scope, the value is also gone with it. Let&#39;s say we have two variables referencing the same string:</p>
+
+<pre><code>// example 4
+
+// s1 not valid
+let s1 = String::from(&#34;hello&#34;);
+let s2 = s1;
+
+// s1 valid
+let s1 = String::from(&#34;hello&#34;);
+let s2 = s1.clone();
+</code></pre>
+
+<p>Traditionally, <code>s1</code> and <code>s2</code> point to the same reference. To ensure memory safety, rust no longer considers <code>s1</code> here valid after <code>s2</code> is created. There are no double memory free errors when there&#39;s a one to one relationship between references and resource. If we really wanted to, we can do a <code>.clone()</code> for heap variables to copy data.</p>
+
+<p>Likewise, for exiting and entering functions, the ownership of a heap variable changes, and the previous variable is decommissioned.</p>
+
+<p>The ownership of some stack variable, for example, integer or a memory reference, can still be used after the owernship changes. It doesn&#39;t use the <code>.drop()</code> function, it uses <code>.Copy()</code> instead.</p>
+
+<pre><code>// example 5
+
+fn main() {
+  let s = String::from(&#34;hello&#34;);
+  takes_ownership(s);
+  // s is no longer valid here
+  
+  let s1 = String::from(&#34;hello&#34;);
+  borrows_reference(&amp;s1)
+  // s is still valid here
+  
+}
+
+fn takes_ownership(some_string: String) {
+  println!(&#34;{}&#34;, some_string);
+}
+
+fn borrows_reference(some_string: String) {
+  s.len()
+}
+</code></pre>
+
+<p>But how do we use some heap variable after it enters a function? We can borrow the variable via reference. Because memory addresses (references) are stored on the stack and uses <code>.Copy()</code>, the ownership of the resource is still in the main function, nothing gets decommissioned. Pretty cool design.</p>
+
+<h4 id="1-2-5-slice-type" id="1-2-5-slice-type">1.2.5 Slice Type</h4>
+
+<p>This piece of code returns the first word in a string:</p>
+
+<pre><code>// example 6
+
+fn first_word(s: &amp;String) -&gt; &amp;str {
+    let bytes = s.as_bytes();
+    for (i, &amp;item) in bytes.iter().enumerate() {
+        if item == b&#39; &#39; {
+            return &amp;s[0..i];
+        }
+    }
+    &amp;s[..]
+}
+
+fn main() {
+    let mut s = String::from(&#34;hello world&#34;);
+    let word = first_word(&amp;s); // immutable reference
+    s.clear(); // error!
+    println!(&#34;the first word is: {}&#34;, word);
+}
+</code></pre>
+
+<p>It turns the string into an array of bytes, and then looks for the <code>b&#39; &#39;</code> byte, and returns the slice of a string. Notice that in the example above, <code>&amp;s</code> is an immutable reference to the string, and <code>s.clear()</code>is a mutable reference (modifies the value), and fails.</p>
+
+<p>Other information:</p>
+<ul><li>Rust uses snake case for functions and variable names.</li>
+<li>Double quotations <code>//</code> denotes the start of a comment.</li>
+<li>Control flows are also pretty self-explanatory. Truthiness for control flows must evaluate to a bool. Similar to golang. Rustacians prefer for loops due to safety and conciseness.</li>
+<li>References are not mutable by default, but it CAN be mutable ...</li>
+<li>“Only one person borrow at a time” to ensure no data races. You can have multiple immutable references to data, but you can only have one mutable reference to a piece of data. You also can&#39;t have a mutable reference while you have an immutable one.</li></ul>
+
+<pre><code>  // example 7
+  
+  let mut s = String::from(&#34;hello&#34;);
+  let r1 = &amp;mut s;
+  let r2 = &amp;mut s;
+  
+  // fails, simultaneous borrow
+  println!(&#34;{}, {}&#34;, r1, r2);
+  
+</code></pre>
+<ul><li>Dangling references: you can&#39;t have references to nothing; compile error.</li></ul>
+
+<h3 id="1-3-structs" id="1-3-structs">1.3 Structs</h3>
+
+<p>Structs are similar to tuples. Here&#39;s how you would create an instance of a struct:</p>
+
+<pre><code>// example 8
+
+struct User {
+	username: String,
+  email: String,
+  sign_in_count: u64,
+  active: bool,
+}
+
+let mut user1 = User {
+	email: String::from(&#34;someone@example.com&#34;),
+	username: String::from(&#34;someusername123&#34;),
+	active: true,
+	sign_in_count: 1,
+};
+
+user1.email = String::from(&#34;anotheremail@example.com&#34;);
+</code></pre>
+
+<p>If the instance is mutable, all the fields of a struct are mutable. You can also have tuple structs: no names, just types of the fields, but their types of are of the type defined by the struct.</p>
+
+<h4 id="1-3-1-example-with-structs" id="1-3-1-example-with-structs">1.3.1 Example with Structs</h4>
+
+<pre><code>// example 9
+
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    fn area(&amp;self) -&gt; u32 {
+        self.width * self.height
+    }
+
+    fn can_hold(&amp;self, other: &amp;Rectangle) -&gt; bool {
+        self.width &gt; other.width &amp;&amp; self.height &gt; other.height
+    }
+}
+
+fn main() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    let rect2 = Rectangle {
+        width: 10,
+        height: 40,
+    };
+    println!(&#34;rect1 is {:#?}&#34;, rect1);
+    println!(
+        &#34;The area of the rectangle is {} square pixels.&#34;,
+        rect1.area()
+    );
+
+    println!(&#34;Can rect1 hold rect2? {}&#34;, rect1.can_hold(&amp;rect2));
+}
+
+</code></pre>
+
+<p>Need to add <code>#[derive(Debug)]</code> so that Rectangle gets the Debug trait when printing structs. Traits are like interfaces. In this example, we also added two methods, the latter to use another Rectangle struct for the syntax.</p>
+
+<p>Other information:</p>
+<ul><li><code>{:#?}</code> for pretty formatting structs</li>
+<li>If you need to deference in C/C++, you need to use an –&gt; operator, but in rust, referencing and dereferencing is automatic.</li>
+<li>You don&#39;t need <code>&amp;self</code> as a parameter for methods; these are called associated functions.</li>
+<li>You can split up <code>impl</code> blocks</li></ul>
+
+<h3 id="1-4-enums" id="1-4-enums">1.4 Enums</h3>
+
+<p>Here&#39;s how the <a href="https://doc.rust-lang.org/std/net/enum.IpAddr.html">standard library</a> defines the enum for <code>IpAddr</code>:</p>
+
+<pre><code>// example 10
+
+struct Ipv4Addr {
+    // --snip--
+}
+
+struct Ipv6Addr {
+    // --snip--
+}
+
+pub enum IpAddrKind {
+    V4(Ipv4Addr),
+    V6(Ipv6Addr),
+}
+
+enum IpAddr {
+    V4(String),
+    V6(String),
+}
+
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+impl Message {
+    fn call(&amp;self) {
+            //
+        }
+    }
+
+let m = Message::Write(String::from(&#34;hello&#34;));
+m.call();
+</code></pre>
+
+<p>With this, we can define a function to take any <code>IpAddrKind</code>, like so: <code>fn route(ip_kind: IpAddrKind) {}</code>. We can also create instances of specific IpAddrKinds: <code>let four = IpAddrKind::V4;</code>. Within an Enum, we can have a wide variety of types, like <code>Message</code>, given above. You can also define methods on enums.</p>
+
+<p>You can use the <code>match</code> control flow operator on enums like in the random number guessing example. This allows the compile to confirm all possible cases are handled.</p>
+
+<h4 id="1-4-1-option" id="1-4-1-option">1.4.1 Option</h4>
+
+<p>There&#39;s a useful <code>Option</code> <a href="https://doc.rust-lang.org/std/option/enum.Option.html">enum</a> that you can use to define nullable objects. The <code>&lt;T&gt;</code> syntax is used to denote that the <code>Some</code> variant of the <code>Option</code> enum can hold one piece of data of any type. If we use <code>None</code> rather than <code>Some</code>, we need to tell rust what type of <code>Option&lt;t&gt;</code>.</p>
+
+<pre><code>// example 11
+
+enum Option&lt;T&gt; {
+    Some(T),
+    None,
+}
+
+let x: i8 = 5;
+let y: Option&lt;i8&gt; = Some(5);
+let sum = x + y;
+</code></pre>
+
+<p>The above code won&#39;t work because you can&#39;t add an <code>i8</code> to a value that might not be a <code>i8</code>.</p>
+
+<p>Other information:</p>
+<ul><li>A common pattern to handle nulls is to use <code>match</code> like so:</li></ul>
+
+<pre><code>  // example 12
+  
+  fn plus_one(x: Option&lt;i32&gt;) -&gt; Option&lt;i32&gt; {
+  	match x {
+  		None =&gt; None,
+  		Some(i) =&gt; Some(i + 1),
+  	}
+  }
+  
+  let five = Some(5);
+  let six = plus_one(five);
+  let none = plus_one(None);
+  
+</code></pre>
+<ul><li>You have to cover all the cases when matching enum, else compile error.</li>
+<li>You can use <code>_</code> to match any value that aren&#39;t specified before it.</li>
+<li>The following two pieces of code are the same. You can use <code>if let</code> to match one value. You can also do a <code>if let</code> and <code>else</code> to specify a non-trivial function for the <code>_</code> condition.</li></ul>
+
+<pre><code>  // example 13
+  
+  let some_u8_value = Some(0u8);
+  match some_u8_value {
+  	Some(3) =&gt; println!(&#34;three&#34;),
+  	_ =&gt; (),
+  }
+  
+  if let Some(3) = some_u8_value {
+  	println!(&#34;three&#34;);
+  }
+  
+</code></pre>
+
+<h3 id="1-5-project-management" id="1-5-project-management">1.5 Project Management</h3>
+
+<p>This is <a href="https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html">chapter 7</a> in the rust-lang book. Rust comes with the <em>module system</em> to manage your code&#39;s organization. <a href="https://www.youtube.com/watch?v=AN9FoZgLcFg&amp;ab_channel=Rust">More about it</a>. <code>cargo.toml</code> defines a package and contains information on how to build crates. The top level module is usually <code>main.rs</code> or <code>lib.rs</code> depending on if you&#39;re writing a program or library.</p>
+
+<p><strong>Packages</strong> are a cargo feature that lets you build, test, and share crates. You create a package with the command <code>cargo new</code>; it contains a cargo.toml that describes how to build crates. <strong>Crates</strong> are like bundled functionality for <strong>modules</strong>, mapping to a single executable. Everything is private by default including functions, modules, and structs.</p>
+
+<h4 id="1-5-1-use" id="1-5-1-use">1.5.1 Use</h4>
+
+<p>Here&#39;s an example of an <a href="https://github.com/RustScan/RustScan/blob/master/src/main.rs">actual project</a> I found on github that uses <code>mod</code> and <code>use</code>, <code>use</code> brings the module into scope.</p>
+
+<p>Use the <code>as</code> keyword to alias a new name, for example <code>use std::io::Result as IoResult;</code>. The name available in the new scope is by default private. Use <code>pub use</code>to make it public.</p>
+
+<p>You can use nested paths to put a bunch of use things together like so: <code>use std::{cmp::Ordering, io};</code> or <code>use std::io::{self, Write};</code> (<code>self</code> references itself). You can also use the glob operator to bring all public items into scope like so: <code>use std::collections::*;</code></p>
+
+<p>Put external packages into <code>Cargo.toml</code> under dependencies. A bunch of them are available at <a href="https://blog.bwang.io/notes-on-rust-part-1/crates.io">crates.io</a>. The standard library (e.g. <code>use std::collections:Hashmap;</code>) is automatically imported.</p>
+<ul><li>Start relative paths with the <code>super</code> keyword, e.g:</li></ul>
+
+<pre><code>  // example 14
+  
+  fn serve_order() {}
+  
+  mod back_of_house {
+      fn fix_incorrect_order() {
+          cook_order();
+          super::serve_order();
+      }
+      fn cook_order() {}
+  }
+  
+</code></pre>
+<ul><li>It&#39;s not idiomatic to bring the function to scope, only the module that has the function.</li></ul>
+
+<h3 id="1-6-standard-library" id="1-6-standard-library">1.6 Standard Library</h3>
+
+<h4 id="1-6-1-vector-example" id="1-6-1-vector-example">1.6.1 Vector Example</h4>
+<ul><li>Create: <code>let v: Vec&lt;i32&gt; = Vec::new();</code>. or <code>let v = vec![0];</code>
+<ul><li><code>vec!</code> is a macro for convenience</li></ul></li>
+<li>Add: <code>v.push(5);</code>
+<ul><li>note that push uses a mutable reference, so while this is happening you can&#39;t hold another reference</li>
+<li>Remember that variables are immutable by default</li></ul></li>
+<li>Drop: go out of scope</li>
+<li>Get:</li></ul>
+
+<pre><code>  // example 15
+  
+  let v = vec![1, 2, 3, 4, 5];
+  let third: &amp;i32 = &amp;v[2];
+  println!(&#34;The third element is {}&#34;, third);
+  
+  match v.get(2) {
+  	Some(third) =&gt; println!(&#34;The third element is {}&#34;, third),
+    None =&gt; println!(&#34;There is no third element.&#34;),
+  }
+  
+</code></pre>
+<ul><li>Iterating: <code>for i in &amp;v {}</code>or <code>for i in &amp;mut v {}</code> to change elements</li></ul>
+
+<p>You can use vectors in conjunction with enums to store data of multiple types:</p>
+
+<pre><code>// example 16
+
+enum SpreadsheetCell {
+	Int(i32),
+	Float(f64),
+	Text(String),
+}
+let row = vec![
+	SpreadsheetCell::Int(3),
+	SpreadsheetCell::Float(10.12),
+];
+</code></pre>
+
+<p>There is also an introduction to <a href="https://doc.rust-lang.org/book/ch08-02-strings.html">strings</a> and <a href="https://doc.rust-lang.org/book/ch08-03-hash-maps.html">hashmaps</a> in the rust-lang book but I figured one is enough. I can just google as I go along. I didn&#39;t expect this book to be this fucking long.</p>
+
+<h3 id="1-7-errors" id="1-7-errors">1.7 Errors</h3>
+
+<p>There are two classes of errors:</p>
+<ol><li><p>Recoverable errors</p>
+<ul><li>handle with <code>Result&lt;T, E&gt;</code> like how we have in the past.</li></ul></li>
+
+<li><p>Unrecoverable errors</p>
+<ul><li>calls <code>panic!</code></li></ul></li></ol>
+
+<p>You can use <code>unwrap</code> to <a href="https://learning-rust.github.io/docs/e4.unwrap_and_expect.html">directly</a> access the <code>Some()</code> value of a result. Likewise, you <code>expect</code> is the same but can also return a custom panic statement.</p>
+
+<p>Another super common pattern in rust is error propagation. The code below are the same. We can place the <code>?</code> operator after a <code>Result</code> value to return an Error value, else return an Ok value.</p>
+
+<pre><code>// example 17
+
+fn read_username_from_file() -&gt; Result&lt;String, io::Error&gt; {
+    let f = File::open(&#34;hello.txt&#34;);
+
+    let mut f = match f {
+        Ok(file) =&gt; file,
+        Err(e) =&gt; return Err(e),
+    };
+
+    let mut s = String::new();
+    match f.read_to_string(&amp;mut s) {
+        Ok(_) =&gt; Ok(s),
+        Err(e) =&gt; Err(e),
+    }
+}
+
+fn read_username_from_file() -&gt; Result&lt;String, io::Error&gt; {
+    let mut f = File::open(&#34;hello.txt&#34;)?;
+    let mut s = String::new();
+    f.read_to_string(&amp;mut s)?;
+    Ok(s)
+}
+
+fn read_username_from_file() -&gt; Result&lt;String, io::Error&gt; {
+    let mut s = String::new();
+    File::open(&#34;hello.txt&#34;)?.read_to_string(&amp;mut s)?;
+    Ok(s)
+}
+</code></pre>
+
+<p>Other information:</p>
+<ul><li>Attempting to access information that doesn&#39;t exist, for example, beyond the end of a vector, will also call <code>panic!</code></li>
+<li>Common pattern:<code>error.kind</code> returns an error enum which you can use to handle different types of errors.</li></ul>
+
+<pre><code>  // example 18
+  
+  let f = match f {
+    Ok(file) =&gt; file,
+    Err(error) =&gt; match error.kind() {
+      ErrorKind::NotFound =&gt; match File::create(&#34;hello.txt&#34;) {
+        Ok(fc) =&gt; fc,
+        Err(e) =&gt; panic!(&#34;Problem creating the file: {:?}&#34;, e),
+  	  },
+      other_error =&gt; {
+        panic!(&#34;Problem opening the file: {:?}&#34;, other_error)
+  	  }
+  	},
+  };
+  
+</code></pre>
+
+<h3 id="1-8-generics-traits-lifetimes" id="1-8-generics-traits-lifetimes">1.8 Generics, Traits, Lifetimes</h3>
+
+<p>Duplicating code is added work, looks shitty, and can lead to errors. One way to remove the duplication of code is to write reusable functions. But in a typed language, what if you wanted to have a function to handle multiple types? In our signature we can use a generic type <code>fn get_some&lt;T&gt;(list: &amp;[T]) -&gt; &amp;T {</code>. We can also define types in structs with the generic type; you can define single, multiple types like so:</p>
+
+<pre><code>// example 19
+
+struct Point&lt;T&gt; {
+    x: T,
+    y: T,
+}
+
+struct Point&lt;T, U&gt; {
+    x: T,
+    y: U,
+}
+</code></pre>
+
+<p>Similarly with structs, like with the <code>Option</code> enum, it&#39;s also possible to hold generic data types.</p>
+
+<p>Traits are a collection of methods defined for an unknown type; it&#39;s like generic types but for functions (it&#39;s really similar to interfaces, but there are a few differences). Here&#39;s an example in <a href="https://doc.rust-lang.org/rust-by-example/trait.html">rust-by-example</a> that I think is pretty good. <code>impl Trait</code> is straightforward for me, but there are more complex things you can do, described <a href="https://doc.rust-lang.org/book/ch10-02-traits.html">here</a>. There&#39;s a <code>where</code> clause and a <code>+</code> syntax.</p>
+
+<p>The scope of which that reference is valid (lifetime) is inferred in rust most of the time. Lifetime generics is created to prevent dangling references, which means that a program is trying to reference data other than the data it&#39;s intending to reference. The longest function below doesn&#39;t work, but the longest_2 function works. Why? We don&#39;t know whether we&#39;re returning a borrowed value <code>.as_str()</code>or not.</p>
+
+<pre><code>// example 20
+
+fn main() {
+    let string1 = String::from(&#34;abcd&#34;);
+    let string2 = &#34;xyz&#34;;
+
+    let result = longest(string1.as_str(), string2);
+    println!(&#34;The longest string is {}&#34;, result);
+}
+
+fn longest(x: &amp;str, y: &amp;str) -&gt; &amp;str {
+    if x.len() &gt; y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+fn longest_2&lt;&#39;a&gt;(x: &amp;&#39;a str, y: &amp;&#39;a str) -&gt; &amp;&#39;a str {
+    if x.len() &gt; y.len() {
+        x
+    } else {
+        y
+    }
+}
+</code></pre>
+
+<p>There&#39;s also rust lifetime <a href="https://doc.rust-lang.org/nomicon/lifetime-elision.html">elision rules/exceptions</a> so I&#39;m just omit that in my notes for now. If I find something interesting, I might write about it later.</p>
+
+<p>Other information</p>
+<ul><li>For generics, you&#39;ll need to make sure it works for all types, else you get a compile error</li>
+<li>Rust uses monomorphization which is the process of filling in specific types at compile time</li>
+<li>Most people use the name <code>&amp;&#39;a</code> when denoting a lifetime</li></ul>
+
+<h3 id="1-9-tests" id="1-9-tests">1.9 Tests</h3>
+
+<p>In this format:</p>
+
+<pre><code>fn prints_and_returns_10(a: i32) -&gt; i32 {
+    println!(&#34;I got the value {}&#34;, a);
+    10
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn this_test_will_pass() {
+        let value = prints_and_returns_10(4);
+        assert_eq!(10, value);
+    }
+}
+</code></pre>
+
+<p>Do <code>cargo test -- --test-threads=2 --show-output</code> to run all tests in the project with 2 threads. At the top level, it&#39;s customary to create a tests directory next to src. Cargo will know to look for integration tests in that directory.</p>
+
+<h3 id="1-10-sample-projects" id="1-10-sample-projects">1.10 Sample Projects</h3>
+
+<p>Reading from <a href="https://doc.rust-lang.org/book/ch12-00-an-io-project.html">this</a>, just writing some stuff down, nothing too comprehensive.</p>
+
+<h4 id="1-10-1-grep-project" id="1-10-1-grep-project">1.10.1 Grep Project</h4>
+<ul><li>use <code>std::env:args</code> to read command line arguments</li>
+<li>separate of concerns by having a <code>main.rs</code> and business logic in <code>lib.rs</code></li>
+<li>use <code>eprintln!</code> to print errors</li></ul>
+</div></article>
+
+		
+
+		
+		<footer dir="ltr"><hr><nav><p style="font-size: 0.9em">published with <a class="home pubd" href="https://write.as/">write.as</a></p></nav></footer>
+		
+
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	</body>
+	
+	
+		
+		
+	
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/posts/9aoah21bao686vym/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var pinning = false;
+function unpinPost(e, postID) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var $header = document.getElementsByTagName('header')[0];
+	var callback = function() {
+		
+		var $pinnedNavLink = $header.getElementsByTagName('nav')[0].querySelector('.pinned.selected');
+		$pinnedNavLink.style.display = 'none';
+		try { _paq.push(['trackEvent', 'Post', 'unpin', 'post']); } catch(e) {}
+	};
+
+	var $pinBtn = $header.getElementsByClassName('unpin')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/unpin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+				$pinBtn.style.display = 'none';
+				$pinBtn.innerHTML = 'Pin';
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'Unpin';
+			} else {
+				$pinBtn.innerHTML = 'Unpin';
+				alert("Failed to unpin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+
+var $form = document.getElementById('emailsub');
+if ($form != null) {
+	$form.onsubmit = function() {
+		var $sub = document.getElementById('subscribe-btn');
+		$sub.disabled = true;
+		$sub.value = 'Subscribing...';
+	}
+}
+
+	
+
+	
+	try { 
+	  var _paq = _paq || [];
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+	try { 
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {   }
+	</script>
+
+    
+</html>

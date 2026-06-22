@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Understanding SPACs · Who Makes Money and How to Spot a Bad Deal</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%231c1b19' stroke-width='2.5'/%3E%3Cpath d='M16 9 V23 M19.5 11.5 C19.5 11.5 18 10.5 16 10.5 C14 10.5 12.5 11.5 12.5 13 C12.5 16.5 19.5 15.5 19.5 19 C19.5 20.5 18 21.5 16 21.5 C14 21.5 12.5 20.5 12.5 20.5' fill='none' stroke='%231c1b19' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta name="description" content="A plain-English guide to SPACs: what blank-check companies are, who actually makes money on them, and how to tell a survivable deal from a doomed one.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --surface: #f5f2ec;
+    --surface-2: #eee9df;
+    --border: #e6e1d8;
+    --text: #1c1b19;
+    --muted: #6f6a62;
+    --green: #1f6f54;
+    --red: #b3382e;
+    --accent: #357BB3; /* structural accent (overridden site-wide by reading-theme.css) */
+    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.7 var(--serif);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 22px; }
+  p { margin: 0 0 1em; }
+  header { padding: 34px 0 0; margin-bottom: 8px; }
+  header .container { padding-bottom: 22px; border-bottom: 2px solid var(--text); }
+  .kick {
+    font-family: var(--sans); color: var(--accent); letter-spacing: .14em;
+    text-transform: uppercase; font-size: 12px; font-weight: 700;
+  }
+  h1 {
+    font-size: clamp(26px, 3.6vw, 38px); line-height: 1.12;
+    letter-spacing: -0.015em; margin: .2em 0 .3em; font-weight: 700;
+  }
+  .subtitle { font-size: 18px; line-height: 1.5; color: #3a3833; margin: 0 0 14px; max-width: 720px; }
+  .asof { font-family: var(--sans); font-size: 13.5px; color: var(--muted); }
+  section { margin: 44px 0; }
+  h2 { font-size: 23px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 .5em; }
+  .eyebrow {
+    font-family: var(--sans); color: var(--accent); letter-spacing: .14em;
+    text-transform: uppercase; font-size: 11px; font-weight: 700; margin: 0 0 6px;
+    padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 0; font-family: var(--sans); font-size: 13px; }
+  nav.toc a {
+    color: var(--text); text-decoration: none; font-weight: 600;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 5px 13px;
+  }
+  nav.toc a:hover { border-color: var(--text); }
+  nav.outline {
+    position: fixed; top: 120px; right: max(22px, calc(50vw - 705px)); left: auto; width: 175px;
+    font-family: var(--sans); font-size: 12px; line-height: 1.45;
+  }
+  nav.outline a {
+    display: block; color: var(--muted); text-decoration: none;
+    padding: 4px 0 4px 12px; border-left: 2px solid var(--border);
+  }
+  nav.outline a.sub { padding-left: 26px; }
+  nav.outline a:hover { color: var(--text); }
+  nav.outline a.active { color: var(--accent); font-weight: 700; border-left-color: var(--accent); }
+  @media (max-width: 1330px) { nav.outline { display: none; } }
+  @media (min-width: 1331px) { nav.toc { display: none; } }
+  h3 { font-size: 18px; font-weight: 700; margin: 1.6em 0 .4em; letter-spacing: -0.01em; }
+  .section-note { margin: 0 0 1em; }
+  .bigstat { text-align: center; margin: 22px 0 26px; }
+  .bigstat .value { font-size: 34px; font-weight: 700; line-height: 1; color: var(--accent); }
+  .bigstat .label {
+    font-family: var(--sans); color: var(--muted); font-size: 12.5px;
+    margin: 7px auto 0; line-height: 1.4; max-width: 430px;
+  }
+  .value.up { color: var(--green); }
+  .value.down { color: var(--red); }
+  .chart-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 9px; padding: 18px; margin: 16px 0 28px;
+  }
+  table {
+    width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 14px;
+    font-variant-numeric: tabular-nums; margin: 16px 0 28px;
+  }
+  th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--border); }
+  th {
+    color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.04em; border-bottom: 1.5px solid var(--text);
+  }
+  td.num, th.num { text-align: right; }
+  tbody tr:hover td { background: var(--surface); }
+  .pos { color: var(--green); font-weight: 600; }
+  .neg { color: var(--red); font-weight: 600; }
+  .pill {
+    font-family: var(--sans); display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.03em; vertical-align: middle;
+    background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+  }
+  .wt {
+    font-family: var(--sans); display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .wt-high { background: var(--text); color: var(--bg); border: 1px solid var(--text); }
+  .wt-med { background: transparent; color: var(--text); border: 1px solid var(--text); }
+  .wt-low { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  .callout {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 14px 18px; margin: 22px 0; font-size: 15.5px; line-height: 1.6;
+  }
+  .callout strong { color: var(--text); }
+  ul.caveats { margin: 12px 0 28px; padding-left: 1.1em; color: var(--muted); font-size: 15px; line-height: 1.65; }
+  ul.caveats li { margin: .35em 0 .6em; }
+  sup a { font-family: var(--sans); font-size: 0.72em; color: var(--accent); text-decoration: none; }
+  .sources a { color: var(--accent); text-decoration: underline; text-decoration-color: #b9b3a8; text-underline-offset: 2px; }
+  .sources a:hover { text-decoration-color: var(--accent); }
+  .sources li { margin-bottom: 6px; font-family: var(--sans); font-size: 13.5px; }
+  .sources { padding-left: 1.3em; }
+  footer {
+    margin-top: 56px; padding: 24px 0 48px; border-top: 1px solid var(--border);
+    color: var(--muted); font-family: var(--sans); font-size: 13.5px; line-height: 1.55;
+  }
+  @media (max-width: 640px) {
+    th, td { padding: 8px 6px; font-size: 13px; }
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="kick">Market Research · SPACs</div>
+    <h1>Understanding SPACs</h1>
+    <p class="subtitle">What blank-check companies are, who actually makes money on them, and how to tell a survivable deal from a doomed one.</p>
+    <span class="asof">Research compiled June 12, 2026 · figures from the cited academic studies; study periods differ</span>
+  </div>
+</header>
+
+<nav class="outline" aria-label="Outline">
+  <a href="#basics">The basics</a>
+  <a class="sub" href="#lifecycle">The lifecycle</a>
+  <a href="#returns">1 · The returns evidence</a>
+  <a class="sub" href="#seats">Who sits where</a>
+  <a class="sub" href="#dilution">Why holding loses</a>
+  <a class="sub" href="#profitable">The "profitable" question</a>
+  <a href="#arbitrage">2 · The arbitrage trade</a>
+  <a class="sub" href="#warrants">Warrants</a>
+  <a class="sub" href="#howto">Doing it in practice</a>
+  <a href="#predictors">3 · What predicts returns</a>
+  <a href="#casestudy">4 · The case study</a>
+  <a class="sub" href="#scorecard">The scorecard</a>
+  <a href="#scams">5 · Useful or scam?</a>
+  <a class="sub" href="#fraud">Fraud tells</a>
+  <a class="sub" href="#badstructure">Legal-but-bad tells</a>
+  <a class="sub" href="#verdict">Scam or inefficient?</a>
+  <a href="#marketnow">6 · The market now</a>
+  <a href="#sources">Sources</a>
+</nav>
+
+<main class="container">
+
+  <section id="basics">
+    <h2>What is a SPAC?</h2>
+    <p class="section-note">
+      A <strong>SPAC</strong> (Special Purpose Acquisition Company) is a shell company with no business
+      operations. It exists to raise money through an IPO and then merge with a private company. The
+      merger takes the private company public without a traditional IPO. SPACs are called
+      <em>"blank-check companies"</em> because investors fund them before knowing the acquisition
+      target.
+    </p>
+    <div class="callout">
+      <strong>The thesis of this page:</strong> whether a SPAC is a good investment depends on which
+      seat you hold, and the only reliably great seat is the sponsor's. Sponsors averaged +619% per
+      completed deal, paid even when the company flopped. Public shareholders who held through the
+      merger lost, because dilution removes roughly half the cash behind each $10 share (Parts&nbsp;1
+      and&nbsp;3). The one public-side exception is the pre-merger arbitrage, a floor-protected trade
+      that earns the trust yield plus a free option (Part&nbsp;2). The disclosed numbers separate the
+      survivable deals from the doomed ones before the merger closes (Parts&nbsp;4–5).
+    </div>
+    <nav class="toc" aria-label="Contents">
+      <a href="#returns">The returns evidence</a>
+      <a href="#arbitrage">The arbitrage trade</a>
+      <a href="#predictors">What predicts returns</a>
+      <a href="#casestudy">The case study</a>
+      <a href="#scams">Useful or scam?</a>
+      <a href="#marketnow">The market now</a>
+      <a href="#sources">Sources</a>
+    </nav>
+
+    <h3 id="lifecycle">The lifecycle</h3>
+    <table>
+      <thead>
+        <tr><th>Stage</th><th>What happens</th><th>Your position</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1 · IPO</strong></td>
+          <td>The SPAC sells units to the public, almost always at $10. A unit is usually a share plus a
+          fraction of a warrant, the right to buy another share later at a fixed price, usually $11.50.
+          The cash goes into a trust account.</td>
+          <td>Cash in trust backs your shares at ~$10</td>
+        </tr>
+        <tr>
+          <td><strong>2 · The hunt</strong></td>
+          <td>The sponsors, the people who created the SPAC, have a deadline of usually 18–24 months to
+          find a private company to acquire. Their pay is the "promote": a nearly free stake of about
+          20% of the SPAC's shares, worthless unless a deal closes.</td>
+          <td>You hold a claim on the trust plus a free option on the deal</td>
+        </tr>
+        <tr>
+          <td><strong>3 · The merger ("de-SPAC")</strong></td>
+          <td>If shareholders approve, the SPAC merges with the target and SPAC shares become shares of
+          the new public company.</td>
+          <td>Before the vote you may <strong>redeem</strong>: return your shares for your portion of the trust, roughly $10, instead of riding along</td>
+        </tr>
+        <tr>
+          <td><strong>4 · Liquidation</strong></td>
+          <td>If no deal happens by the deadline, the trust is returned to shareholders.</td>
+          <td>You get ~$10 back plus interest</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="returns">
+    <div class="eyebrow">Part 1 · The returns evidence</div>
+    <h2>Who makes money on SPACs</h2>
+    <p class="section-note">
+      SPAC returns sort by seat, not by deal. Pre-merger shares have been a reliably decent trade.
+      Post-merger shares have been a reliably bad one. Sponsors won either way. The first table shows
+      the returns by strategy; the second shows who fills each seat.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Strategy</th><th class="num">Return</th><th>Evidence</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Buy at IPO, exit at merger or liquidation</strong> ("SPAC arbitrage")</td>
+          <td class="num pos">+23.9%/yr</td>
+          <td>Equally weighted annualized return across 458 SPAC IPOs, 2010–2020. The trust floor meant
+          even the worst SPAC in the sample returned +0.51%/yr.<sup><a href="#sources">[2]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>Hold through the merger, one year</strong></td>
+          <td class="num neg">−11.3%</td>
+          <td>Average one-year buy-and-hold return on post-merger shares, vs <span class="pos">+19.4%</span>
+          for the broad market over the same periods, about 31 points of
+          underperformance.<sup><a href="#sources">[2]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>Hold through merger · 2019–20 cohort, 3 months</strong></td>
+          <td class="num neg">−14.5%</td>
+          <td>Median post-merger return. Six- and twelve-month figures were progressively
+          worse.<sup><a href="#sources">[1]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>Hold through merger · bubble cohort (Jul 2020–Dec 2021)</strong></td>
+          <td class="num neg">−62%</td>
+          <td>Average return to December 2022 across 243 mergers, about 26 points worse than comparable
+          traditional IPOs.<sup><a href="#sources">[3]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>Be the sponsor</strong></td>
+          <td class="num pos">+619%</td>
+          <td>Average sponsor gain of ~$51M per completed deal.<sup><a href="#sources">[2]</a></sup></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 id="seats">Who sits where</h3>
+    <p class="section-note" style="margin-bottom:10px">
+      Each seat at the SPAC table has different economics. This table is the page's thesis in one view.
+      Retail ownership concentrates in the post-announcement and post-merger window, which is the losing
+      seat.<sup><a href="#sources">[20]</a></sup>
+    </p>
+    <table>
+      <thead>
+        <tr><th>Seat</th><th>What they get</th><th>When they leave</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Sponsor</strong></td>
+          <td>The ~20% promote nearly free, plus founder warrants. Average gain +619% per completed
+          deal.<sup><a href="#sources">[2]</a></sup></td>
+          <td>Locked up after the merger, but profits even on deals where public shareholders lose</td>
+        </tr>
+        <tr>
+          <td><strong>IPO-stage hedge funds</strong></td>
+          <td>Treasury yield, the redemption floor, and free warrants: the pre-merger arbitrage
+          trade.<sup><a href="#sources">[2]</a></sup></td>
+          <td>Redeem or sell at the merger; the median 2019–20 SPAC saw 73% of public shares
+          go<sup><a href="#sources">[1]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>PIPE investors</strong></td>
+          <td>Entry at the $10 deal price, sometimes at a discount, with size and information
+          advantages</td>
+          <td>After the merger, often early via registered shares</td>
+        </tr>
+        <tr>
+          <td><strong>Target and its VCs</strong></td>
+          <td>A public listing with speed and price certainty, and (pre-2024) marketable projections.
+          The structure's costs land elsewhere.<sup><a href="#sources">[2]</a>,<a href="#sources">[4]</a></sup></td>
+          <td>Lockups, typically about six months</td>
+        </tr>
+        <tr>
+          <td><strong>Post-announcement retail</strong></td>
+          <td class="neg">The story. This seat absorbs the dilution that every other seat
+          avoids.<sup><a href="#sources">[20]</a></sup></td>
+          <td>Last in, and most often still holding through the merger</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 id="dilution">Why holding through the merger loses: dilution</h3>
+    <div class="chart-wrap" style="height:260px"><canvas id="chartHold"></canvas></div>
+    <div class="bigstat"><div class="value down">$4.10</div><div class="label">Mean net cash per $10 share delivered at merger in Klausner &amp; Ohlrogge's 2019–20 sample (median $5.70).</div></div>
+    <p class="section-note">
+      A $10 SPAC share does not deliver $10 to the merged company. The sponsor's free 20% equity stake
+      (the "promote"), underwriting fees, and warrant overhang consumed most of it: the SPACs in Klausner
+      and Ohlrogge's 2019–20 sample delivered a mean of $4.10 in net cash per $10 share by the time the
+      merger closed.<sup><a href="#sources">[1]</a></sup> Their follow-up study of the bubble cohort
+      measured the same drain, about 36% of pre-merger equity, and found that net cash per share predicted
+      the post-merger crash almost one-for-one.<sup><a href="#sources">[3]</a></sup> The total cost
+      comparison: going public via SPAC cost the median company about <strong>15.1% of post-issue market
+      cap, versus 3.2%</strong> for a traditional IPO.<sup><a href="#sources">[2]</a></sup>
+    </p>
+    <p class="section-note">
+      Institutional investors exit before bearing these costs. In the 2019–20 sample the median SPAC saw
+      <span class="neg">73%</span> of public shares redeemed before the merger, and over a third of SPACs
+      had redemptions above 90%.<sup><a href="#sources">[1]</a></sup> The losses concentrate on whoever
+      stays in.
+    </p>
+
+    <h3 id="profitable">"Can I invest in a profitable SPAC?"</h3>
+    <div class="callout">
+      <strong>A SPAC is never profitable.</strong> It has no revenue, no products, and no operations. It
+      holds cash in a trust. You cannot screen for "profitable SPACs" the way you screen for profitable
+      companies. The question becomes answerable once a target is announced, and then it applies to the
+      target: most have been early-stage and unprofitable, and avoiding a traditional IPO's stricter
+      scrutiny is often why they chose a SPAC. The pre-merger economics are Part&nbsp;2; the post-merger
+      economics are the dilution math above.
+    </div>
+  </section>
+
+  <section id="arbitrage">
+    <div class="eyebrow">Part 2 · The arbitrage trade</div>
+    <h2>How the pre-merger trade works</h2>
+    <p class="section-note">
+      The +23.9%/yr figure in Part&nbsp;1 comes from one repeatable trade.<sup><a href="#sources">[5]</a></sup>
+      Buy units at or below the pro-rata trust value. The trust holds Treasuries, so the position pays a
+      Treasury-like yield with a hard floor. Every announced deal adds a free option: if the market likes
+      the target and the price rises above trust value, sell into the rise; if it does not, redeem for
+      the trust value at the merger vote, or collect the cash at liquidation. Hedge funds run this at
+      scale.
+    </p>
+    <div class="bigstat"><div class="value">$10.05+</div><div class="label">Typical overfunded trust level in the 2025–26 market. Sponsors now deposit more than $10 per unit to raise the redemption floor, often instead of issuing warrants.<sup><a href="#sources">[18]</a></sup></div></div>
+    <p class="section-note">
+      The trade is real but the edge is thin today. From 2022 to 2024 returns ran close to T-bills plus a
+      small spread, and the Robinson pre-merger SPAC ETF (SPAX) liquidated in early 2025 because the
+      spread barely cleared its fees.<sup><a href="#sources">[17]</a></sup> The CrossingBridge Pre-Merger
+      SPAC ETF (ticker SPC) still runs the strategy, buying only at or below trust value and exiting
+      before mergers complete.<sup><a href="#sources">[16]</a></sup> Deal-announcement premiums returned
+      in 2025 as the market revived, which restored some value to the option half of the trade.
+    </p>
+
+    <h3 id="warrants">The warrant, separately</h3>
+    <p class="section-note">
+      Units split after the IPO, and the share and the warrant trade separately. The warrant is the
+      speculative half of the unit: the right to buy a share at $11.50, typically for five years after
+      the merger. It can be worth a few dollars while the share sits at $10 because it is a long-dated
+      option on the deal working out. Two retail traps live here. Nearly all SPAC warrants carry an
+      early-redemption clause: if the stock holds above a trigger, usually $18, the company can call the
+      warrants for as little as $0.01 on 30 days' notice, and holders who miss the notice lose nearly
+      the entire position.<sup><a href="#sources">[13]</a></sup> And if the SPAC liquidates instead of
+      merging, warrants expire worthless; only the shares get the trust money
+      back.<sup><a href="#sources">[14]</a></sup>
+    </p>
+
+    <h3 id="howto">Doing it in practice</h3>
+    <table>
+      <thead>
+        <tr><th>Step</th><th>Mechanics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Screen</strong></td>
+          <td>SPACInsider and ListingTrack publish live tables of every SPAC's trust value per share,
+          premium or discount to trust, and deal
+          deadline.<sup><a href="#sources">[6]</a>,<a href="#sources">[19]</a></sup> The trade only
+          works at or below trust value.</td>
+        </tr>
+        <tr>
+          <td><strong>Buy</strong></td>
+          <td>Shares and units trade like any stock. Buying at a discount to trust locks in the yield to
+          deadline. The deal option comes free.</td>
+        </tr>
+        <tr>
+          <td><strong>Redeem</strong></td>
+          <td>Redemption goes through your broker's corporate-actions desk, not the trading screen.
+          Brokers set internal cutoffs, commonly two business days before the official deadline, and the
+          last day to buy and still redeem is about two business days before that deadline. Cash arrives
+          two to three business days after the vote.<sup><a href="#sources">[15]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>Or sell</strong></td>
+          <td>If the announcement lifts the price above trust value, selling on the market captures the
+          option value without the redemption process.</td>
+        </tr>
+        <tr>
+          <td><strong>Taxes</strong></td>
+          <td>Redemption is a sale: the difference between the redemption payment and what you paid is a
+          capital gain or loss, short- or long-term by holding period.<sup><a href="#sources">[23]</a></sup>
+          One trap: a pre-deal SPAC has no operations, so a SPAC incorporated offshore (many use the
+          Cayman Islands) usually meets the definition of a PFIC, which can convert gains to ordinary
+          income unless you file the right election. The proxy's tax section states whether this
+          applies.<sup><a href="#sources">[23]</a></sup></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>The honest economics today:</strong> a Treasury-like yield, a small spread, and a free
+      option, in exchange for locked-up cash, broker friction, and taxes. The 2010–2020
+      sample's +23.9%/yr included a once-in-history bubble. The repeatable part of the trade is the
+      floor, not that number.
+    </div>
+  </section>
+
+  <section id="predictors">
+    <div class="eyebrow">Part 3 · What predicts returns</div>
+    <h2>The factors, ranked by evidence</h2>
+    <p class="section-note" style="margin-bottom:10px">
+      Researchers have tested most of the intuitive candidates. <strong>Weight</strong> is how strongly
+      the factor predicts post-merger returns in the cited studies.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Factor</th><th>What the evidence shows</th><th>Weight</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Net cash per share (dilution)</td>
+          <td>The strongest predictor. Post-merger share value tracks the Part&nbsp;1 net-cash figure
+          nearly one-for-one. Shareholders bear essentially the entire cost of the structure. A deal with
+          a small promote, few warrants, and a large PIPE (private investment in public equity: outside
+          money committed at the deal price) keeps more value behind each
+          share.<sup><a href="#sources">[3]</a></sup></td>
+          <td><span class="wt wt-high">High</span></td>
+        </tr>
+        <tr>
+          <td>Redemption rate</td>
+          <td>Higher redemptions predict lower post-merger returns.<sup><a href="#sources">[2]</a></sup>
+          They signal a weak target and mechanically worsen dilution for the shareholders who remain.</td>
+          <td><span class="wt wt-high">High</span></td>
+        </tr>
+        <tr>
+          <td>Deadline pressure</td>
+          <td>Deals completed close to the SPAC's expiration perform worse. Sponsors facing total loss of
+          their promote will close a mediocre deal rather than no deal.<sup><a href="#sources">[2]</a></sup></td>
+          <td><span class="wt wt-med">Medium</span></td>
+        </tr>
+        <tr>
+          <td>Target fundamentals</td>
+          <td>Post-merger returns are lower for targets with under $100M in trailing revenue, and lower
+          still for unprofitable ones. Profitability matters; it applies to the target, not the
+          SPAC.<sup><a href="#sources">[2]</a></sup></td>
+          <td><span class="wt wt-med">Medium</span></td>
+        </tr>
+        <tr>
+          <td>Sponsor quality</td>
+          <td>A weak predictor. Sponsors affiliated with billion-dollar funds or former Fortune&nbsp;500
+          executives perform better than average and negotiate less dilutive terms, but many of their
+          SPACs still lost money, and after controlling for net cash per share, sponsor quality adds
+          little predictive power.<sup><a href="#sources">[1]</a>,<a href="#sources">[3]</a></sup></td>
+          <td><span class="wt wt-low">Low</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>Summary:</strong> holding through a merger requires all of these to line up at once: low
+      dilution, low redemptions, a deal done early in the window, a profitable target with real revenue,
+      and a credible sponsor. Miss one and the structure favors every other party at the table. The
+      pre-merger arbitrage (Part&nbsp;2) is the only public-side trade the evidence actually favors.
+    </div>
+  </section>
+
+  <section id="casestudy">
+    <div class="eyebrow">Part 4 · The case study</div>
+    <h2>Case study: DraftKings vs Lordstown</h2>
+    <p class="section-note">
+      Both were hyped 2020 SPAC mergers in hot sectors. One trades around three times its $10 trust value
+      six years later; the other was bankrupt within three years. Every signal that separated them was
+      visible in the announcement-day filings. The tables below score both deals using only information
+      available at announcement.
+    </p>
+
+    <h3>The two deals at announcement</h3>
+    <table>
+      <thead>
+        <tr><th></th><th>DraftKings · Diamond Eagle</th><th>Lordstown · DiamondPeak</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Announced</strong></td>
+          <td>December 2019</td>
+          <td>August 2020</td>
+        </tr>
+        <tr>
+          <td><strong>The SPAC</strong></td>
+          <td>$400M IPO (May 2019), the fifth "Eagle" SPAC from media dealmakers Harry Sloan and
+          Jeff Sagansky<sup><a href="#sources">[9]</a></sup></td>
+          <td>$250M IPO (March 2019) targeting "a business with a real estate related component";
+          sponsor David Hamamoto, a real-estate executive<sup><a href="#sources">[10]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>The deal</strong></td>
+          <td>~$3.3B three-way merger with sportsbook platform SBTech; $304M PIPE from Capital Research,
+          Wellington, and Franklin Templeton<sup><a href="#sources">[9]</a></sup></td>
+          <td>~$1.6B pro forma equity value; $500M PIPE including $75M from General Motors, partly
+          in-kind<sup><a href="#sources">[10]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>The target</strong></td>
+          <td>~$323M of 2019 revenue, millions of paying customers, an eight-year operating history</td>
+          <td>Zero revenue, no production line, one prototype truck, and 100,000 claimed pre-orders,
+          disclosed as non-binding</td>
+        </tr>
+        <tr>
+          <td><strong>Outcome</strong></td>
+          <td class="pos">Closed April 2020 with 99.7% approval and negligible redemptions; peaked near
+          $74 in March 2021; traded near $30 in June 2026, roughly +200% from trust value</td>
+          <td class="neg">Peaked near $32 in September 2020, before the merger even closed in October;
+          a March 2021 Hindenburg report found the pre-orders largely fictitious; the CEO resigned June
+          2021; Chapter&nbsp;11 followed in June 2023; the SEC charged it with misleading investors
+          (settled via $25.5M disgorgement); the leftover shell trades around
+          $2<sup><a href="#sources">[11]</a>,<a href="#sources">[12]</a></sup></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 id="scorecard">Scoring the factors at announcement time</h3>
+    <table>
+      <thead>
+        <tr><th>Factor</th><th>DraftKings</th><th>Lordstown</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Target fundamentals</td>
+          <td><span class="pos">Real revenue, real customers</span></td>
+          <td><span class="neg">Pre-revenue, pre-product</span></td>
+        </tr>
+        <tr>
+          <td>Verifiability</td>
+          <td><span class="pos">Audited revenue, auditable user counts</span></td>
+          <td><span class="neg">Demand evidence was non-binding letters of intent, disclosed as such in
+          the filings</span></td>
+        </tr>
+        <tr>
+          <td>Sponsor–target fit</td>
+          <td><span class="pos">Serial media/consumer SPAC sponsors on their fifth deal</span></td>
+          <td><span class="neg">A real-estate SPAC pivoting to an EV startup</span></td>
+        </tr>
+        <tr>
+          <td>Deadline pressure</td>
+          <td><span class="pos">Deal struck ~7 months into the SPAC's window</span></td>
+          <td><span class="neg">~17 months into a 24-month window, off the original thesis</span></td>
+        </tr>
+        <tr>
+          <td>What the pitch leaned on</td>
+          <td><span class="pos">An existing revenue ramp plus state-by-state legalization</span></td>
+          <td><span class="neg">Projections from zero revenue, the kind the SEC stripped of safe-harbor
+          protection in 2024</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>The factor that did not separate them: dilution.</strong> Lordstown delivered about $4.11
+      of cash per $10 share, deep dilution typical of the era.<sup><a href="#sources">[24]</a></sup>
+      DraftKings was no better: its SPAC supplied roughly $700M of cash for about 22% of the company,
+      barely $2 behind each share.<sup><a href="#sources">[25]</a></sup> Net cash per share is the
+      dominant predictor across hundreds of deals (Part&nbsp;3), but here both sides were badly diluted,
+      so it was not the discriminator. The target was. Dilution is the headwind every holder fights; a
+      real business overcomes it, and a fake one cannot be saved from it.
+    </div>
+    <div class="callout">
+      <strong>Two caveats.</strong> Hindsight bias is a fair objection. The answer to it is that every
+      signal in the table sat in the announcement-day filings. Timing is the second caveat: Lordstown
+      tripled after its announcement and did not collapse until the Hindenburg report, five months after
+      closing. The checklist identifies what to avoid holding. It does not predict when the price will
+      correct.
+    </div>
+  </section>
+
+  <section id="scams">
+    <div class="eyebrow">Part 5 · Useful or scam?</div>
+    <h2>How to spot a bad one</h2>
+    <p class="section-note">
+      Outright scams are the rare case. The more common danger is a SPAC that is legal but structurally
+      built to transfer your money to the sponsor. Both have tells. One habit covers nearly everything:
+      <strong>read the filings on <a class="sec" href="https://www.sec.gov/edgar" style="color:var(--accent)">SEC EDGAR</a></strong>,
+      the S-1 for the SPAC itself and the merger proxy or S-4 once a deal is announced. The proxy contains
+      the honest version of every number in the pitch deck, including the dilution table and the sponsor's
+      compensation. Scams survive on people not reading these.
+    </p>
+
+    <h3 id="fraud">Actual-fraud tells</h3>
+    <p class="section-note" style="margin-bottom:10px">
+      Real frauds share recognizable features. Nikola's founder was convicted of fraud after its SPAC
+      merger. Akazoo largely fabricated its user base. The pattern:
+    </p>
+    <table>
+      <thead>
+        <tr><th>Tell</th><th>What it looks like</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Unverifiable numbers</strong></td>
+          <td>Revenue claims with no audited financials, customers that are "letters of intent" rather
+          than contracts, products that are demos rather than shipping. Nikola famously rolled a truck
+          down a hill for a promo video.</td>
+        </tr>
+        <tr>
+          <td><strong>Wild projections</strong></td>
+          <td>Before 2024, de-SPAC targets could legally market projections a traditional IPO could never
+          publish. Five years of 100%+ growth from near-zero revenue was a hallmark of the worst deals.
+          The SEC closed most of this loophole in 2024.<sup><a href="#sources">[7]</a></sup> Treat any
+          projection-heavy pitch as a flag.</td>
+        </tr>
+        <tr>
+          <td><strong>Promotion over disclosure</strong></td>
+          <td>You learned about it from social media hype, a celebrity endorsement, or a YouTube channel
+          rather than its filings. The SEC issued a 2021 investor alert specifically warning against
+          buying SPACs because a celebrity is attached.</td>
+        </tr>
+        <tr>
+          <td><strong>Evasive or recycled sponsors</strong></td>
+          <td>Search the sponsor on EDGAR and in news archives. Serial sponsors with prior blown-up deals,
+          regulatory actions, or penny-stock histories are exactly who the 1980s blank-check rules were
+          written for.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 id="badstructure">Legal-but-bad tells</h3>
+    <p class="section-note">
+      Most investor losses come from legal structures, not fraud. Four of the tells are the Part&nbsp;3
+      predictors read straight from the filings: net cash per share far below $10 in the proxy's dilution
+      table, heavy redemptions (announced before closing), a deal struck near the deadline, and a
+      pre-revenue target.<sup><a href="#sources">[1]</a>,<a href="#sources">[2]</a>,<a href="#sources">[3]</a></sup>
+      The fifth is skin in the game. Did the sponsor buy meaningful shares at $10 alongside you? Did a
+      credible PIPE invest at the deal price? Did the sponsor forfeit part of its promote or extend its
+      lockup? Aligned sponsors do these things; extractive ones don't.
+    </p>
+
+    <div class="callout">
+      <strong>When a SPAC is useful:</strong> a credible sponsor with relevant operating experience takes
+      a real-revenue company public on disciplined terms, with low dilution and investors who chose to
+      stay in. Dilution, desperation, or hype turns it into a wealth-transfer machine. Either way, no
+      legitimate deal requires you to give up your redemption right early.
+    </div>
+
+    <h3 id="verdict">So are SPACs scams, or just inefficient?</h3>
+    <p class="section-note">
+      SPACs benefit more than one party, so the premise needs one correction. The Part&nbsp;1 seat table
+      shows it: the sponsor, the IPO-stage funds, and the target all get paid, and the structure's costs
+      land on the shareholder who holds through the
+      merger.<sup><a href="#sources">[2]</a>,<a href="#sources">[4]</a></sup> Retail investors who bought
+      after a deal announcement disproportionately filled that seat.<sup><a href="#sources">[20]</a></sup>
+    </p>
+    <p class="section-note">
+      The accurate verdict is inefficiency, not fraud. A scam requires deception, and the SPAC's costs are
+      disclosed: the promote, the warrants, and the dilution table are all in the proxy. Klausner and
+      Ohlrogge describe the costs as <em>obscured</em>: legal, printed, and systematically ignored, which
+      is how the market mispriced the structure for a decade.<sup><a href="#sources">[1]</a></sup> An
+      inefficient structure persists as long as its losing seat keeps being refilled with less-informed
+      money. The 2020–21 bubble was that dynamic at maximum scale. The bust, the redemption snap-back,
+      and the 2024 SEC rules repriced it.
+    </p>
+    <div class="callout">
+      <strong>The verdict:</strong> the structure is inefficient by design, and individual deals are
+      sometimes scams. Disclosed dilution you did not read is inefficiency. Lordstown-style
+      misrepresentation is fraud, and it gets prosecuted as fraud. The difference is whether your losses
+      came from the proxy you skipped or from a lie.
+    </div>
+  </section>
+
+  <section id="marketnow">
+    <div class="eyebrow">Part 6 · The market now</div>
+    <h2>The market now (2024–2026)</h2>
+    <p class="section-note" style="margin-bottom:10px">
+      The revival is larger than "partial." SPAC volume has grown each year since the bust, and in early
+      2026 SPACs are again the majority of US IPO activity by count.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Period</th><th class="num">SPAC IPOs</th><th class="num">Raised</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>2024</strong></td>
+          <td class="num">57</td>
+          <td class="num">~$9.7B</td>
+          <td>About 23% of US IPO proceeds; Q4 was the strongest quarter in two
+          years<sup><a href="#sources">[22]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>2025</strong></td>
+          <td class="num">~140</td>
+          <td class="num">~$26–28B</td>
+          <td>Roughly triple 2024, around 40% of US IPO count<sup><a href="#sources">[22]</a></sup></td>
+        </tr>
+        <tr>
+          <td><strong>Q1 2026</strong></td>
+          <td class="num">~62</td>
+          <td class="num">~$11.8B</td>
+          <td>69% of US IPO deal count, the highest SPAC volume since 2021; completed de-SPACs remain
+          few<sup><a href="#sources">[21]</a></sup></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="section-note">
+      The terms changed more than the volume. Typical 2025–26 deals run $100–300M with experienced
+      repeat sponsors and sector focus (AI, quantum, crypto). Trusts are overfunded to $10.05 or more
+      per unit, which raises the redemption floor, and many deals drop warrants entirely or tie part of
+      the promote to post-merger performance.<sup><a href="#sources">[8]</a>,<a href="#sources">[18]</a>,<a href="#sources">[21]</a></sup>
+      Each change attacks a specific item in this page's dilution math: more cash behind each share,
+      less warrant overhang, a sponsor paid for outcomes instead of closings.
+    </p>
+    <div class="callout">
+      <strong>Does the critique still apply?</strong> With less force, deal by deal. An overfunded trust
+      and a performance promote shrink the gap between the $10 you pay and the cash the company gets.
+      They do not eliminate the deadline incentive or the fee load, and the post-2024 cohort is too young
+      for return studies. The method of this page survives the new terms: compute net cash per share from
+      the proxy and let that number, not the sponsor's name, make the call.
+    </div>
+  </section>
+
+  <section id="sources">
+    <div class="eyebrow">Appendix</div>
+    <h2>Sources</h2>
+    <ol class="sources">
+      <li>Klausner, Ohlrogge &amp; Ruan, "A Sober Look at SPACs," <em>Yale Journal on Regulation</em> (2022) ·
+        <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3720919">SSRN 3720919</a></li>
+      <li>Gahng, Ritter &amp; Zhang, "SPACs," <em>Review of Financial Studies</em> 36(9) (2023) ·
+        <a href="https://academic.oup.com/rfs/article-abstract/36/9/3463/7067751">academic.oup.com</a></li>
+      <li>Klausner &amp; Ohlrogge, "Was the SPAC Crash Predictable?," <em>Yale Journal on Regulation Bulletin</em> 40 (2023) ·
+        <a href="https://www.yalejreg.com/wp-content/uploads/Michael-Klausner-Michael-Ohlrogge-Was-the-SPAC-Crash-Predictable-40-Yale.-J.-on-Regul.-Bulletin-101-2023.pdf">yalejreg.com</a></li>
+      <li>Klausner &amp; Ohlrogge, "A Second Look at SPACs: Is This Time Different?," Harvard Law School Forum on Corporate Governance (2022) ·
+        <a href="https://corpgov.law.harvard.edu/2022/01/24/a-second-look-at-spacs-is-this-time-different/">corpgov.law.harvard.edu</a></li>
+      <li>Accelerate, "The Art of SPAC Arbitrage" ·
+        <a href="https://accelerateshares.com/wp-content/uploads/2020/05/The-Art-of-SPAC-Arbitrage-1.pdf">accelerateshares.com</a></li>
+      <li>SPACInsider, SPAC IPO statistics ·
+        <a href="https://www.spacinsider.com/data/stats">spacinsider.com/data/stats</a></li>
+      <li>SEC, "SEC Adopts Rules to Enhance Investor Protections Relating to SPACs, Shell Companies, and Projections" (Jan 24, 2024) ·
+        <a href="https://www.sec.gov/newsroom/press-releases/2024-8">sec.gov</a></li>
+      <li>Foley &amp; Lardner, "SPAC 4.0: From Spectacular Failures to a Disciplined Renaissance" (2025) ·
+        <a href="https://www.foley.com/insights/publications/2025/09/spac-4-0-from-spectacular-failures-to-a-disciplined-renaissance/">foley.com</a></li>
+      <li>Deadline, "DraftKings To Go Public In $3.3B Merger With Diamond Eagle" (Dec 23, 2019) ·
+        <a href="https://deadline.com/2019/12/draftkings-to-go-public-in-3-3b-merger-with-diamond-eagle-1202816362/">deadline.com</a></li>
+      <li>Business Wire, "Lordstown Motors Corp. to List on NASDAQ Through Merger With DiamondPeak Holdings Corp." (Aug 3, 2020) ·
+        <a href="https://www.businesswire.com/news/home/20200803005226/en/Lordstown-Motors-Corp.-to-List-on-NASDAQ-Through-Merger-With-DiamondPeak-Holdings-Corp.">businesswire.com</a></li>
+      <li>Hindenburg Research, "The Lordstown Motors Mirage: Fake Orders, Undisclosed Production Hurdles, And A Prototype Inferno" (Mar 2021) ·
+        <a href="https://hindenburgresearch.com/lordstown/">hindenburgresearch.com</a></li>
+      <li>SEC, "SEC Charges Lordstown Motors with Misleading Investors about Company's Flagship Electric Vehicle" (Feb 29, 2024) ·
+        <a href="https://www.sec.gov/newsroom/press-releases/2024-29">sec.gov</a></li>
+      <li>FINRA, "SPAC Warrants: 5 Tips" ·
+        <a href="https://www.finra.org/investors/insights/spac-warrants-5-tips">finra.org</a></li>
+      <li>SEC, "What You Need to Know About SPACs · Investor Bulletin" ·
+        <a href="https://www.sec.gov/oiea/investor-alerts-and-bulletins/what-you-need-know-about-spacs-investor-bulletin">sec.gov</a></li>
+      <li>SPAC Research, FAQ (redemption mechanics for shareholders) ·
+        <a href="https://www.spacresearch.com/faq">spacresearch.com</a></li>
+      <li>CrossingBridge Pre-Merger SPAC ETF (SPC) ·
+        <a href="https://www.crossingbridgefunds.com/spac-etf">crossingbridgefunds.com</a></li>
+      <li>ETF Database, Robinson Pre-Merger SPAC ETF (SPAX, liquidated 2025) ·
+        <a href="https://etfdb.com/etf/SPAX/">etfdb.com</a></li>
+      <li>ARC Group, "Trust Overfunding in a Deal-Starved SPAC Market" ·
+        <a href="https://arc-group.com/trust-overfunding-deal-starved-spac-market/">arc-group.com</a></li>
+      <li>ListingTrack, SPAC market stats and trust screener ·
+        <a href="https://www.listingtrack.io/spacs/stats">listingtrack.io</a></li>
+      <li>Committee on Capital Markets Regulation, "Nothing But the Facts: Retail Investors and Special Purpose Acquisition Companies" ·
+        <a href="https://capmktsreg.org/nothing-but-the-facts-retail-investors-and-special-purpose-acquisition-companies/">capmktsreg.org</a></li>
+      <li>FTI Consulting, "IPO &amp; SPAC Market Update: Q1 2026" ·
+        <a href="https://www.fticonsulting.com/insights/reports/ipo-spac-market-update-q1-2026">fticonsulting.com</a></li>
+      <li>ARC Group, "The Resurgence of SPACs in 2025" ·
+        <a href="https://arc-group.com/resurgence-spacs-2025/">arc-group.com</a></li>
+      <li>Citrin Cooperman, "SPACs: What Are They and How Are They Taxed" ·
+        <a href="https://www.citrincooperman.com/In-Focus-Resource-Center/SPACs--What-Are-They-and-How-Are-They-Taxed">citrincooperman.com</a></li>
+      <li>DiamondPeak Holdings / Lordstown Motors investor presentation (Aug 2020), SEC EDGAR (~$675M cash, ~164M pro forma shares) ·
+        <a href="https://www.sec.gov/Archives/edgar/data/1759546/000121390020019762/ea124863ex99-2_diamondpeak.htm">sec.gov</a></li>
+      <li>DraftKings Inc., Form 424B3 (2020), SEC EDGAR (Diamond Eagle trust + PIPE cash, post-merger ownership) ·
+        <a href="https://www.sec.gov/Archives/edgar/data/0001772757/000110465920095004/tm2027130d2_424b3.htm">sec.gov</a></li>
+    </ol>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    This page is for educational purposes only and is not investment advice. Figures are drawn from the
+    cited studies; study periods differ, so numbers are not directly comparable across rows.
+  </div>
+</footer>
+
+<script>
+  const links = document.querySelectorAll('nav.outline a');
+  const sections = [...links].map(a => document.querySelector(a.hash)).filter(Boolean);
+  const byId = {};
+  links.forEach(a => { byId[a.hash.slice(1)] = a; });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.remove('active'));
+        const link = byId[e.target.id];
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // Bar chart: holding through the merger loses, vs the market
+  if (window.Chart) {
+    const css = getComputedStyle(document.documentElement);
+    const green = css.getPropertyValue('--green').trim();
+    const red = css.getPropertyValue('--red').trim();
+    const muted = css.getPropertyValue('--muted').trim();
+    const border = css.getPropertyValue('--border').trim();
+    const data = [
+      { label: 'Market, 1 yr', v: 19.4 },
+      { label: 'Post-merger, 3 mo', v: -14.5 },
+      { label: 'Post-merger, 1 yr', v: -11.3 },
+      { label: 'Bubble cohort', v: -62 },
+    ];
+    new Chart(document.getElementById('chartHold'), {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.label),
+        datasets: [{
+          data: data.map(d => d.v),
+          backgroundColor: data.map(d => d.v >= 0 ? green : red),
+          borderRadius: 3,
+          barThickness: 22,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Hold through the merger, and you lose',
+            color: muted,
+            font: { family: '-apple-system, system-ui, sans-serif', size: 13, weight: '700' },
+            padding: { bottom: 12 },
+          },
+          tooltip: {
+            callbacks: { label: c => (c.raw > 0 ? '+' : '') + c.raw + '%' },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { color: muted, callback: v => v + '%', font: { family: '-apple-system, system-ui, sans-serif', size: 11 } },
+            grid: { color: border },
+            border: { color: border },
+          },
+          y: {
+            ticks: { color: muted, font: { family: '-apple-system, system-ui, sans-serif', size: 11 } },
+            grid: { display: false },
+            border: { color: border },
+          },
+        },
+      },
+    });
+  }
+</script>
+
+</body>
+</html>

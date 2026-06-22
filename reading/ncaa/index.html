@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html class="cache-narrow" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predicting March Madness 2026 &mdash; cache</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%204%2028%2010%2016%2016%204%2010Z%27/%3E%3Cpath%20d%3D%27M4%2016%2016%2022%2028%2016%27/%3E%3Cpath%20d%3D%27M4%2022%2016%2028%2028%2022%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" type="text/css" href="../../assets/css/reading-theme.css">
+<meta property="og:title" content="Predicting March Madness 2026">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cache">
+<meta property="og:url" content="https://cache.bwang.io/reading/ncaa/index.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Predicting March Madness 2026 &mdash; cache">
+</head>
+<body>
+<style>@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:400;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');}@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:600;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');}@keyframes cacheFadeIn{from{opacity:0;}to{opacity:1;}}body{animation:cacheFadeIn .4s ease both;}</style><style>
+@view-transition{navigation:auto;}
+.nav-float{position:fixed;top:22px;left:22px;z-index:2147483647;pointer-events:none;
+	font:400 14px/1.45 'Josefin Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-min-cb{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.nav-card{width:230px;max-height:calc(100vh - 44px);overflow-y:auto;
+	background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.16);
+	border-radius:13px;padding:14px 0 16px;pointer-events:auto;transform-origin:top left;
+	transition:opacity .24s ease,transform .24s ease;}
+.nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;}
+.nav-home{display:inline-flex;align-items:center;color:#9a9a9a;text-decoration:none;
+	padding:2px;transition:color .15s;}
+.nav-home:hover{color:#333;}
+.nav-mini{cursor:pointer;color:#c4c4c4;font-size:21px;line-height:.5;padding:0 3px 6px;
+	user-select:none;transition:color .15s;}
+.nav-mini:hover{color:#333;}
+.nav-restore{position:absolute;top:0;left:0;display:inline-flex;align-items:center;gap:8px;
+	cursor:pointer;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.2);
+	color:#555;border-radius:11px;padding:8px 14px;font-size:13px;user-select:none;
+	opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.nav-restore::before{content:"";width:15px;height:11px;flex:none;color:#888;
+	background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left center/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left bottom/100% 1.5px no-repeat;}
+.nav-restore:hover{color:#111;}
+.nav-min-cb:checked ~ .nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+.nav-min-cb:checked ~ .nav-restore{opacity:1;pointer-events:auto;}
+.nav-card a.item{display:block;padding:7px 20px;color:#333;text-decoration:none;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-card a.item:hover{background:#f6f6f6;color:#111;}
+.nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-radio{position:absolute;opacity:0;pointer-events:none;}
+.nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
+.nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
+	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
+.nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
+.nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+	color:#111;border-bottom-color:#357BB3;}
+.nav-feed{display:none;}
+.nav-card #nav-cache:checked ~ .nf-cache{display:block;}
+.nav-card #nav-reading:checked ~ .nf-reading{display:block;}
+.nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+/* The panel is a left rail beside the centered column. Until the viewport is
+   wide enough for it to clear that column (same breakpoint as the article
+   outline), start it minimized: the pill shows by default and tapping it
+   expands the list. Otherwise the card slides out over the post text. */
+@media (max-width:1330px){
+	.nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+	.nav-restore{opacity:1;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-card{opacity:1;transform:none;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-restore{opacity:0;pointer-events:none;}
+}
+@media (max-width:700px){
+	.nav-card{width:min(230px,calc(100vw - 36px));}
+}
+@media (prefers-reduced-motion: reduce){
+	.nav-card,.nav-restore{transition:none;}
+}
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label></div><div class="nav-feed nf-cache"><a class="item" href="../../token-playbook.html">Token Playbook</a><a class="item" href="../../some-projects.html">Some Projects</a><a class="item" href="../../practical-poker.html">Practical Poker</a><a class="item" href="../../ecom-experiments.html">Ecom Experiments</a><a class="item" href="../../why-crypto.html">Why Crypto</a><a class="item" href="../../growing-peppers.html">Growing Peppers</a><a class="item" href="../../book-reviews.html">Book Reviews</a><a class="item" href="../../wasted-time.html">Dumb Poker</a><a class="item" href="../../trading-automation.html">Trading Automation</a><a class="item" href="../../api-in-rust.html">API in Rust</a><a class="item" href="../../cicd-on-gcp.html">CI/CD on GCP + SQL</a><a class="item" href="../../nomad-and-waypoint.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../poker-pros/index.html">High Roller Ledger</a><a class="item" href="../spacs/index.html">Understanding SPACs</a><a class="item" href="../ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../watches/index.html">Watches That Beat Retail</a><a class="item" href="../wine/index.html">Wine as an Investment Asset</a><a class="item" href="../real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item active" href="../ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a></div></div></div>
+
+<!-- HEADER -->
+<header>
+  <h1>Predicting March Madness 2026</h1>
+  <div class="kick">Sports Analytics · March Madness 2026</div>
+  <p class="subtitle">A 15-feature model trained on 23 seasons, a 50,000-tournament Monte Carlo simulation, and the bracket it predicts — including where the model beats picking by seed, and where it doesn't.</p>
+  <span class="asof" id="tourney-status"></span>
+</header>
+<nav class="outline" aria-label="Outline">
+  <a href="#s1">The baseline</a>
+  <a href="#s4">The features</a>
+  <a href="#s-upsets">Upset watch</a>
+  <a href="#s6">The simulation</a>
+  <a href="#s7">The bracket</a>
+</nav>
+
+<div class="bracket-controls">
+  <div class="prob-toggle" id="prob-toggle">
+    <button class="prob-btn" data-mode="normalized">Win %</button>
+    <button class="prob-btn active" data-mode="total">Advance %</button>
+  </div>
+  <div class="prob-desc" id="prob-desc">Advance % — Each team's overall probability of advancing to that round from 50K simulations.</div>
+  <div class="prob-desc">Click any underdog to override the model's pick and build your own bracket.</div>
+  <div class="bracket-key">
+    <span class="key-item"><span class="key-swatch sw-predict"></span> Predicted</span>
+    <span class="key-item"><span class="key-swatch sw-correct"></span> Correct</span>
+    <span class="key-item"><span class="key-swatch sw-wrong"></span> Wrong</span>
+    <span class="key-item"><span class="key-swatch sw-user"></span> User pick</span>
+  </div>
+</div>
+<div class="bracket-wrapper" id="bracket-container"></div>
+
+<div class="divider"></div>
+
+<!-- SECTION 1: THE BASELINE -->
+<div class="section reveal" id="s1">
+  <div class="section-num">01 / The Baseline</div>
+  <h2>Seeds are hard to beat but <em>not impossible</em></h2>
+  <p>It turns out the simplest March Madness strategy of just picking the higher seed is very good. A 1 beats a 16. A 2 beats a 15.</p>
+
+  <div class="stats-row" id="accuracy-stats">
+    <!-- filled by JS: seed-only vs model accuracy -->
+  </div>
+
+  <p>Picking the higher seed gets 70% of games right. Our model of 15 features (from 110+ candidates) over 23 seasons of training data only improves accuracy by 2.3 percentage points.</p>
+
+  <p id="headline-stats"><!-- filled by JS --></p>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- SECTION 2: THE FEATURES -->
+<div class="section reveal" id="s4">
+  <div class="section-num">02 / The Features</div>
+  <h2>15 features from <em>110+ candidates</em></h2>
+  <p>We started with over 110 candidate features to predict win probability between two teams, and ended up keeping only 16.</p>
+
+  <div class="bar-chart" id="importance-chart">
+    <!-- filled by JS -->
+  </div>
+
+  <p>The most important feature by far is <strong>AdjEM</strong> (Adjusted Efficiency Margin): the difference between a team's points scored and points allowed per 100 possessions, adjusted for opponent strength. A team that beats weak opponents by 20 looks less impressive than one that beats strong opponents by 10. AdjEM accounts for more importance than all other features combined.</p>
+
+
+  <p style="margin-top: 3rem; margin-bottom: 0.8rem; color: var(--text-bright); font-weight: 500;">Try it yourself:</p>
+  <p>Select two teams to see how the model predicts win probability.</p>
+
+  <div class="predictor" id="predictor">
+    <div class="pred-result">
+      <div class="pred-team-labels">
+        <span class="pred-team-name a" id="pred-name-a">Team A</span>
+        <span class="pred-team-name b" id="pred-name-b">Team B</span>
+      </div>
+      <div class="pred-bar">
+        <div class="pred-bar-fill" id="pred-bar-fill" style="width:50%"></div>
+      </div>
+      <div class="pred-pct">
+        <span class="pred-pct-val a" id="pred-pct-a">50.0%</span>
+        <span class="pred-pct-val b" id="pred-pct-b">50.0%</span>
+      </div>
+    </div>
+    <div class="pred-panels">
+      <div class="pred-panel a">
+        <select class="pred-select" id="pred-select-a"><option value="">Select Team A...</option></select>
+        <div class="pred-features" id="pred-features-a"></div>
+      </div>
+      <div class="pred-panel b">
+        <select class="pred-select" id="pred-select-b"><option value="">Select Team B...</option></select>
+        <div class="pred-features" id="pred-features-b"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="dim" style="margin-top: 2rem;">Over 90 features were evaluated and rejected. Raw counting stats (points, rebounds, steals, blocks) were too noisy without opponent adjustment. Ranking systems (KenPom, Sagarin, Massey, and 6 others) were highly correlated with each other and with AdjEM. Coach experience (tournament wins, appearances, Final Four trips) was statistically redundant with program history and seed. Clutch performance (close-game win rate, overtime record) suffered from small sample sizes. Shooting variance and conference tournament results also added no value in cross-validation.</p>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- SECTION 3: UPSET PICKS -->
+<div class="section reveal" id="s-upsets">
+  <div class="section-num">03 / Upset Watch</div>
+  <h2>Games where the model predicts an <em>underdog</em> win</h2>
+  <ul style="margin-top: 2rem; line-height: 1.8;">
+    <li><strong>10-Santa Clara over 7-Kentucky (model: 70.5%).</strong> Santa Clara climbed 70 spots in the rankings this season while Kentucky dropped 24. The Broncos' efficiency margin improved by +13.3 points; Kentucky's fell by &minus;7.5. Their recent win rate (.700 vs .400) confirms the trend. By March the gap in actual quality is far smaller than the seed gap suggests.</li>
+    <li style="margin-top: 1rem;"><strong>9-Iowa over 8-Clemson (model: 70.7%).</strong> Iowa is simply the better team by AdjEM: 28.1 vs 24.5. They're also healthier (injury rank 23 vs 37) and improved +21 ranking spots while Clemson slipped &minus;4. The 8/9 seed line is where committee judgment is weakest.</li>
+    <li style="margin-top: 1rem;"><strong>12-Northern Iowa over 5-St John's (model: 50.3%).</strong> St John's has the higher AdjEM (30.9 vs 13.1), but their worst loss was a 32-point blowout compared to Northern Iowa's &minus;15. Northern Iowa is also winning recent games by a wider margin (10.8 vs 9.8) and opponents rely more on three-point shooting (0.311 vs 0.270) — a volatile style in March.</li>
+    <li style="margin-top: 1rem;"><strong>12-Akron over 5-Texas Tech (model: 50.1%).</strong> The classic 12-over-5. Akron won their last 10 games by an average of 13.8 points while Texas Tech went 6&ndash;4 with a +5.2 margin and a fading win trend (&minus;0.10 vs +0.30). Historically, 12-seeds beat 5-seeds 36% of the time. This one is a coin flip.</li>
+  </ul>
+
+
+</div>
+
+<div class="divider"></div>
+
+<!-- SECTION 6: SIMULATION -->
+<div class="section reveal" id="s6">
+  <div class="section-num">05 / The Simulation</div>
+  <h2>Probabilities <em>compounding</em></h2>
+
+  <div class="sim-counter" id="sim-counter">0</div>
+  <div class="sim-counter-label">tournaments simulated</div>
+
+  <p>We use a Monte Carlo simulation to simulate the entire bracket 50,000 times. Each simulation draws random outcomes weighted by our model's probabilities. In a bracket, Team A's path to the Final Four depends on who else advances. Simulation captures this path dependency that a pairwise model alone cannot.</p>
+
+
+</div>
+
+<div class="divider"></div>
+
+<!-- SECTION 7: THE BRACKET -->
+<div class="section reveal" id="s7">
+  <div class="section-num">06 / The Bracket</div>
+  <h2>Who wins <em>March Madness 2026?</em></h2>
+  <p>Advancement probabilities from 50,000 simulated tournaments. The <span style="color: var(--green)">green</span> and <span style="color: var(--red)">red</span> deltas show where our model diverges from the seed-only baseline: the places where all those extra features actually shift the prediction.</p>
+
+  <div style="overflow-x: auto;">
+    <table class="team-table" id="team-table">
+      <thead>
+        <tr>
+          <th style="min-width:140px">Team</th>
+          <th style="min-width:50px">Seed</th>
+          <th>R64</th>
+          <th>R32</th>
+          <th>S16</th>
+          <th>E8</th>
+          <th>F4</th>
+          <th>Champ</th>
+          <th style="min-width:60px">vs Seed</th>
+        </tr>
+      </thead>
+      <tbody id="team-tbody">
+        <!-- filled by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top: 3rem; margin-bottom: 0.8rem; color: var(--text-bright); font-weight: 500;">Season-by-season accuracy:</p>
+  <p class="dim">The model works poorly for upset-heavy years like 2011 and 2014.</p>
+
+  <div class="season-chart">
+    <div class="chart-bars" id="season-bars">
+      <!-- filled by JS -->
+    </div>
+  </div>
+  <div class="chart-legend">
+    <div class="chart-legend-item">
+      <div class="chart-legend-dot" style="background: var(--text-dim); opacity: 0.4;"></div>
+      Seed Only
+    </div>
+    <div class="chart-legend-item">
+      <div class="chart-legend-dot" style="background: var(--accent);"></div>
+      Ensemble Model
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Predicting March Madness 2026<br>
+  Built with data from Kaggle March Machine Learning Mania
+</div>
+
+<script src="./app.js"></script>
+<script>
+/* Highlight the contents outline entry for the section in view. */
+(function () {
+  var links = [].slice.call(document.querySelectorAll('nav.outline a'));
+  if (!links.length) return;
+  var map = links.map(function (a) {
+    return { a: a, sec: document.querySelector(a.getAttribute('href')) };
+  }).filter(function (m) { return m.sec; });
+  function onScroll() {
+    var y = window.scrollY + 140, cur = null;
+    map.forEach(function (m) { if (m.sec.offsetTop <= y) cur = m; });
+    links.forEach(function (a) { a.classList.remove('active'); });
+    if (cur) cur.a.classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+<a href="#top" class="to-top" aria-label="Back to top" title="Back to top">↑</a>
+<style>
+.to-top{position:fixed;bottom:22px;right:22px;z-index:2147483646;width:40px;height:40px;
+	display:flex;align-items:center;justify-content:center;border-radius:50%;
+	background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+	border:1px solid rgba(140,140,140,.28);color:#555;font-size:19px;line-height:1;text-decoration:none;
+	opacity:0;pointer-events:none;transition:opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.to-top.show{opacity:1;pointer-events:auto;}
+.to-top:hover{color:#111;border-color:rgba(140,140,140,.5);}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none;}html{scroll-behavior:auto;}}
+</style>
+<script>(function(){var b=document.querySelector('.to-top');if(!b)return;
+function f(){b.classList.toggle('show',window.scrollY>500);}
+window.addEventListener('scroll',f,{passive:true});f();
+b.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});})();</script>
+</body>
+</html>

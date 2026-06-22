@@ -1,0 +1,226 @@
+/* Re-theme the mirrored reading articles toward the cache (Inside) look:
+   Josefin Sans everywhere + a narrow centered column like the cache posts.
+   Loaded AFTER each article's own CSS, so !important wins the cascade.
+   Fonts are self-hosted (same files the rest of the site uses). */
+
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 400;
+	src: url(../fonts/inside/josefin-sans-v15-latin-regular.woff2) format('woff2');
+}
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 600;
+	src: url(../fonts/inside/josefin-sans-v15-latin-600.woff2) format('woff2');
+}
+@font-face {
+	font-family: 'Josefin Sans';
+	font-style: normal;
+	font-weight: 700;
+	src: url(../fonts/inside/josefin-sans-v15-latin-700.woff2) format('woff2');
+}
+@font-face {
+	font-family: 'Cascadia Code';
+	font-style: normal;
+	src: url(../fonts/inside/CascadiaCode.woff2) format('woff2');
+}
+
+/* Josefin Sans for everything, monospace kept for code. */
+body, body *:not(script):not(style) {
+	font-family: 'Josefin Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+code, code *, pre, pre *, kbd, samp, tt {
+	font-family: 'Cascadia Code', Consolas, 'Courier New', monospace !important;
+}
+
+/* White page background everywhere, like the cache posts. Articles ship various
+   off-whites (#f1f2f6, #fbfaf7, #fcfbf8 …); override the --bg custom property so
+   every var(--bg) consumer (body, loading overlays, etc.) turns white, and force
+   the body background for the few that hardcode it. Surface boxes (callouts,
+   cards) keep their own backgrounds — only the page canvas is reset.
+   One shared structural accent too: every article ships its own (violet, blue,
+   green, gold …); override --accent / --ac so kickers, the contents outline, and
+   eyebrows are the same colour everywhere. Data colours (--green/--red) stay. */
+html.cache-narrow {
+	--bg: #fff !important; background: #fff !important;
+	--accent: #357BB3 !important; --ac: #357BB3 !important; --accent-dim: #2c6196 !important;
+}
+
+/* Narrow, centered column matching the cache posts (~600px of text).
+   Scoped to <html class="cache-narrow"> — applied only to the text-article
+   pages; the interactive dashboards keep their own (wider) layout. */
+html.cache-narrow body {
+	/* Same column measure as the cache posts (inside.css --measure: 620 → 960px,
+	   30px gutter, border-box) so the text width is identical on both. */
+	max-width: 620px !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	padding: 2rem 30px 4rem !important;
+	box-sizing: border-box !important;
+	float: none !important;
+	background: #fff !important;
+	color: #333 !important;
+	line-height: 1.7 !important;
+	/* Match the cache posts' body size (inside.css .e-content is 15px); these
+	   essays ship at 17px, which reads noticeably larger than the cache feed. */
+	font-size: 15px !important;
+}
+/* Consistent heading sizes, rhythm AND colour across every reading article,
+   matching the cache posts (inside.css: h2 20px, h3 18px, dark). Some articles
+   colour their section headings with their own accent (e.g. wine) — force dark
+   so headings look the same everywhere; the accent is reserved for kicker/
+   outline/eyebrows. */
+html.cache-narrow h2 {
+	font-size: 20px !important; font-weight: 700 !important; line-height: 1.3 !important;
+	margin: 1.8em 0 .5em !important; letter-spacing: -0.01em !important; color: #111 !important;
+}
+html.cache-narrow h3 {
+	font-size: 18px !important; font-weight: 700 !important; line-height: 1.35 !important;
+	margin: 1.5em 0 .4em !important; color: #111 !important;
+}
+html.cache-narrow h4 { font-size: 16px !important; font-weight: 700 !important; }
+html.cache-narrow p,
+html.cache-narrow li { font-size: 15px !important; line-height: 1.7 !important; }
+html.cache-narrow p { margin: 0 0 1em !important; }
+/* Content links match the cache posts (inside.css: dotted blue, 2px offset).
+   Scoped to text containers so the tray + right-rail outline links are untouched. */
+html.cache-narrow p a,
+html.cache-narrow li a,
+html.cache-narrow td a,
+html.cache-narrow dd a,
+html.cache-narrow sup a,
+html.cache-narrow figcaption a,
+html.cache-narrow blockquote a {
+	color: #357BB3 !important;
+	text-decoration: underline !important;
+	text-decoration-style: dotted !important;
+	text-underline-offset: 2px !important;
+}
+html.cache-narrow p a:hover,
+html.cache-narrow li a:hover,
+html.cache-narrow td a:hover,
+html.cache-narrow dd a:hover,
+html.cache-narrow sup a:hover,
+html.cache-narrow figcaption a:hover,
+html.cache-narrow blockquote a:hover { color: #1f5c8c !important; }
+/* Match the cache posts: widen the column on larger screens. */
+@media (min-width: 1100px) { html.cache-narrow body { max-width: 720px !important; } }
+@media (min-width: 1500px) { html.cache-narrow body { max-width: 840px !important; } }
+@media (min-width: 1900px) { html.cache-narrow body { max-width: 960px !important; } }
+@media (max-width: 560px) { html.cache-narrow body { padding: 1.5rem 20px 3rem !important; } }
+/* Every article's layout wrapper(s) become a transparent full-width pass-through:
+   the body alone owns the column width AND the page padding, so the title starts
+   at exactly the same offset on every article (some articles wrap content in a
+   <div class="wrap"> with its own 20px top padding, which otherwise pushes their
+   header down relative to articles whose header is a direct child of body). */
+html.cache-narrow .wrap,
+html.cache-narrow .container,
+html.cache-narrow main,
+html.cache-narrow article,
+html.cache-narrow [class*="container"],
+html.cache-narrow [class*="wrapper"] {
+	max-width: 100% !important;
+	width: auto !important;
+	margin: 0 auto !important;
+	padding: 0 !important;
+	border: 0 !important;
+}
+/* Articles that shipped a two-column grid with a sticky side TOC (wine,
+   real-estate) collapse to the single narrow column — the content then uses the
+   full essay width instead of sharing it with a left rail. */
+html.cache-narrow .layout {
+	display: block !important;
+	max-width: 100% !important;
+	width: auto !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	gap: 0 !important;
+}
+html.cache-narrow details.toc-mobile { display: none !important; }
+
+/* ─── In-page contents outline → a fixed rail on the RIGHT ───
+   One treatment for every reading article. spacs/ipos/ncaa ship a
+   <nav class="outline">; wine/real-estate's sidebar <nav class="toc"> is also
+   tagged "outline" (keeping "toc" so its scroll-spy JS still matches). It hugs
+   the column on wide screens and hides when there's no room. (spacs/ipos also
+   have a separate inline <nav class="toc"> pill row — left untouched here.) */
+html.cache-narrow nav.outline {
+	position: fixed !important; top: 120px !important; bottom: auto !important;
+	right: max(22px, calc(50vw - 705px)) !important; left: auto !important;
+	width: 175px !important; max-height: calc(100vh - 150px) !important; overflow-y: auto !important;
+	margin: 0 !important; padding: 0 !important;
+	font-size: 12px !important; line-height: 1.45 !important;
+}
+/* spacs/ipos (the reference) have no heading inside the outline — hide the
+   "Contents" <h4> that wine/real-estate ship so every rail is just a link list. */
+html.cache-narrow nav.outline h4 { display: none !important; }
+html.cache-narrow nav.outline ul { list-style: none !important; margin: 0 !important; padding: 0 !important; }
+/* Explicit 12px here: real-estate/wine wrap items in <li>, which would otherwise
+   inherit the general 15px cache-narrow li size and render larger than spacs'
+   flat <a> outline. Set size on both li and a so every rail matches spacs. */
+html.cache-narrow nav.outline li { margin: 0 !important; font-size: 12px !important; line-height: 1.45 !important; }
+html.cache-narrow nav.outline a {
+	display: block !important; font-size: 12px !important; padding: 4px 0 4px 12px !important; line-height: 1.4 !important;
+	border-left: 2px solid #e6e1d8 !important; color: #6f6a62 !important; text-decoration: none !important;
+}
+html.cache-narrow nav.outline a.sub { padding-left: 26px !important; }
+html.cache-narrow nav.outline a.active {
+	color: var(--accent, #357BB3) !important; font-weight: 700 !important; border-left-color: currentColor !important;
+}
+@media (max-width: 1330px) {
+	html.cache-narrow nav.outline { display: none !important; }
+}
+
+/* ─── Consistent essay header across every reading article ───
+   The cache header look: optional kicker, big title, lead, meta line. Forces
+   every article's title block to the same type (no divider, matching cache). */
+html.cache-narrow header {
+	padding: 8px 0 0 !important; margin: 0 0 22px !important; border: 0 !important;
+}
+html.cache-narrow header > .container { border: 0 !important; padding: 0 !important; }
+/* Match the cache post title exactly (inside.css: 25px / 900 / 1.3). */
+html.cache-narrow h1 {
+	font-size: 25px !important; line-height: 1.3 !important;
+	font-weight: 900 !important; letter-spacing: -0.01em !important;
+	color: #111 !important; margin: 0 0 .35em !important; padding: 0 !important; border: 0 !important;
+}
+/* Kicker + date/source lines all match the cache posts' date (inside.css
+   .dt-published: 13px, light grey #757575, weight 300, normal case) — no loud
+   blue uppercase eyebrow, just a quiet metadata line like "June 1, 2026". */
+html.cache-narrow .kick,
+html.cache-narrow .asof,
+html.cache-narrow .meta,
+html.cache-narrow .byline {
+	display: block !important; font-size: 13px !important; font-weight: 300 !important;
+	text-transform: none !important; letter-spacing: normal !important;
+	color: #757575 !important; margin: 0 0 6px !important;
+}
+html.cache-narrow .subtitle,
+html.cache-narrow .dek,
+html.cache-narrow .hero-sub {
+	font-size: 15px !important; line-height: 1.6 !important; color: #3a3833 !important;
+	font-style: normal !important; font-weight: 400 !important; margin: 0 0 10px !important; max-width: none !important;
+}
+
+/* Keep wide media/tables inside the column. */
+html.cache-narrow img,
+html.cache-narrow video,
+html.cache-narrow svg,
+html.cache-narrow iframe,
+html.cache-narrow pre { max-width: 100% !important; }
+html.cache-narrow table { display: block; max-width: 100% !important; overflow-x: auto; }
+
+/* Wide articles (dashboards + the two with their own left TOC) fill the page, so
+   the floating posts tray would sit on top of their content/nav. Keep it
+   collapsed to the pill by default at every width — the reader opens it on
+   demand. The .nav-collapsed prefix outweighs the tray's own inline rules. */
+html.nav-collapsed .nav-card {
+	opacity: 0; transform: scale(.96) translateY(-6px); pointer-events: none;
+}
+html.nav-collapsed .nav-restore { opacity: 1; pointer-events: auto; }
+html.nav-collapsed .nav-min-cb:checked ~ .nav-card {
+	opacity: 1; transform: none; pointer-events: auto;
+}
+html.nav-collapsed .nav-min-cb:checked ~ .nav-restore { opacity: 0; pointer-events: none; }

@@ -1,0 +1,3 @@
+{
+  "_README": "Per-signal realized P&L from live trading. Keys are signal IDs (match badge text in index.html). realized_pnl_pct is total return since 'since' date. Update manually or via trade-log script."
+}

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predicting March Madness 2026</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%23e8a838' stroke-width='2.5'/%3E%3Cpath d='M4 16 H28 M16 4 V28 M8 7 C12 12 12 20 8 25 M24 7 C20 12 20 20 24 25' fill='none' stroke='%23e8a838' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="kick">Sports Analytics · March Madness 2026</div>
+  <h1>Predicting March Madness 2026</h1>
+  <p class="subtitle">A 15-feature model trained on 23 seasons, a 50,000-tournament Monte Carlo simulation, and the bracket it predicts — including where the model beats picking by seed, and where it doesn't.</p>
+  <span class="asof" id="tourney-status"></span>
+</header>
+<nav class="outline" aria-label="Outline">
+  <a href="#s1">The baseline</a>
+  <a href="#s4">The features</a>
+  <a href="#s-upsets">Upset watch</a>
+  <a href="#s6">The simulation</a>
+  <a href="#s7">The bracket</a>
+</nav>
+
+<div class="bracket-controls">
+  <div class="prob-toggle" id="prob-toggle">
+    <button class="prob-btn" data-mode="normalized">Win %</button>
+    <button class="prob-btn active" data-mode="total">Advance %</button>
+  </div>
+  <div class="prob-desc" id="prob-desc">Advance % — Each team's overall probability of advancing to that round from 50K simulations.</div>
+  <div class="prob-desc">Click any underdog to override the model's pick and build your own bracket.</div>
+  <div class="bracket-key">
+    <span class="key-item"><span class="key-swatch sw-predict"></span> Predicted</span>
+    <span class="key-item"><span class="key-swatch sw-correct"></span> Correct</span>
+    <span class="key-item"><span class="key-swatch sw-wrong"></span> Wrong</span>
+    <span class="key-item"><span class="key-swatch sw-user"></span> User pick</span>
+  </div>
+</div>
+<div class="bracket-wrapper" id="bracket-container"></div>
+
+<div class="divider"></div>
+
+<!-- SECTION 1: THE BASELINE -->
+<div class="section reveal" id="s1">
+  <div class="section-num">01 / The Baseline</div>
+  <h2>Seeds are hard to beat but <em>not impossible</em></h2>
+  <p>It turns out the simplest March Madness strategy of just picking the higher seed is very good. A 1 beats a 16. A 2 beats a 15.</p>
+
+  <div class="stats-row" id="accuracy-stats">
+    <!-- filled by JS: seed-only vs model accuracy -->
+  </div>
+
+  <p>Picking the higher seed gets 70% of games right. Our model of 15 features (from 110+ candidates) over 23 seasons of training data only improves accuracy by 2.3 percentage points.</p>
+
+  <p id="headline-stats"><!-- filled by JS --></p>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- SECTION 2: THE FEATURES -->
+<div class="section reveal" id="s4">
+  <div class="section-num">02 / The Features</div>
+  <h2>15 features from <em>110+ candidates</em></h2>
+  <p>We started with over 110 candidate features to predict win probability between two teams, and ended up keeping only 16.</p>
+
+  <div class="bar-chart" id="importance-chart">
+    <!-- filled by JS -->
+  </div>
+
+  <p>The most important feature by far is <strong>AdjEM</strong> (Adjusted Efficiency Margin): the difference between a team's points scored and points allowed per 100 possessions, adjusted for opponent strength. A team that beats weak opponents by 20 looks less impressive than one that beats strong opponents by 10. AdjEM accounts for more importance than all other features combined.</p>
+
+
+  <p style="margin-top: 3rem; margin-bottom: 0.8rem; color: var(--text-bright); font-weight: 500;">Try it yourself:</p>
+  <p>Select two teams to see how the model predicts win probability.</p>
+
+  <div class="predictor" id="predictor">
+    <div class="pred-result">
+      <div class="pred-team-labels">
+        <span class="pred-team-name a" id="pred-name-a">Team A</span>
+        <span class="pred-team-name b" id="pred-name-b">Team B</span>
+      </div>
+      <div class="pred-bar">
+        <div class="pred-bar-fill" id="pred-bar-fill" style="width:50%"></div>
+      </div>
+      <div class="pred-pct">
+        <span class="pred-pct-val a" id="pred-pct-a">50.0%</span>
+        <span class="pred-pct-val b" id="pred-pct-b">50.0%</span>
+      </div>
+    </div>
+    <div class="pred-panels">
+      <div class="pred-panel a">
+        <select class="pred-select" id="pred-select-a"><option value="">Select Team A...</option></select>
+        <div class="pred-features" id="pred-features-a"></div>
+      </div>
+      <div class="pred-panel b">
+        <select class="pred-select" id="pred-select-b"><option value="">Select Team B...</option></select>
+        <div class="pred-features" id="pred-features-b"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="dim" style="margin-top: 2rem;">Over 90 features were evaluated and rejected. Raw counting stats (points, rebounds, steals, blocks) were too noisy without opponent adjustment. Ranking systems (KenPom, Sagarin, Massey, and 6 others) were highly correlated with each other and with AdjEM. Coach experience (tournament wins, appearances, Final Four trips) was statistically redundant with program history and seed. Clutch performance (close-game win rate, overtime record) suffered from small sample sizes. Shooting variance and conference tournament results also added no value in cross-validation.</p>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- SECTION 3: UPSET PICKS -->
+<div class="section reveal" id="s-upsets">
+  <div class="section-num">03 / Upset Watch</div>
+  <h2>Games where the model predicts an <em>underdog</em> win</h2>
+  <ul style="margin-top: 2rem; line-height: 1.8;">
+    <li><strong>10-Santa Clara over 7-Kentucky (model: 70.5%).</strong> Santa Clara climbed 70 spots in the rankings this season while Kentucky dropped 24. The Broncos' efficiency margin improved by +13.3 points; Kentucky's fell by &minus;7.5. Their recent win rate (.700 vs .400) confirms the trend. By March the gap in actual quality is far smaller than the seed gap suggests.</li>
+    <li style="margin-top: 1rem;"><strong>9-Iowa over 8-Clemson (model: 70.7%).</strong> Iowa is simply the better team by AdjEM: 28.1 vs 24.5. They're also healthier (injury rank 23 vs 37) and improved +21 ranking spots while Clemson slipped &minus;4. The 8/9 seed line is where committee judgment is weakest.</li>
+    <li style="margin-top: 1rem;"><strong>12-Northern Iowa over 5-St John's (model: 50.3%).</strong> St John's has the higher AdjEM (30.9 vs 13.1), but their worst loss was a 32-point blowout compared to Northern Iowa's &minus;15. Northern Iowa is also winning recent games by a wider margin (10.8 vs 9.8) and opponents rely more on three-point shooting (0.311 vs 0.270) — a volatile style in March.</li>
+    <li style="margin-top: 1rem;"><strong>12-Akron over 5-Texas Tech (model: 50.1%).</strong> The classic 12-over-5. Akron won their last 10 games by an average of 13.8 points while Texas Tech went 6&ndash;4 with a +5.2 margin and a fading win trend (&minus;0.10 vs +0.30). Historically, 12-seeds beat 5-seeds 36% of the time. This one is a coin flip.</li>
+  </ul>
+
+
+</div>
+
+<div class="divider"></div>
+
+<!-- SECTION 6: SIMULATION -->
+<div class="section reveal" id="s6">
+  <div class="section-num">05 / The Simulation</div>
+  <h2>Probabilities <em>compounding</em></h2>
+
+  <div class="sim-counter" id="sim-counter">0</div>
+  <div class="sim-counter-label">tournaments simulated</div>
+
+  <p>We use a Monte Carlo simulation to simulate the entire bracket 50,000 times. Each simulation draws random outcomes weighted by our model's probabilities. In a bracket, Team A's path to the Final Four depends on who else advances. Simulation captures this path dependency that a pairwise model alone cannot.</p>
+
+
+</div>
+
+<div class="divider"></div>
+
+<!-- SECTION 7: THE BRACKET -->
+<div class="section reveal" id="s7">
+  <div class="section-num">06 / The Bracket</div>
+  <h2>Who wins <em>March Madness 2026?</em></h2>
+  <p>Advancement probabilities from 50,000 simulated tournaments. The <span style="color: var(--green)">green</span> and <span style="color: var(--red)">red</span> deltas show where our model diverges from the seed-only baseline: the places where all those extra features actually shift the prediction.</p>
+
+  <div style="overflow-x: auto;">
+    <table class="team-table" id="team-table">
+      <thead>
+        <tr>
+          <th style="min-width:140px">Team</th>
+          <th style="min-width:50px">Seed</th>
+          <th>R64</th>
+          <th>R32</th>
+          <th>S16</th>
+          <th>E8</th>
+          <th>F4</th>
+          <th>Champ</th>
+          <th style="min-width:60px">vs Seed</th>
+        </tr>
+      </thead>
+      <tbody id="team-tbody">
+        <!-- filled by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top: 3rem; margin-bottom: 0.8rem; color: var(--text-bright); font-weight: 500;">Season-by-season accuracy:</p>
+  <p class="dim">The model works poorly for upset-heavy years like 2011 and 2014.</p>
+
+  <div class="season-chart">
+    <div class="chart-bars" id="season-bars">
+      <!-- filled by JS -->
+    </div>
+  </div>
+  <div class="chart-legend">
+    <div class="chart-legend-item">
+      <div class="chart-legend-dot" style="background: var(--text-dim); opacity: 0.4;"></div>
+      Seed Only
+    </div>
+    <div class="chart-legend-item">
+      <div class="chart-legend-dot" style="background: var(--accent);"></div>
+      Ensemble Model
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Predicting March Madness 2026<br>
+  Built with data from Kaggle March Machine Learning Mania
+</div>
+
+<script src="./app.js"></script>
+<script>
+/* Highlight the contents outline entry for the section in view. */
+(function () {
+  var links = [].slice.call(document.querySelectorAll('nav.outline a'));
+  if (!links.length) return;
+  var map = links.map(function (a) {
+    return { a: a, sec: document.querySelector(a.getAttribute('href')) };
+  }).filter(function (m) { return m.sec; });
+  function onScroll() {
+    var y = window.scrollY + 140, cur = null;
+    map.forEach(function (m) { if (m.sec.offsetTop <= y) cur = m; });
+    links.forEach(function (a) { a.classList.remove('active'); });
+    if (cur) cur.a.classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
