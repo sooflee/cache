@@ -271,7 +271,7 @@ much as the strongest squad. This forecast simulates the tournament 100,000 time
 anchored to the betting market and calibrated on 25 years of international results, to
 estimate each team's chance of lifting the trophy. The current favorite is
 <b>&#127942; <span id=champName>Spain</span></b>.</p>
-<div class=byline>Updated July 10, 2026 &middot; <a href="#how">how it works &darr;</a></div>
+<div class=byline>Updated July 10, 2026<span id=howlink> &middot; <a href="#how">how it works &darr;</a></span></div>
 </header>
 
 <div class=modebar>
@@ -339,6 +339,11 @@ This was the pre-tournament projection.</p>
 <div id=bracketWrap><div class=bracket><div class=bcol><h4>Round of 16</h4><div class=tie><div class='m '>Germany<em>60.7%</em></div><div class='m win'>France<em>73.3%</em></div></div><div class=tie><div class='m '>Czechia<em>34.3%</em></div><div class='m win'>Netherlands<em>51.9%</em></div></div><div class=tie><div class='m win'>Brazil<em>60.5%</em></div><div class='m '>Norway<em>43.2%</em></div></div><div class=tie><div class='m '>Mexico<em>49.6%</em></div><div class='m win'>England<em>66.4%</em></div></div><div class=tie><div class='m '>Colombia<em>45.4%</em></div><div class='m win'>Spain<em>75.4%</em></div></div><div class=tie><div class='m '>United States<em>44.7%</em></div><div class='m win'>Belgium<em>53.9%</em></div></div><div class=tie><div class='m win'>Argentina<em>64.3%</em></div><div class='m '>Turkiye<em>42.4%</em></div></div><div class=tie><div class='m '>Switzerland<em>45.9%</em></div><div class='m win'>Portugal<em>66.7%</em></div></div></div><div class=bcol><h4>Quarter-finals</h4><div class=tie><div class='m win'>France<em>53.2%</em></div><div class='m '>Netherlands<em>33.1%</em></div></div><div class=tie><div class='m win'>Spain<em>56.3%</em></div><div class='m '>Belgium<em>28.2%</em></div></div><div class=tie><div class='m '>Brazil<em>39.3%</em></div><div class='m win'>England<em>45.0%</em></div></div><div class=tie><div class='m win'>Argentina<em>47.9%</em></div><div class='m '>Portugal<em>45.4%</em></div></div></div><div class=bcol><h4>Semi-finals</h4><div class=tie><div class='m '>France<em>38.2%</em></div><div class='m win'>Spain<em>43.6%</em></div></div><div class=tie><div class='m '>England<em>28.4%</em></div><div class='m win'>Argentina<em>31.8%</em></div></div></div><div class=bcol><h4>Final</h4><div class=tie><div class='m win'>Spain<em>29.5%</em></div><div class='m '>Argentina<em>19.1%</em></div></div><div class=trophy>&#127942; Spain 19.3%</div></div></div></div>
 </details></section>
 
+<p class=mut id=methodHint hidden style="text-align:center;margin:46px 0 0">This is the live forecast for the teams still in. For how the model works
+&mdash; the Elo ratings, the Monte Carlo, market calibration and measured match
+variance &mdash; switch to <b>Before kickoff</b> above.</p>
+
+<div id=methodWrap>
 <div class=divider id=how><span>The method</span><h2>How it works</h2></div>
 
 <section><h2><span class=n>0</span>The big idea is to play the tournament 100,000 times</h2>
@@ -436,6 +441,7 @@ while retaining the model as a hedge.</p></section>
 </ul>
 <p class=mut>Reproduce: <code>python3 run.py</code>,
 <code>python3 fit_variance.py</code>, <code>python3 backtest.py</code>.</p></section>
+</div>
 
 <footer>Generated July 10, 2026. Sources: bookmaker futures, World Football Elo, FIFA
 fixtures, the martj42 international-results dataset.<br>
@@ -512,6 +518,9 @@ function applyMode(){
   document.getElementById("showCtl").style.display=now?"none":"";
   document.getElementById("hostRow").style.display=now?"none":"";
   document.getElementById("formRow").style.display=now?"":"none";
+  document.getElementById("methodWrap").style.display=now?"none":"";
+  document.getElementById("methodHint").hidden=!now;
+  document.getElementById("howlink").style.display=now?"none":"";
   document.getElementById("oddsNoteNow").hidden=!now;
   document.getElementById("oddsNotePre").hidden=now;
   document.getElementById("oddsTitle").textContent=now?"Live title odds":"Title & deep-run odds";
