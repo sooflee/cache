@@ -54,6 +54,27 @@ window.addEventListener('scroll',f,{passive:true});f();
 b.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});})();</script>"""
 
 
+# Google Analytics (gtag.js), injected site-wide right after <head> on every
+# built page. Guarded so a page that already carries the tag isn't doubled.
+GA_ID = "G-4E4BE1S6R6"
+GA_TAG = f"""<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+  gtag('config', '{GA_ID}');
+</script>"""
+
+
+def inject_ga(text):
+	"""Add the Google Analytics tag right after the opening <head> tag."""
+	if "googletagmanager.com/gtag" in text:
+		return text
+	return re.sub(r'(<head\b[^>]*>)', r'\1\n' + GA_TAG.replace("\\", r"\\"),
+	              text, count=1, flags=re.I)
+
+
 def set_favicon(text):
 	"""Replace any existing favicon link(s) with the shared one; insert before
 	</head> if the page has none."""
@@ -429,6 +450,8 @@ def rewrite_common(text):
 	text = text.replace('rel="author" href="/"', 'rel="author" href="index.html"')
 	# One shared favicon on every page (cache posts + homepage).
 	text = set_favicon(text)
+	# Analytics on every page.
+	text = inject_ga(text)
 	return text
 
 
@@ -500,8 +523,9 @@ def build_reading_articles():
 				r'\3\2\1',
 				text, count=1, flags=re.S | re.I,
 			)
-		# Shared favicon + consistent Open Graph tags + back-to-top control.
+		# Shared favicon + analytics + consistent Open Graph tags + back-to-top.
 		text = set_favicon(text)
+		text = inject_ga(text)
 		text = add_og_tags(text, _label, f"reading/{slug}/index.html")
 		# Inject the left tray right after <body ...>, highlighting this article.
 		text = inject_tray(text, "reading", slug)
