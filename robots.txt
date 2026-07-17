@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /_mirror/
+
+Sitemap: https://cache.bwang.io/sitemap.xml

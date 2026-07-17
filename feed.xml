@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cache</title>
+    <link>https://cache.bwang.io/</link>
+    <description>Benson Wang&#39;s blog and reading room: essays and interactive, data-driven articles.</description>
+    <language>en</language>
+    <atom:link href="https://cache.bwang.io/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 01 Jun 2026 02:48:23 +0000</lastBuildDate>
+    <item>
+      <title>Token Playbook</title>
+      <link>https://cache.bwang.io/token-playbook.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/token-playbook.html</guid>
+      <pubDate>Mon, 01 Jun 2026 02:48:23 +0000</pubDate>
+      <description>A simple tokenmaxxing playbook. Briefly talk about how to increase token throughput (queues, fan-out, more context, loops) to generate hi...</description>
+    </item>
+    <item>
+      <title>Some Projects</title>
+      <link>https://cache.bwang.io/some-projects.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/some-projects.html</guid>
+      <pubDate>Wed, 11 Mar 2026 21:26:07 +0000</pubDate>
+      <description>Disclaimer: all the projects mentioned in this post were created two months ago, maybe a month ago. This post was written around that tim...</description>
+    </item>
+    <item>
+      <title>Practical Poker</title>
+      <link>https://cache.bwang.io/practical-poker.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/practical-poker.html</guid>
+      <pubDate>Fri, 14 Nov 2025 18:43:34 +0000</pubDate>
+      <description>Across playing low stakes live and microstakes online, I have won somewhere around 15k in profit playing poker.  I used to have a lengthi...</description>
+    </item>
+    <item>
+      <title>Ecom Experiments</title>
+      <link>https://cache.bwang.io/ecom-experiments.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/ecom-experiments.html</guid>
+      <pubDate>Wed, 15 Jan 2025 22:36:25 +0000</pubDate>
+      <description>E-commerce is growing exponentially. I frequently see overnight successes of such companies through viral marketing; globalization and so...</description>
+    </item>
+    <item>
+      <title>Why Crypto</title>
+      <link>https://cache.bwang.io/why-crypto.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/why-crypto.html</guid>
+      <pubDate>Wed, 03 Apr 2024 19:46:22 +0000</pubDate>
+      <description>I’ve been getting some FOMO and mixed thoughts on BTC. This is just a quick rundown to help me think through whether I should invest.  Th...</description>
+    </item>
+    <item>
+      <title>Growing Peppers</title>
+      <link>https://cache.bwang.io/growing-peppers.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/growing-peppers.html</guid>
+      <pubDate>Fri, 19 Jan 2024 02:36:41 +0000</pubDate>
+      <description>I just wanted to grow something.  Peppers are pretty cool; they are pretty easy to grow, they self-pollinate, requires little space, ar...</description>
+    </item>
+    <item>
+      <title>Book Reviews</title>
+      <link>https://cache.bwang.io/book-reviews.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/book-reviews.html</guid>
+      <pubDate>Mon, 04 Dec 2023 20:29:41 +0000</pubDate>
+      <description>Here are some quick takeaways of some books I read this year.  Million Dollar Weekend – Noah Hagan  Nice lessons: Always ask for what you...</description>
+    </item>
+    <item>
+      <title>Dumb Poker</title>
+      <link>https://cache.bwang.io/wasted-time.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/wasted-time.html</guid>
+      <pubDate>Tue, 10 Jan 2023 02:53:42 +0000</pubDate>
+      <description>I made a tool to use to save hands and give a strategy on how to play different hands. This project will no longer exists.  Demo: https:/...</description>
+    </item>
+    <item>
+      <title>Trading Automation</title>
+      <link>https://cache.bwang.io/trading-automation.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/trading-automation.html</guid>
+      <pubDate>Tue, 15 Nov 2022 01:38:40 +0000</pubDate>
+      <description>I spent 90% of my time doing stuff that I ended up scrapping.  Products like Zapier are restrictive (no external libs, at least at the ti...</description>
+    </item>
+    <item>
+      <title>API in Rust</title>
+      <link>https://cache.bwang.io/api-in-rust.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/api-in-rust.html</guid>
+      <pubDate>Sun, 23 May 2021 23:30:21 +0000</pubDate>
+      <description>After some notes in rust, I created a rust app in rust deployed on Google Kubernetes Engine (GKE).  Here are some of the tooling/stack I ...</description>
+    </item>
+    <item>
+      <title>CI/CD on GCP + SQL</title>
+      <link>https://cache.bwang.io/cicd-on-gcp.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/cicd-on-gcp.html</guid>
+      <pubDate>Wed, 16 Dec 2020 02:20:52 +0000</pubDate>
+      <description>\[This post was originally written in 2020.\]  This post is dedicated primarily on making a cicd pipeline, a pretty generic boilerplate p...</description>
+    </item>
+    <item>
+      <title>Nomad &amp; Waypoint</title>
+      <link>https://cache.bwang.io/nomad-and-waypoint.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/nomad-and-waypoint.html</guid>
+      <pubDate>Tue, 11 Aug 2020 01:03:32 +0000</pubDate>
+      <description>This is just me trying out Nomad and Waypoint. This post was originally wrote in 2020.  nomad  Nomad acts as an online server/system to m...</description>
+    </item>
+    <item>
+      <title>Penetration Testing with Claude Code</title>
+      <link>https://cache.bwang.io/reading/klefki/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/klefki/index.html</guid>
+      <description>A field guide and seven-phase playbook for using Claude Code as a security copilot on authorized engagements — driving scanners, reviewing source, writing proof-of-concept exploits, and drafting the report, all under a permission model you control.</description>
+    </item>
+    <item>
+      <title>High Roller Ledger</title>
+      <link>https://cache.bwang.io/reading/poker-pros/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/poker-pros/index.html</guid>
+      <description>A ledger of high-stakes tournament poker: tracking the biggest names' net profit and loss to see who is actually winning at the top of the game.</description>
+    </item>
+    <item>
+      <title>Understanding SPACs</title>
+      <link>https://cache.bwang.io/reading/spacs/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/spacs/index.html</guid>
+      <description>A plain-English guide to SPACs: what blank-check companies are, who actually makes money on them, and how to tell a survivable deal from a doomed one.</description>
+    </item>
+    <item>
+      <title>Will the SpaceX IPO Beat the Market?</title>
+      <link>https://cache.bwang.io/reading/ipos-spacex/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/ipos-spacex/index.html</guid>
+      <description>An on-the-record forecast for the SpaceX (SPCX) IPO, plus the evidence behind it: the factors that predict post-IPO returns and how US IPOs from 2022 through 2026 have performed relative to their offer prices.</description>
+    </item>
+    <item>
+      <title>Anatomy of an iPhone</title>
+      <link>https://cache.bwang.io/reading/making-an-iphone/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/making-an-iphone/index.html</guid>
+      <description>An interactive guide to the iPhone supply chain: which company makes each component, where in the world it's made, what it costs, and how it all gets shipped.</description>
+    </item>
+    <item>
+      <title>Who Will Win the 2026 World Cup?</title>
+      <link>https://cache.bwang.io/reading/world-cup-2026/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/world-cup-2026/index.html</guid>
+      <description>A live forecast for the 2026 World Cup that simulates the tournament 100,000 times — anchored to the betting market and calibrated on 25 years of results — to estimate each team's chance of lifting the trophy.</description>
+    </item>
+    <item>
+      <title>Watches That Beat Retail</title>
+      <link>https://cache.bwang.io/reading/watches/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/watches/index.html</guid>
+      <description>How luxury watches beat retail: the mechanics of scarcity, allocation, and waitlists that push models like Rolex and Patek Philippe to premiums on the secondary market.</description>
+    </item>
+    <item>
+      <title>Wine as an Investment Asset</title>
+      <link>https://cache.bwang.io/reading/wine/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/wine/index.html</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>What Predicts US Real-Estate Returns?</title>
+      <link>https://cache.bwang.io/reading/real-estate/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/real-estate/index.html</guid>
+      <description>What actually predicts US residential real-estate returns — the economic and demographic factors that move home prices, and how much each one really explains.</description>
+    </item>
+    <item>
+      <title>Predicting March Madness 2026</title>
+      <link>https://cache.bwang.io/reading/ncaa/index.html</link>
+      <guid isPermaLink="true">https://cache.bwang.io/reading/ncaa/index.html</guid>
+      <description>A data-driven bracket forecast for the 2026 NCAA men's basketball tournament: how the model rates each team and simulates March Madness to estimate every school's odds of cutting down the nets.</description>
+    </item>
+  </channel>
+</rss>
