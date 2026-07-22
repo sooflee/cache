@@ -73,7 +73,7 @@ text-align:center;transition:all .15s;line-height:1.25}
 .ppanel{display:none;padding:14px 4px 10px;font-family:var(--sans);font-size:14.5px;line-height:1.6;animation:fade .25s ease}
 .ppanel.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.ppanel h4{font-family:var(--sans);font-size:16px;margin:0 0 2px;color:var(--ink)}
+.ppanel h3{font-family:var(--sans);font-size:16px;margin:0 0 2px;color:var(--ink)}
 .ppanel .goal{color:var(--mut);font-size:13.5px;margin:0 0 12px}
 .ppanel .lbl{font-family:var(--sans);font-weight:700;font-size:11px;text-transform:uppercase;
 letter-spacing:.05em;color:var(--ac);margin:14px 0 5px}
@@ -134,6 +134,39 @@ body{font-size:16px}.wrap{padding:16px 14px 50px}.stats{grid-template-columns:1f
 .pbtn{min-width:72px;font-size:11.5px}.flow .arw{display:none}.flow .node{flex-basis:44%}
 }
 </style><link rel="stylesheet" type="text/css" href="../../assets/css/reading-theme.css">
+<style>
+/* ── Per-page tuning, loaded AFTER reading-theme.css so it wins the cascade ──
+   (1) type a notch smaller across the board; (2) fixes for the dense code
+   tables and stat tiles that were squished/clipped in the narrow column. */
+/* Prose + headings slightly smaller (theme sets these !important, so match it). */
+html.cache-narrow p,html.cache-narrow li{font-size:14px!important}
+html.cache-narrow h1{font-size:23px!important}
+html.cache-narrow h2{font-size:18px!important}
+html.cache-narrow h3{font-size:16px!important}
+.dek{font-size:16px}.byline{font-size:12.5px}
+.note,.warn{font-size:14px}.mut{font-size:12.5px}
+.ppanel{font-size:13.5px}.ppanel .goal{font-size:12.5px}
+.card .body p,details.card>summary b{font-size:13.5px}
+.check li{font-size:13px}
+/* Phase-panel heads are now h3; keep them at panel scale, not the global h3. */
+.ppanel h3{font-size:14.5px!important;margin:0 0 3px!important}
+/* Stat row: pin four tiles across on desktop so the 4th can't wrap into its
+   label; smaller number + code so /security-review sits cleanly inside a tile. */
+.stats{grid-template-columns:repeat(4,1fr);gap:12px}
+.stat b{font-size:25px}.stat small{font-size:11.5px}
+.stat small code{font-size:10.5px;padding:1px 4px}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr}}
+/* Tables: the 4-column VulnShop table overflowed and CLIPPED its last column.
+   Fixed layout + wrapping code keeps every column inside the width; the widths
+   below give the code columns room without starving "What you get". */
+table.cap{table-layout:fixed;font-size:12px}
+.cap th,.cap td{padding:8px 6px;word-break:break-word;overflow-wrap:anywhere}
+.cap td code,.cap th code{font-size:11px;white-space:normal;word-break:break-word;
+padding:1px 4px;background:#f0ede5}
+/* Terminal / prompt blocks a hair smaller to match the new scale. */
+.term pre,.prompt pre{font-size:12px}
+code{font-size:12.5px}
+</style>
 <meta name="description" content="A field guide and seven-phase playbook for using Claude Code as a security copilot on authorized engagements — driving scanners, reviewing source, writing proof-of-concept exploits, and drafting the report, all under a permission model you control.">
 <meta property="og:description" content="A field guide and seven-phase playbook for using Claude Code as a security copilot on authorized engagements — driving scanners, reviewing source, writing proof-of-concept exploits, and drafting the report, all under a permission model you control.">
 <meta name="twitter:description" content="A field guide and seven-phase playbook for using Claude Code as a security copilot on authorized engagements — driving scanners, reviewing source, writing proof-of-concept exploits, and drafting the report, all under a permission model you control.">
@@ -308,7 +341,7 @@ its job, the tools it drives, and a copy-paste prompt to start from. Click a pha
 </div>
 
 <div class="ppanel on" data-p=0>
-<h4>Phase 0 &middot; Scope &amp; rules of engagement</h4>
+<h3>Phase 0 &middot; Scope &amp; rules of engagement</h3>
 <p class=goal>Goal: make the assistant scope-aware before a single tool runs.</p>
 <p>Put the rules of engagement where Claude reads them every session &mdash; a <code>SCOPE.md</code> or
 the project's <code>CLAUDE.md</code>. Then harden the permission layer so out-of-scope or
@@ -329,7 +362,7 @@ appendix and your evidence of staying in bounds.</p>
 </div>
 
 <div class=ppanel data-p=1>
-<h4>Phase 1 &middot; Reconnaissance (passive)</h4>
+<h3>Phase 1 &middot; Reconnaissance (passive)</h3>
 <p class=goal>Goal: map the attack surface without hammering the target.</p>
 <p>Claude chains passive OSINT tools and collapses the output into one deduplicated picture:
 subdomains, live hosts, technologies, and anything interesting leaking in public.</p>
@@ -347,7 +380,7 @@ sorted by how interesting the tech stack is. Don't run active scanners yet.</pre
 </div>
 
 <div class=ppanel data-p=2>
-<h4>Phase 2 &middot; Enumeration &amp; scanning (active)</h4>
+<h3>Phase 2 &middot; Enumeration &amp; scanning (active)</h3>
 <p class=goal>Goal: active discovery of services, endpoints, and parameters &mdash; and triage.</p>
 <p>This is where Claude's parsing shines. Scanners emit walls of text; the model turns them into a
 ranked worklist and cross-references versions against known CVEs.</p>
@@ -367,7 +400,7 @@ Flag anything unauthenticated or clearly outdated for follow-up.</pre></div>
 </div>
 
 <div class=ppanel data-p=3>
-<h4>Phase 3 &middot; Vulnerability analysis</h4>
+<h3>Phase 3 &middot; Vulnerability analysis</h3>
 <p class=goal>Goal: turn surface into concrete, ranked hypotheses. This is the model's best phase.</p>
 <p>If you have source (white-box, or you pulled it), point Claude at the tree and let it read.
 It traces tainted input from every HTTP handler to dangerous sinks &mdash; SQL, shell, file paths,
@@ -387,7 +420,7 @@ the tests to confirm.</p>
 </div>
 
 <div class=ppanel data-p=4>
-<h4>Phase 4 &middot; Exploitation (authorized PoC)</h4>
+<h3>Phase 4 &middot; Exploitation (authorized PoC)</h3>
 <p class=goal>Goal: prove impact with the smallest possible demonstration &mdash; then stop.</p>
 <p>Claude writes the proof-of-concept and iterates it against a target you control: a Python
 <code>requests</code> script, a <code>curl</code> chain, a crafted payload. Confirm SQLi with
@@ -407,7 +440,7 @@ the live target. Treat its confidence as a lead, never as proof.</div>
 </div>
 
 <div class=ppanel data-p=5>
-<h4>Phase 5 &middot; Post-exploitation (scoped)</h4>
+<h3>Phase 5 &middot; Post-exploitation (scoped)</h3>
 <p class=goal>Goal: demonstrate business impact within the rules of engagement &mdash; nothing more.</p>
 <p>Show the one pivot that proves why the finding matters &mdash; the privilege you gained, the data
 class you could reach &mdash; and collect evidence. This is deliberately the phase Claude is <em>least</em>
@@ -424,7 +457,7 @@ no data pulled beyond a redacted screenshot.</pre></div>
 </div>
 
 <div class=ppanel data-p=6>
-<h4>Phase 6 &middot; Reporting</h4>
+<h3>Phase 6 &middot; Reporting</h3>
 <p class=goal>Goal: turn a messy session into a client-ready deliverable. The other very-high-fit phase.</p>
 <p>Hand Claude your notes and evidence; it produces structured findings &mdash; title, CVSS 3.1 vector
 and score, affected asset, numbered reproduction, evidence reference, business impact, and a
@@ -670,7 +703,7 @@ check that turns out to matter.</p>
 
 <section id=vulnshop><h2><span class=n>4</span>The practice target: VulnShop</h2>
 <p>Reading about payloads only gets you so far &mdash; you need something to break. This report ships a
-runnable one. <b>VulnShop</b> is a ~150-line Flask app in <code>lab/vulnshop.py</code> that wires up
+runnable one. <b>VulnShop</b> is a ~210-line Flask app in <code>lab/vulnshop.py</code> that wires up
 every class in the field manual as a real, exploitable endpoint. It binds to <code>127.0.0.1</code>,
 so the target is a machine you own and testing it is authorized by definition.</p>
 <div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>run the lab<button class=copy>Copy</button></div><pre><span class=cmd>pip install flask</span>
@@ -742,8 +775,9 @@ the authorization is the whole thing.</div>
 <p>VulnShop was localhost with the source in your hand. The next rung is a <b>real, hosted</b> app you're
 authorized to test &mdash; a <a href="https://portswigger.net/web-security">PortSwigger Web Security Academy</a>
 lab, a hosted <a href="https://owasp.org/www-project-juice-shop/">Juice Shop</a>, a Hack The Box /
-TryHackMe box, or an in-scope <b>bug-bounty</b> asset. The vulnerability classes are the same five
-(1&nbsp;SQLi, 2&nbsp;XSS, 3&nbsp;access control, 4&nbsp;auth/JWT, 6&nbsp;SSTI/RCE), but they show up in
+TryHackMe box, or an in-scope <b>bug-bounty</b> asset. Five classes carry over &mdash; keeping the
+field-manual numbers (1&nbsp;SQLi, 2&nbsp;XSS, 3&nbsp;access control, 4&nbsp;auth/JWT, 6&nbsp;SSTI/RCE;
+5&nbsp;SSRF and the file-based classes are covered above and skipped here) &mdash; but they show up in
 their <em>blind, filtered, and hardened</em> forms. What changes is discipline more than technique.</p>
 <div class=note><b>These are authorized targets.</b> Academy labs are explicitly yours to break; a bounty
 program's scope <em>is</em> your written authorization. That's the whole reason this section can exist &mdash;
@@ -967,14 +1001,14 @@ authorize anything. Written permission and legal scope come from you, every time
 <section id=checklist><h2>The one-screen checklist</h2>
 <p class=mut>Before you start an engagement. Tap to tick off &mdash; kept in your browser only.</p>
 <ul class=check>
-<li><input type=checkbox><span><span class=k>Authorization in hand.</span> Signed scope / engagement letter / CTF rules covering every target.</span></li>
-<li><input type=checkbox><span><span class=k>Scope loaded.</span> In- and out-of-scope ranges written into <code>SCOPE.md</code> / <code>CLAUDE.md</code>.</span></li>
-<li><input type=checkbox><span><span class=k>Guardrails set.</span> <code>settings.json</code> allow-lists recon tools, deny-lists destructive commands and out-of-scope hosts.</span></li>
-<li><input type=checkbox><span><span class=k>Bypass off.</span> No <code>--dangerously-skip-permissions</code> on anything you don't own.</span></li>
-<li><input type=checkbox><span><span class=k>Logging on.</span> The agent keeps an engagement log of every command and rationale.</span></li>
-<li><input type=checkbox><span><span class=k>Verification discipline.</span> Every finding reproduced live before it's written up.</span></li>
-<li><input type=checkbox><span><span class=k>Minimal impact.</span> Prove and stop &mdash; no persistence, no exfiltration beyond evidence.</span></li>
-<li><input type=checkbox><span><span class=k>Defensive mirror.</span> <code>/security-review</code> or the CI action running on the codebase too.</span></li>
+<li><input type=checkbox aria-label="Authorization in hand"><span><span class=k>Authorization in hand.</span> Signed scope / engagement letter / CTF rules covering every target.</span></li>
+<li><input type=checkbox aria-label="Scope loaded"><span><span class=k>Scope loaded.</span> In- and out-of-scope ranges written into <code>SCOPE.md</code> / <code>CLAUDE.md</code>.</span></li>
+<li><input type=checkbox aria-label="Guardrails set"><span><span class=k>Guardrails set.</span> <code>settings.json</code> allow-lists recon tools, deny-lists destructive commands and out-of-scope hosts.</span></li>
+<li><input type=checkbox aria-label="Bypass off"><span><span class=k>Bypass off.</span> No <code>--dangerously-skip-permissions</code> on anything you don't own.</span></li>
+<li><input type=checkbox aria-label="Logging on"><span><span class=k>Logging on.</span> The agent keeps an engagement log of every command and rationale.</span></li>
+<li><input type=checkbox aria-label="Verification discipline"><span><span class=k>Verification discipline.</span> Every finding reproduced live before it's written up.</span></li>
+<li><input type=checkbox aria-label="Minimal impact"><span><span class=k>Minimal impact.</span> Prove and stop &mdash; no persistence, no exfiltration beyond evidence.</span></li>
+<li><input type=checkbox aria-label="Defensive mirror"><span><span class=k>Defensive mirror.</span> <code>/security-review</code> or the CI action running on the codebase too.</span></li>
 </ul>
 </section>
 
