@@ -31,7 +31,15 @@
 body, body *:not(script):not(style) {
 	font-family: 'Josefin Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
-code, code *, pre, pre *, kbd, samp, tt {
+/* Monospace for code/terminal blocks. This MUST be scoped to html.cache-narrow:
+   the blanket rule above matches code/pre via `body *:not(script):not(style)`
+   (specificity 0,0,3), and an unscoped `code`/`pre` selector (0,0,1) loses to it
+   even with !important — so inline <code> and <pre> would render in Josefin,
+   which also mangles ASCII alignment in terminal blocks. The html.cache-narrow
+   prefix (0,1,1) outweighs the blanket rule and restores the mono face. */
+html.cache-narrow code, html.cache-narrow code *,
+html.cache-narrow pre, html.cache-narrow pre *,
+html.cache-narrow kbd, html.cache-narrow samp, html.cache-narrow tt {
 	font-family: 'Cascadia Code', Consolas, 'Courier New', monospace !important;
 }
 
