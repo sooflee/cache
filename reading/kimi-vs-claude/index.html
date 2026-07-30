@@ -1,0 +1,562 @@
+<!doctype html><html class="cache-narrow" lang=en><head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4E4BE1S6R6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4E4BE1S6R6');
+</script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Claude vs. Kimi K3 &mdash; cache</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%237b4fa5%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20x%3D%274%27%20y%3D%274%27%20width%3D%2715%27%20height%3D%2715%27%20rx%3D%273%27/%3E%3Crect%20x%3D%2713%27%20y%3D%2713%27%20width%3D%2715%27%20height%3D%2715%27%20rx%3D%273%27/%3E%3C/svg%3E"><style>
+:root{--bg:#fbfaf7;--ink:#1c1b19;--mut:#6f6a62;--ac:#7b4fa5;--acbg:#f2ecf8;
+--line:#e6e1d8;--tile:#f5f2ec;--warn:#b4453a;--warnbg:#fbeeec;--ok:#2f8f5b;--term:#1b2733;
+--serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scrollbar-gutter:stable}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 var(--serif);
+-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.wrap{max-width:900px;margin:0 auto;padding:20px 22px 64px}
+p{margin:0 0 1em}em{font-style:italic}a{color:var(--ac)}
+ul,ol{padding-left:1.2em}li{margin:.35em 0}
+.mut{font-family:var(--sans);color:var(--mut);font-size:13.5px;line-height:1.55}
+code{background:#f0ede5;padding:2px 6px;border-radius:4px;font-size:14px;
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.kick{font-family:var(--sans);color:var(--ac);letter-spacing:.14em;text-transform:uppercase;
+font-size:12px;font-weight:700}
+header{padding:34px 0 22px;margin-bottom:8px;border-bottom:2px solid var(--ink)}
+header h1{font-size:clamp(26px,3.6vw,38px);line-height:1.12;letter-spacing:-.015em;
+margin:.2em 0 .3em;font-weight:700}
+.dek{font-size:18px;line-height:1.5;color:#3a3833;margin:0 0 18px}
+.dek b{color:var(--ac)}
+.byline{font-family:var(--sans);font-size:13.5px;color:var(--mut)}
+.byline a{color:var(--ac)}
+section{margin:36px 0;padding:0}
+h2{font-size:23px;line-height:1.25;font-weight:700;letter-spacing:-.01em;margin:0 0 .5em}
+h2 .n{font-family:var(--sans);font-size:14px;font-weight:700;color:#fff;background:var(--ac);
+border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;
+vertical-align:middle;margin-right:10px}
+h3{font-size:18px;font-weight:700;margin:1.6em 0 .4em;letter-spacing:-.01em}
+/* callouts */
+.note{background:var(--acbg);border-left:3px solid var(--ac);border-radius:0 6px 6px 0;
+padding:13px 18px;margin:18px 0;font-size:15.5px;line-height:1.6;font-family:var(--sans)}
+.note b{color:var(--ac)}
+.warn{background:var(--warnbg);border-left:3px solid var(--warn);border-radius:0 6px 6px 0;
+padding:13px 18px;margin:18px 0;font-size:15.5px;line-height:1.6;font-family:var(--sans)}
+.warn b{color:var(--warn)}
+.warn .h{display:block;font-weight:700;color:var(--warn);text-transform:uppercase;
+letter-spacing:.05em;font-size:12px;margin-bottom:4px}
+/* stat row */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;margin:22px 0}
+.stat{text-align:center}
+.stat b{display:block;font-size:30px;color:var(--ac);font-weight:700;line-height:1}
+.stat small{font-family:var(--sans);color:var(--mut);font-size:12.5px;display:block;margin-top:7px;line-height:1.4}
+/* capability matrix */
+table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:14px;margin:16px 0}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+border-bottom:1.5px solid var(--ink)}
+.cap tr:hover td{background:var(--tile)}
+.pill{display:inline-block;font-family:var(--sans);font-size:11px;font-weight:700;
+border-radius:20px;padding:2px 10px;white-space:nowrap}
+.p-vhigh{background:#e7f3ec;color:#1f6f47}.p-high{background:#eaf1f7;color:#2c6196}
+.p-med{background:#fbf3e3;color:#9a6a13}.p-low{background:#f3ece9;color:#8a4b41}
+/* phase stepper */
+.stepper{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:16px 16px 4px;margin:20px 0}
+.pbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.pbtn{flex:1 1 auto;min-width:96px;font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;
+background:#fff;color:var(--mut);border:1px solid var(--line);border-radius:9px;padding:9px 8px;
+text-align:center;transition:all .15s;line-height:1.25}
+.pbtn .pn{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;opacity:.7}
+.pbtn:hover{border-color:var(--ac);color:var(--ink)}
+.pbtn.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.pbtn.on .pn{opacity:.85}
+.ppanel{display:none;padding:14px 4px 10px;font-family:var(--sans);font-size:14.5px;line-height:1.6;animation:fade .25s ease}
+.ppanel.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ppanel h3{font-family:var(--sans);font-size:16px;margin:0 0 2px;color:var(--ink)}
+.ppanel .goal{color:var(--mut);font-size:13.5px;margin:0 0 12px}
+.ppanel .lbl{font-family:var(--sans);font-weight:700;font-size:11px;text-transform:uppercase;
+letter-spacing:.05em;color:var(--ac);margin:14px 0 5px}
+.ppanel ul{margin:.2em 0 .6em;padding-left:1.15em}.ppanel li{margin:.28em 0}
+/* code / terminal / prompt blocks */
+.term,.prompt{position:relative;border-radius:9px;margin:10px 0;overflow:hidden;border:1px solid var(--line)}
+.term{background:var(--term)}
+.term pre,.prompt pre{margin:0;padding:14px 15px;overflow-x:auto;font-size:13px;line-height:1.55;
+font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word}
+.term pre{color:#d6e2ec}.term .cmt{color:#6f8ba0}.term .cmd{color:#7fd3a3}
+.prompt{background:#f3f1ea}.prompt pre{color:#2a3b47}
+.blk-h{display:flex;align-items:center;gap:8px;padding:7px 12px;font-family:var(--sans);
+font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.term .blk-h{background:#12202c;color:#8fb0c6}.prompt .blk-h{background:#e8e3d8;color:var(--mut)}
+.blk-h .dot{width:9px;height:9px;border-radius:50%;background:#e2544a}
+.blk-h .dot+.dot{background:#e6b53c}.blk-h .dot+.dot+.dot{background:#4caf6b}
+.copy{margin-left:auto;cursor:pointer;border:0;border-radius:6px;padding:3px 10px;font-family:var(--sans);
+font-size:11px;font-weight:700;background:rgba(255,255,255,.14);color:inherit;transition:background .15s}
+.prompt .copy{background:rgba(0,0,0,.06)}
+.copy:hover{background:rgba(127,211,163,.28)}.prompt .copy:hover{background:rgba(53,123,179,.16)}
+.copy.done{background:var(--ok);color:#fff}
+/* prompt library cards */
+details.card{background:var(--tile);border:1px solid var(--line);border-radius:10px;margin:10px 0;overflow:hidden}
+details.card>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;user-select:none;
+padding:13px 16px;transition:background .15s;font-family:var(--sans)}
+details.card>summary:hover{background:#efeae0}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::before{content:"\25B8";color:var(--ac);font-size:13px;transition:transform .15s}
+details.card[open]>summary::before{transform:rotate(90deg)}
+details.card>summary b{font-size:15px}
+details.card>summary .tag{margin-left:auto;font-family:var(--sans);font-size:10.5px;font-weight:700;
+text-transform:uppercase;letter-spacing:.04em;color:var(--ac);background:#fff;border:1px solid var(--line);
+border-radius:20px;padding:2px 9px}
+.card .body{padding:2px 16px 14px}
+/* checklist */
+.check{list-style:none;padding:0;margin:14px 0;font-family:var(--sans)}
+.check li{display:flex;gap:11px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);
+border-radius:8px;margin:7px 0;background:var(--tile);font-size:14px;line-height:1.5;cursor:pointer;transition:all .15s}
+.check li:hover{border-color:var(--ac)}
+.check input{margin-top:3px;width:16px;height:16px;accent-color:var(--ac);cursor:pointer;flex:none}
+.check li.done{opacity:.55;background:#eef4ef;border-color:#cfe3d6}
+.check li.done span{text-decoration:line-through}
+.check .k{font-weight:700}
+/* pipeline diagram */
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:18px 0;font-family:var(--sans)}
+.flow .node{flex:1 1 90px;text-align:center;background:var(--tile);border:1px solid var(--line);
+border-radius:8px;padding:10px 6px;font-size:12px;font-weight:600;position:relative;min-width:88px}
+.flow .node small{display:block;color:var(--mut);font-size:10px;font-weight:400;margin-top:2px}
+.flow .arw{display:flex;align-items:center;color:var(--ac);font-weight:700;padding:0 3px}
+.divider{text-align:center;margin:60px 0 12px}
+.divider span{font-family:var(--sans);color:var(--ac);letter-spacing:.16em;text-transform:uppercase;
+font-size:12px;font-weight:700}
+.divider:after{content:"";display:block;width:56px;height:2px;background:var(--ac);margin:14px auto 0}
+footer{margin-top:54px;padding-top:22px;border-top:1px solid var(--line);
+font-family:var(--sans);color:var(--mut);font-size:13px;line-height:1.6}
+@media(max-width:600px){
+body{font-size:16px}.wrap{padding:16px 14px 50px}.stats{grid-template-columns:1fr 1fr}
+.pbtn{min-width:72px;font-size:11.5px}.flow .arw{display:none}.flow .node{flex-basis:44%}
+}
+</style><link rel="stylesheet" type="text/css" href="../../assets/css/reading-theme.css">
+<style>
+/* ── Per-page tuning, loaded AFTER reading-theme.css so it wins the cascade ──
+   (1) type a notch smaller across the board; (2) fixes for the dense code
+   tables and stat tiles that were squished/clipped in the narrow column. */
+/* Prose + headings slightly smaller (theme sets these !important, so match it). */
+html.cache-narrow p,html.cache-narrow li{font-size:14px!important}
+html.cache-narrow h1{font-size:23px!important}
+html.cache-narrow h2{font-size:18px!important}
+html.cache-narrow h3{font-size:16px!important}
+.dek{font-size:16px}.byline{font-size:12.5px}
+.note,.warn{font-size:14px}.mut{font-size:12.5px}
+.ppanel{font-size:13.5px}.ppanel .goal{font-size:12.5px}
+.card .body p,details.card>summary b{font-size:13.5px}
+.check li{font-size:13px}
+/* Phase-panel heads are now h3; keep them at panel scale, not the global h3. */
+.ppanel h3{font-size:14.5px!important;margin:0 0 3px!important}
+/* Stat row: pin four tiles across on desktop so the 4th can't wrap into its
+   label; smaller number + code so long values sit cleanly inside a tile. */
+.stats{grid-template-columns:repeat(4,1fr);gap:12px}
+.stat b{font-size:25px}.stat small{font-size:11.5px}
+.stat small code{font-size:10.5px;padding:1px 4px}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr}}
+/* Tables: fixed layout + wrapping cells so the 3-4 column comparison tables
+   stay fully inside the narrow reading column on phones. */
+table.cap{table-layout:fixed;font-size:12px}
+.cap th,.cap td{padding:8px 6px;word-break:break-word;overflow-wrap:anywhere}
+.cap td code,.cap th code{font-size:11px;white-space:normal;word-break:break-word;
+padding:1px 4px;background:#f0ede5}
+/* Terminal / prompt blocks a hair smaller to match the new scale. */
+.term pre,.prompt pre{font-size:12px}
+code{font-size:12.5px}
+</style>
+<style>
+/* ── charts ── */
+.fig{margin:22px 0 26px}
+.fig-title{font-family:var(--sans);font-size:14px;font-weight:700;margin:0 0 2px}
+.fig-sub{font-family:var(--sans);font-size:12px;color:var(--mut);margin:0 0 8px}
+.vlegend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--sans);font-size:12.5px;color:var(--mut);margin:0 0 4px}
+.vlegend .sw{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+.fig-scroll{overflow-x:auto}
+svg.chart{width:100%;height:auto;display:block}
+@media(max-width:600px){svg.chart{min-width:560px}}
+.chart .grid{stroke:#e6e1d8;stroke-width:1}
+.chart .axis{stroke:#c9c3b8;stroke-width:1}
+.chart .leader{stroke:#c9c3b8;stroke-width:1}
+.chart .tick{font:12.5px var(--sans);fill:var(--mut)}
+.chart .dl{font:600 12px var(--sans);fill:var(--ink)}
+.chart .dlv{font-weight:400;fill:var(--mut)}
+.chart .pt{cursor:pointer;outline:none}
+.chart .pt:hover circle:last-child,.chart .pt:focus circle:last-child{r:6}
+figcaption.mut{margin-top:8px}
+.viz-tip{position:fixed;pointer-events:none;background:#fff;border:1px solid var(--line);border-radius:8px;
+padding:7px 11px;font:12.5px/1.45 var(--sans);color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.09);
+z-index:2147483000;display:none;max-width:250px}
+</style>
+<meta name="description" content="Kimi K3 beats Claude on some coding benchmarks at nearly half of Opus pricing — and it's open-weight. A working comparison of capability, cost, and the three environment variables between you and switching, plus the case for staying.">
+<meta property="og:description" content="Kimi K3 beats Claude on some coding benchmarks at nearly half of Opus pricing — and it's open-weight. A working comparison of capability, cost, and the three environment variables between you and switching, plus the case for staying.">
+<meta name="twitter:description" content="Kimi K3 beats Claude on some coding benchmarks at nearly half of Opus pricing — and it's open-weight. A working comparison of capability, cost, and the three environment variables between you and switching, plus the case for staying.">
+<meta property="og:title" content="Claude vs. Kimi K3: Should You Switch?">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cache">
+<meta property="og:url" content="https://cache.bwang.io/reading/kimi-vs-claude/index.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Claude vs. Kimi K3 &mdash; cache">
+</head><body>
+<style>@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:400;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');}@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:600;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');}@keyframes cacheFadeIn{from{opacity:0;}to{opacity:1;}}body{animation:cacheFadeIn .4s ease both;}</style><style>
+@view-transition{navigation:auto;}
+.nav-float{position:fixed;top:22px;left:22px;z-index:2147483647;pointer-events:none;
+	font:400 14px/1.45 'Josefin Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-min-cb{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.nav-card{width:230px;max-height:calc(100vh - 44px);overflow-y:auto;
+	background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.16);
+	border-radius:13px;padding:14px 0 16px;pointer-events:auto;transform-origin:top left;
+	transition:opacity .24s ease,transform .24s ease;}
+.nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;}
+.nav-home{display:inline-flex;align-items:center;color:#9a9a9a;text-decoration:none;
+	padding:2px;transition:color .15s;}
+.nav-home:hover{color:#333;}
+.nav-mini{cursor:pointer;color:#c4c4c4;font-size:21px;line-height:.5;padding:0 3px 6px;
+	user-select:none;transition:color .15s;}
+.nav-mini:hover{color:#333;}
+.nav-restore{position:absolute;top:0;left:0;display:inline-flex;align-items:center;gap:8px;
+	cursor:pointer;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.2);
+	color:#555;border-radius:11px;padding:8px 14px;font-size:13px;user-select:none;
+	opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.nav-restore::before{content:"";width:15px;height:11px;flex:none;color:#888;
+	background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left center/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left bottom/100% 1.5px no-repeat;}
+.nav-restore:hover{color:#111;}
+.nav-min-cb:checked ~ .nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+.nav-min-cb:checked ~ .nav-restore{opacity:1;pointer-events:auto;}
+.nav-card a.item{display:block;padding:7px 20px;color:#333;text-decoration:none;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-card a.item:hover{background:#f6f6f6;color:#111;}
+.nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-radio{position:absolute;opacity:0;pointer-events:none;}
+.nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
+.nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
+	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
+.nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
+.nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+	color:#111;border-bottom-color:#357BB3;}
+.nav-feed{display:none;}
+.nav-card #nav-cache:checked ~ .nf-cache{display:block;}
+.nav-card #nav-reading:checked ~ .nf-reading{display:block;}
+.nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+@media (max-width:1330px){
+	.nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+	.nav-restore{opacity:1;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-card{opacity:1;transform:none;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-restore{opacity:0;pointer-events:none;}
+}
+@media (max-width:700px){.nav-card{width:min(230px,calc(100vw - 36px));}}
+@media (prefers-reduced-motion: reduce){.nav-card,.nav-restore{transition:none;}}
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label></div><div class="nav-feed nf-cache"><a class="item" href="../../token-playbook.html">Token Playbook</a><a class="item" href="../../some-projects.html">Some Projects</a><a class="item" href="../../practical-poker.html">Practical Poker</a><a class="item" href="../../ecom-experiments.html">Ecom Experiments</a><a class="item" href="../../why-crypto.html">Why Crypto</a><a class="item" href="../../growing-peppers.html">Growing Peppers</a><a class="item" href="../../book-reviews.html">Book Reviews</a><a class="item" href="../../wasted-time.html">Dumb Poker</a><a class="item" href="../../trading-automation.html">Trading Automation</a><a class="item" href="../../api-in-rust.html">API in Rust</a><a class="item" href="../../cicd-on-gcp.html">CI/CD on GCP + SQL</a><a class="item" href="../../nomad-and-waypoint.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../poker-pros/index.html">High Roller Ledger</a><a class="item" href="../spacs/index.html">Understanding SPACs</a><a class="item" href="../ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../watches/index.html">Watches That Beat Retail</a><a class="item" href="../wine/index.html">Wine as an Investment Asset</a><a class="item" href="../real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../ncaa/index.html">Predicting March Madness 2026</a><a class="item" href="../klefki/index.html">Penetration Testing with Claude Code</a><a class="item active" href="../kimi-vs-claude/index.html">Claude vs. Kimi K3: Should You Switch?</a></div><div class="nav-feed nf-standalone"><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener">Stock Picker <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener">Newsletter <span aria-hidden="true">↗</span></a></div></div></div>
+
+<div class=wrap>
+<header>
+<h1>Claude vs. Kimi K3: should you switch?</h1>
+<p class=dek>Moonshot's 2.8-trillion-parameter <b>Kimi K3</b> is the largest open-weight model ever
+released. It tops Claude on a frontend-coding leaderboard, undercuts Opus on price, and slots into
+Claude Code with three environment variables. A comparison of capability, cost, and the switching
+path &mdash; and the case for <b>staying</b>.</p>
+<div class=byline>A study, July 30, 2026 &middot; benchmarks and prices as of late July 2026 &middot; <a href="#verdict">jump to the verdict &darr;</a></div>
+</header>
+
+<nav class="outline" aria-label="Outline">
+  <a href="#tldr">0 &middot; TL;DR</a>
+  <a href="#contenders">1 &middot; The contenders</a>
+  <a href="#bench">2 &middot; Benchmarks</a>
+  <a href="#price">3 &middot; Pricing</a>
+  <a href="#wins">4 &middot; Where each wins</a>
+  <a href="#switch">5 &middot; The switching path</a>
+  <a href="#giveup">6 &middot; What you give up</a>
+  <a href="#next">7 &middot; What happens next</a>
+  <a href="#verdict">8 &middot; The verdict</a>
+</nav>
+
+<section id=tldr>
+<h2>TL;DR</h2>
+<div class=note><b>K3 is the credible answer to a high Claude bill.</b> It matches or beats Claude
+on several coding benchmarks at ~40% below Opus blended cost, and the weights are open &mdash; nobody
+can deprecate it out from under you. On the hardest long-horizon work, Opus 5 is still the safer
+default; Fable 5 sits above both. Keep Opus or Fable where a failed run is expensive. Give the
+routine work to K3 if it wins your eval.</div>
+
+<div class=stats>
+<div class=stat><b>2.8T</b><small>K3 parameters &mdash; largest open-weight model ever</small></div>
+<div class=stat><b>$2.90</b><small>K3 input per 1M tokens, vs $5.00 for Claude Opus 5</small></div>
+<div class=stat><b>1M</b><small>token context window &mdash; both models</small></div>
+<div class=stat><b>32.9</b><small>K3 output tokens/sec, vs 53.7 for Opus 5</small></div>
+</div>
+</section>
+
+<section id=contenders>
+<h2><span class=n>1</span>The contenders</h2>
+<p><b>Claude</b> is Anthropic's closed-weight family: Haiku 4.5 for cheap fast tasks, Sonnet 5 as
+the volume workhorse, Opus 5 for hard agentic coding, and Fable 5 at the top of the range. The
+relevant tiers here are <b>Opus 5 and Fable 5</b>; that's what K3 has to beat. All current tiers run a 1M-token context window with 128K max output. The moat isn't just the models
+&mdash; it's the harness around them: Claude Code, adaptive thinking with effort control, prompt
+caching, server-side tools, and a first-party API that the whole toolchain is tuned against.</p>
+<p><b>Kimi K3</b> is Moonshot AI's flagship, released July 16, 2026, with the full 2.8-trillion-parameter
+weights published on July 27. It's a mixture-of-experts model (KDA plus attention residuals for
+computational efficiency), natively multimodal, with a 1M-token context window &mdash; up from 256K
+on its 1.1T-parameter predecessor K2.7. It's positioned squarely at agentic coding: navigating large
+repositories, using tools, debugging, and iterating against screenshots, logs, and test output.</p>
+</section>
+
+<section id=bench>
+<h2><span class=n>2</span>What the benchmarks say</h2>
+<p>K3 placed in the top three across six coding benchmarks at launch, and took the #1 spot on
+Arena.AI's Frontend Code Arena &mdash; ahead of both Claude Fable 5 and GPT-5.6 Sol. On the
+independent Artificial Analysis index, though, Claude Opus 5 still edges it out on raw intelligence
+and generates substantially faster.</p>
+<table class=cap>
+<tr><th class=l>Measure</th><th class=l>Kimi K3</th><th class=l>Comparison</th><th class=l>Read</th></tr>
+<tr><td class=l>Frontend Code Arena (Arena.AI)</td><td class=l><b>1,679 &mdash; #1</b></td><td class=l>ahead of Claude Fable 5, GPT-5.6 Sol</td><td class=l>K3's headline win; visual/frontend work is its strongest suit</td></tr>
+<tr><td class=l>Terminal-Bench 2.1</td><td class=l>88.3</td><td class=l>&minus;0.5 vs GPT-5.6 Sol</td><td class=l>effectively tied at the top</td></tr>
+<tr><td class=l>SWE Marathon</td><td class=l><b>42.0 &mdash; leads</b></td><td class=l>leads all models</td><td class=l>long-horizon software tasks</td></tr>
+<tr><td class=l>ProgramBench (raw pass)</td><td class=l><b>77.8 &mdash; leads</b></td><td class=l>leads all models</td><td class=l>vendor-reported</td></tr>
+<tr><td class=l>DeepSWE / FrontierSWE</td><td class=l>67.5 / 81.2</td><td class=l>top-3</td><td class=l>vendor-reported</td></tr>
+<tr><td class=l>AA Intelligence Index</td><td class=l>57</td><td class=l>Opus 5 (high effort): <b>59</b></td><td class=l>independent; Claude ahead</td></tr>
+<tr><td class=l>Output speed</td><td class=l>32.9 tok/s</td><td class=l>Opus 5: <b>53.7 tok/s</b></td><td class=l>Claude ~60% faster in generation</td></tr>
+<tr><td class=l>Time to first token</td><td class=l><b>4.2s</b></td><td class=l>Opus 5 (high): 12.8s</td><td class=l>Opus figure includes thinking time</td></tr>
+</table>
+<div class=warn><span class=h>Benchmark caveats</span>
+Several of the coding scores above are Moonshot's own reported numbers, and launch-week benchmarks
+are marketing as much as measurement. The independent signal (Artificial Analysis, early hands-on
+comparisons) is more modest: K3 is genuinely in the frontier pack, slightly behind Opus 5 on
+intelligence, clearly behind on throughput, clearly ahead on price. For <em>your</em> workload, the
+only benchmark that matters is running both on a week of your real tasks.</div>
+
+<h3 id=longview>The long view: capability over time</h3>
+<p>Zoom out and the question looks different. On SWE-bench
+Verified &mdash; the share of real GitHub issues a model can resolve end-to-end &mdash; frontier
+models went from a third of issues in mid-2024 to over 90% today. The line to watch is the aqua
+one: open-weight models trailed the frontier by 20&ndash;30 points for two years, and K3 is the
+first to close the gap almost entirely.</p>
+<figure class=fig>
+<div class=fig-title>Real-world coding ability, mid-2024 &rarr; mid-2026</div>
+<div class=fig-sub>SWE-bench Verified &mdash; % of 500 real GitHub issues resolved, by model release date</div>
+<div class=vlegend><span><span class=sw style="background:#2a78d6"></span>Anthropic</span><span><span class=sw style="background:#eb6834"></span>OpenAI</span><span><span class=sw style="background:#1baf7a"></span>Open-weight</span></div>
+<div class=fig-scroll><svg class="chart" viewBox="0 0 760 380" role="img" aria-label="Line chart of SWE-bench Verified scores by model release date, June 2024 to July 2026, rising from 33 percent to 96 percent" preserveAspectRatio="xMidYMid meet"><line x1="48" y1="340.0" x2="610" y2="340.0" class="grid"/><text x="40" y="344.0" text-anchor="end" class="tick">0%</text><line x1="48" y1="260.0" x2="610" y2="260.0" class="grid"/><text x="40" y="264.0" text-anchor="end" class="tick">25%</text><line x1="48" y1="180.0" x2="610" y2="180.0" class="grid"/><text x="40" y="184.0" text-anchor="end" class="tick">50%</text><line x1="48" y1="100.0" x2="610" y2="100.0" class="grid"/><text x="40" y="104.0" text-anchor="end" class="tick">75%</text><line x1="48" y1="20.0" x2="610" y2="20.0" class="grid"/><text x="40" y="24.0" text-anchor="end" class="tick">100%</text><line x1="88.0" y1="340" x2="88.0" y2="345" class="grid"/><text x="88.0" y="361" text-anchor="middle" class="tick">Jul '24</text><line x1="205.5" y1="340" x2="205.5" y2="345" class="grid"/><text x="205.5" y="361" text-anchor="middle" class="tick">Jan '25</text><line x1="323.1" y1="340" x2="323.1" y2="345" class="grid"/><text x="323.1" y="361" text-anchor="middle" class="tick">Jul '25</text><line x1="440.7" y1="340" x2="440.7" y2="345" class="grid"/><text x="440.7" y="361" text-anchor="middle" class="tick">Jan '26</text><line x1="558.3" y1="340" x2="558.3" y2="345" class="grid"/><text x="558.3" y="361" text-anchor="middle" class="tick">Jul '26</text><line x1="48" y1="340" x2="610" y2="340" class="axis"/><polyline points="78.2,233.1 156.6,183.2 234.9,140.6 293.7,107.4 372.1,93.0 411.3,81.1 470.1,59.7 568.1,32.8" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><polyline points="195.8,183.5 274.1,118.9 352.5,100.3 509.3,68.0 568.1,32.2" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><polyline points="195.8,205.6 215.3,182.6 332.9,129.4 568.1,41.1" fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><text x="72.2" y="257.1" text-anchor="start" class="dl">Claude 3.5 Sonnet <tspan class="dlv">33.4%</tspan></text><text x="183.8" y="173.5" text-anchor="end" class="dl">o1 <tspan class="dlv">48.9%</tspan></text><text x="197.8" y="227.6" text-anchor="middle" class="dl">DeepSeek V3 <tspan class="dlv">42.0%</tspan></text><text x="340.9" y="145.4" text-anchor="start" class="dl">Kimi K2 <tspan class="dlv">65.8%</tspan></text><line x1="575.1" y1="32.2" x2="624" y2="30.0" class="leader"/><text x="628" y="34.0" class="dl">GPT-5.6 Sol <tspan class="dlv">96.2%</tspan></text><line x1="575.1" y1="32.8" x2="624" y2="45.0" class="leader"/><text x="628" y="49.0" class="dl">Claude Opus 5 <tspan class="dlv">96.0%</tspan></text><line x1="575.1" y1="41.1" x2="624" y2="60.0" class="leader"/><text x="628" y="64.0" class="dl">Kimi K3 <tspan class="dlv">93.4%</tspan></text><g class="pt" tabindex="0" role="img" aria-label="Claude 3.5 Sonnet — Jun 2024 · 33.4% · Anthropic" data-tip="Claude 3.5 Sonnet — Jun 2024 · 33.4% · Anthropic"><circle cx="78.2" cy="233.1" r="13" fill="transparent"/><circle cx="78.2" cy="233.1" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude 3.5 Sonnet v2 — Oct 2024 · 49.0% · Anthropic" data-tip="Claude 3.5 Sonnet v2 — Oct 2024 · 49.0% · Anthropic"><circle cx="156.6" cy="183.2" r="13" fill="transparent"/><circle cx="156.6" cy="183.2" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude 3.7 Sonnet — Feb 2025 · 62.3% · Anthropic" data-tip="Claude 3.7 Sonnet — Feb 2025 · 62.3% · Anthropic"><circle cx="234.9" cy="140.6" r="13" fill="transparent"/><circle cx="234.9" cy="140.6" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude Sonnet 4 — May 2025 · 72.7% · Anthropic" data-tip="Claude Sonnet 4 — May 2025 · 72.7% · Anthropic"><circle cx="293.7" cy="107.4" r="13" fill="transparent"/><circle cx="293.7" cy="107.4" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude Sonnet 4.5 — Sep 2025 · 77.2% · Anthropic" data-tip="Claude Sonnet 4.5 — Sep 2025 · 77.2% · Anthropic"><circle cx="372.1" cy="93.0" r="13" fill="transparent"/><circle cx="372.1" cy="93.0" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude Opus 4.5 — Nov 2025 · 80.9% · Anthropic" data-tip="Claude Opus 4.5 — Nov 2025 · 80.9% · Anthropic"><circle cx="411.3" cy="81.1" r="13" fill="transparent"/><circle cx="411.3" cy="81.1" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude Opus 4.7 — early 2026 · 87.6% · Anthropic" data-tip="Claude Opus 4.7 — early 2026 · 87.6% · Anthropic"><circle cx="470.1" cy="59.7" r="13" fill="transparent"/><circle cx="470.1" cy="59.7" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude Opus 5 — 2026 · 96.0% · Anthropic" data-tip="Claude Opus 5 — 2026 · 96.0% · Anthropic"><circle cx="568.1" cy="32.8" r="13" fill="transparent"/><circle cx="568.1" cy="32.8" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="o1 — Dec 2024 · 48.9% · OpenAI" data-tip="o1 — Dec 2024 · 48.9% · OpenAI"><circle cx="195.8" cy="183.5" r="13" fill="transparent"/><circle cx="195.8" cy="183.5" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="o3 — Apr 2025 · 69.1% · OpenAI" data-tip="o3 — Apr 2025 · 69.1% · OpenAI"><circle cx="274.1" cy="118.9" r="13" fill="transparent"/><circle cx="274.1" cy="118.9" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="GPT-5 — Aug 2025 · 74.9% · OpenAI" data-tip="GPT-5 — Aug 2025 · 74.9% · OpenAI"><circle cx="352.5" cy="100.3" r="13" fill="transparent"/><circle cx="352.5" cy="100.3" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="GPT-5.3 — 2026 · 85.0% · OpenAI" data-tip="GPT-5.3 — 2026 · 85.0% · OpenAI"><circle cx="509.3" cy="68.0" r="13" fill="transparent"/><circle cx="509.3" cy="68.0" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="GPT-5.6 Sol — 2026 · 96.2% · OpenAI" data-tip="GPT-5.6 Sol — 2026 · 96.2% · OpenAI"><circle cx="568.1" cy="32.2" r="13" fill="transparent"/><circle cx="568.1" cy="32.2" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="DeepSeek V3 — Dec 2024 · 42.0% · Open-weight" data-tip="DeepSeek V3 — Dec 2024 · 42.0% · Open-weight"><circle cx="195.8" cy="205.6" r="13" fill="transparent"/><circle cx="195.8" cy="205.6" r="4.5" fill="#1baf7a" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="DeepSeek R1 — Jan 2025 · 49.2% · Open-weight" data-tip="DeepSeek R1 — Jan 2025 · 49.2% · Open-weight"><circle cx="215.3" cy="182.6" r="13" fill="transparent"/><circle cx="215.3" cy="182.6" r="4.5" fill="#1baf7a" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Kimi K2 — Jul 2025 · 65.8% · Open-weight" data-tip="Kimi K2 — Jul 2025 · 65.8% · Open-weight"><circle cx="332.9" cy="129.4" r="13" fill="transparent"/><circle cx="332.9" cy="129.4" r="4.5" fill="#1baf7a" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Kimi K3 — Jul 2026 · 93.4% · Open-weight" data-tip="Kimi K3 — Jul 2026 · 93.4% · Open-weight"><circle cx="568.1" cy="41.1" r="13" fill="transparent"/><circle cx="568.1" cy="41.1" r="4.5" fill="#1baf7a" stroke="#fbfaf7" stroke-width="2"/></g></svg></div>
+<details class=card><summary><b>Data table</b><span class=tag>chart data</span></summary><div class=body><table class=cap><tr><th class=l>Model</th><th class=l>Lab</th><th class=l>Released</th><th>SWE-bench Verified</th></tr><tr><td class=l>Claude 3.5 Sonnet</td><td class=l>Anthropic</td><td class=l>Jun 2024</td><td>33.4%</td></tr><tr><td class=l>Claude 3.5 Sonnet v2</td><td class=l>Anthropic</td><td class=l>Oct 2024</td><td>49.0%</td></tr><tr><td class=l>DeepSeek V3</td><td class=l>Open-weight</td><td class=l>Dec 2024</td><td>42.0%</td></tr><tr><td class=l>o1</td><td class=l>OpenAI</td><td class=l>Dec 2024</td><td>48.9%</td></tr><tr><td class=l>DeepSeek R1</td><td class=l>Open-weight</td><td class=l>Jan 2025</td><td>49.2%</td></tr><tr><td class=l>Claude 3.7 Sonnet</td><td class=l>Anthropic</td><td class=l>Feb 2025</td><td>62.3%</td></tr><tr><td class=l>o3</td><td class=l>OpenAI</td><td class=l>Apr 2025</td><td>69.1%</td></tr><tr><td class=l>Claude Sonnet 4</td><td class=l>Anthropic</td><td class=l>May 2025</td><td>72.7%</td></tr><tr><td class=l>Kimi K2</td><td class=l>Open-weight</td><td class=l>Jul 2025</td><td>65.8%</td></tr><tr><td class=l>GPT-5</td><td class=l>OpenAI</td><td class=l>Aug 2025</td><td>74.9%</td></tr><tr><td class=l>Claude Sonnet 4.5</td><td class=l>Anthropic</td><td class=l>Sep 2025</td><td>77.2%</td></tr><tr><td class=l>Claude Opus 4.5</td><td class=l>Anthropic</td><td class=l>Nov 2025</td><td>80.9%</td></tr><tr><td class=l>Claude Opus 4.7</td><td class=l>Anthropic</td><td class=l>early 2026</td><td>87.6%</td></tr><tr><td class=l>GPT-5.3</td><td class=l>OpenAI</td><td class=l>2026</td><td>85.0%</td></tr><tr><td class=l>Kimi K3</td><td class=l>Open-weight</td><td class=l>Jul 2026</td><td>93.4%</td></tr><tr><td class=l>Claude Opus 5</td><td class=l>Anthropic</td><td class=l>2026</td><td>96.0%</td></tr><tr><td class=l>GPT-5.6 Sol</td><td class=l>OpenAI</td><td class=l>2026</td><td>96.2%</td></tr></table></div></details>
+<figcaption class=mut>Best published agentic-harness score at or near each model's release; 2026
+release dates approximate. The benchmark is nearing saturation above 90%, which is why newer
+suites (Terminal-Bench, SWE Marathon) exist at all.</figcaption>
+</figure>
+</section>
+
+<section id=price>
+<h2><span class=n>3</span>What it costs</h2>
+<table class=cap>
+<tr><th class=l>Model</th><th>Input $/1M</th><th>Output $/1M</th><th>Context</th><th class=l>Notes</th></tr>
+<tr><td class=l>Kimi K3</td><td>$2.90</td><td>$15.00</td><td>1M</td><td class=l>via OpenRouter; caching cuts effective cost 60&ndash;80%</td></tr>
+<tr><td class=l>Claude Haiku 4.5</td><td>$1.00</td><td>$5.00</td><td>200K</td><td class=l>cheap tier, not a K3 peer</td></tr>
+<tr><td class=l>Claude Sonnet 5</td><td>$3.00</td><td>$15.00</td><td>1M</td><td class=l><b>$2.00 / $10.00 intro through Aug 31, 2026</b></td></tr>
+<tr><td class=l>Claude Opus 5</td><td>$5.00</td><td>$25.00</td><td>1M</td><td class=l>the model most switchers are leaving</td></tr>
+<tr><td class=l>Claude Fable 5</td><td>$10.00</td><td>$50.00</td><td>1M</td><td class=l>top tier</td></tr>
+</table>
+<p>Artificial Analysis puts the blended real-world cost at <b>$2.31 per 1M tokens for K3 versus
+$3.85 for Opus 5</b> at high effort &mdash; roughly a 40% saving against the model most people are
+thinking of leaving. Fable 5 doubles Opus again. The question isn't whether K3 is cheaper per token
+(it is); it's how many Opus-or-Fable-grade tasks you'd feed to a model that fails them. Price the
+retries, not the tokens.</p>
+
+<h3 id=pricetime>The long view: price over time</h3>
+<p>Capability climbed while price collapsed. GPT-4 launched at $30 per million input tokens in
+March 2023; today's flagships sit at $5, and yesterday's frontier is nearly free &mdash; Epoch AI
+estimates GPT-4-level performance has fallen from ~$20 to ~$0.40 per million tokens. Note where
+K3 sits: at $2.90 it is <em>expensive</em> for an open-weight model &mdash; DeepSeek and Kimi's
+own K2 launched at a tenth of that &mdash; because it's priced as what it is, a frontier model
+that happens to publish its weights.</p>
+<figure class=fig>
+<div class=fig-title>Flagship input price at launch, 2023 &rarr; 2026</div>
+<div class=fig-sub>$ per 1M input tokens, log scale, by model release date</div>
+<div class=vlegend><span><span class=sw style="background:#2a78d6"></span>Anthropic</span><span><span class=sw style="background:#eb6834"></span>OpenAI</span><span><span class=sw style="background:#1baf7a"></span>Open-weight</span></div>
+<div class=fig-scroll><svg class="chart" viewBox="0 0 760 380" role="img" aria-label="Log-scale line chart of flagship model input price per million tokens at launch, 2023 to 2026, falling from 30 dollars to single digits, with open-weight models far below" preserveAspectRatio="xMidYMid meet"><line x1="48" y1="326.5" x2="648" y2="326.5" class="grid"/><text x="40" y="330.5" text-anchor="end" class="tick">$0.25</text><line x1="48" y1="242.8" x2="648" y2="242.8" class="grid"/><text x="40" y="246.8" text-anchor="end" class="tick">$1</text><line x1="48" y1="145.6" x2="648" y2="145.6" class="grid"/><text x="40" y="149.6" text-anchor="end" class="tick">$5</text><line x1="48" y1="37.4" x2="648" y2="37.4" class="grid"/><text x="40" y="41.4" text-anchor="end" class="tick">$30</text><line x1="48.0" y1="340" x2="48.0" y2="345" class="grid"/><text x="48.0" y="361" text-anchor="middle" class="tick">2023</text><line x1="208.0" y1="340" x2="208.0" y2="345" class="grid"/><text x="208.0" y="361" text-anchor="middle" class="tick">2024</text><line x1="368.0" y1="340" x2="368.0" y2="345" class="grid"/><text x="368.0" y="361" text-anchor="middle" class="tick">2025</text><line x1="528.0" y1="340" x2="528.0" y2="345" class="grid"/><text x="528.0" y="361" text-anchor="middle" class="tick">2026</text><line x1="48" y1="340" x2="648" y2="340" class="axis"/><polyline points="134.7,97.9 241.3,79.2 428.0,79.2 508.0,145.6 614.7,145.6" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><polyline points="81.3,37.4 188.0,103.7 268.0,145.6 361.3,79.2 468.0,229.3" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><polyline points="361.3,321.9 454.7,273.6 614.7,178.5" fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><text x="81.3" y="25.4" text-anchor="middle" class="dl">GPT-4 <tspan class="dlv">$30</tspan></text><text x="241.3" y="67.2" text-anchor="middle" class="dl">Claude 3 Opus <tspan class="dlv">$15</tspan></text><text x="278.0" y="159.6" text-anchor="start" class="dl">GPT-4o <tspan class="dlv">$5</tspan></text><text x="428.0" y="67.2" text-anchor="middle" class="dl">Claude Opus 4 <tspan class="dlv">$15</tspan></text><text x="353.3" y="326.9" text-anchor="end" class="dl">DeepSeek V3 <tspan class="dlv">$0.27</tspan></text><text x="448.7" y="291.6" text-anchor="middle" class="dl">Kimi K2 <tspan class="dlv">$0.6</tspan></text><text x="478.0" y="233.3" text-anchor="start" class="dl">GPT-5 <tspan class="dlv">$1.25</tspan></text><text x="624.7" y="149.6" text-anchor="start" class="dl">Claude Opus 5 <tspan class="dlv">$5</tspan></text><text x="624.7" y="182.5" text-anchor="start" class="dl">Kimi K3 <tspan class="dlv">$2.90</tspan></text><g class="pt" tabindex="0" role="img" aria-label="GPT-4 — Mar 2023 · $30 · OpenAI" data-tip="GPT-4 — Mar 2023 · $30 · OpenAI"><circle cx="81.3" cy="37.4" r="13" fill="transparent"/><circle cx="81.3" cy="37.4" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="GPT-4 Turbo — Nov 2023 · $10 · OpenAI" data-tip="GPT-4 Turbo — Nov 2023 · $10 · OpenAI"><circle cx="188.0" cy="103.7" r="13" fill="transparent"/><circle cx="188.0" cy="103.7" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="GPT-4o — May 2024 · $5 · OpenAI" data-tip="GPT-4o — May 2024 · $5 · OpenAI"><circle cx="268.0" cy="145.6" r="13" fill="transparent"/><circle cx="268.0" cy="145.6" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="o1 — Dec 2024 · $15 · OpenAI" data-tip="o1 — Dec 2024 · $15 · OpenAI"><circle cx="361.3" cy="79.2" r="13" fill="transparent"/><circle cx="361.3" cy="79.2" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="GPT-5 — Aug 2025 · $1.25 · OpenAI" data-tip="GPT-5 — Aug 2025 · $1.25 · OpenAI"><circle cx="468.0" cy="229.3" r="13" fill="transparent"/><circle cx="468.0" cy="229.3" r="4.5" fill="#eb6834" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude 2 — Jul 2023 · $11.02 · Anthropic" data-tip="Claude 2 — Jul 2023 · $11.02 · Anthropic"><circle cx="134.7" cy="97.9" r="13" fill="transparent"/><circle cx="134.7" cy="97.9" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude 3 Opus — Mar 2024 · $15 · Anthropic" data-tip="Claude 3 Opus — Mar 2024 · $15 · Anthropic"><circle cx="241.3" cy="79.2" r="13" fill="transparent"/><circle cx="241.3" cy="79.2" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude Opus 4 — May 2025 · $15 · Anthropic" data-tip="Claude Opus 4 — May 2025 · $15 · Anthropic"><circle cx="428.0" cy="79.2" r="13" fill="transparent"/><circle cx="428.0" cy="79.2" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude Opus 4.5 — Nov 2025 · $5 · Anthropic" data-tip="Claude Opus 4.5 — Nov 2025 · $5 · Anthropic"><circle cx="508.0" cy="145.6" r="13" fill="transparent"/><circle cx="508.0" cy="145.6" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Claude Opus 5 — 2026 · $5 · Anthropic" data-tip="Claude Opus 5 — 2026 · $5 · Anthropic"><circle cx="614.7" cy="145.6" r="13" fill="transparent"/><circle cx="614.7" cy="145.6" r="4.5" fill="#2a78d6" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="DeepSeek V3 — Dec 2024 · $0.27 · Open-weight" data-tip="DeepSeek V3 — Dec 2024 · $0.27 · Open-weight"><circle cx="361.3" cy="321.9" r="13" fill="transparent"/><circle cx="361.3" cy="321.9" r="4.5" fill="#1baf7a" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Kimi K2 — Jul 2025 · $0.6 · Open-weight" data-tip="Kimi K2 — Jul 2025 · $0.6 · Open-weight"><circle cx="454.7" cy="273.6" r="13" fill="transparent"/><circle cx="454.7" cy="273.6" r="4.5" fill="#1baf7a" stroke="#fbfaf7" stroke-width="2"/></g><g class="pt" tabindex="0" role="img" aria-label="Kimi K3 — Jul 2026 · $2.90 · Open-weight" data-tip="Kimi K3 — Jul 2026 · $2.90 · Open-weight"><circle cx="614.7" cy="178.5" r="13" fill="transparent"/><circle cx="614.7" cy="178.5" r="4.5" fill="#1baf7a" stroke="#fbfaf7" stroke-width="2"/></g></svg></div>
+<details class=card><summary><b>Data table</b><span class=tag>chart data</span></summary><div class=body><table class=cap><tr><th class=l>Model</th><th class=l>Lab</th><th class=l>Released</th><th>Input $/1M at launch</th></tr><tr><td class=l>GPT-4</td><td class=l>OpenAI</td><td class=l>Mar 2023</td><td>$30</td></tr><tr><td class=l>Claude 2</td><td class=l>Anthropic</td><td class=l>Jul 2023</td><td>$11.02</td></tr><tr><td class=l>GPT-4 Turbo</td><td class=l>OpenAI</td><td class=l>Nov 2023</td><td>$10</td></tr><tr><td class=l>Claude 3 Opus</td><td class=l>Anthropic</td><td class=l>Mar 2024</td><td>$15</td></tr><tr><td class=l>GPT-4o</td><td class=l>OpenAI</td><td class=l>May 2024</td><td>$5</td></tr><tr><td class=l>DeepSeek V3</td><td class=l>Open-weight</td><td class=l>Dec 2024</td><td>$0.27</td></tr><tr><td class=l>o1</td><td class=l>OpenAI</td><td class=l>Dec 2024</td><td>$15</td></tr><tr><td class=l>Claude Opus 4</td><td class=l>Anthropic</td><td class=l>May 2025</td><td>$15</td></tr><tr><td class=l>Kimi K2</td><td class=l>Open-weight</td><td class=l>Jul 2025</td><td>$0.6</td></tr><tr><td class=l>GPT-5</td><td class=l>OpenAI</td><td class=l>Aug 2025</td><td>$1.25</td></tr><tr><td class=l>Claude Opus 4.5</td><td class=l>Anthropic</td><td class=l>Nov 2025</td><td>$5</td></tr><tr><td class=l>Kimi K3</td><td class=l>Open-weight</td><td class=l>Jul 2026</td><td>$2.90</td></tr><tr><td class=l>Claude Opus 5</td><td class=l>Anthropic</td><td class=l>2026</td><td>$5</td></tr></table></div></details>
+<figcaption class=mut>First-party list price at launch, input tokens, before caching discounts.
+Log scale &mdash; each gridline is a different order of magnitude.</figcaption>
+</figure>
+</section>
+
+<section id=wins>
+<h2><span class=n>4</span>Where each one wins</h2>
+<table class=cap>
+<tr><th class=l>Dimension</th><th class=l>Claude</th><th class=l>Kimi K3</th></tr>
+<tr><td class=l>Hardest agentic coding, repo-scale debugging</td><td class=l><span class="pill p-vhigh">Stronger</span> safer default when a failed run is expensive</td><td class=l><span class="pill p-high">Close</span> top-3 on most suites</td></tr>
+<tr><td class=l>Frontend &amp; visual iteration</td><td class=l><span class="pill p-high">Strong</span></td><td class=l><span class="pill p-vhigh">#1</span> inspects screenshots and iterates against what it sees</td></tr>
+<tr><td class=l>Generation speed</td><td class=l><span class="pill p-vhigh">53.7 tok/s</span></td><td class=l><span class="pill p-med">32.9 tok/s</span></td></tr>
+<tr><td class=l>Latency to first token</td><td class=l><span class="pill p-med">12.8s at high effort</span></td><td class=l><span class="pill p-vhigh">4.2s</span></td></tr>
+<tr><td class=l>Price vs. Opus</td><td class=l><span class="pill p-med">&mdash;</span></td><td class=l><span class="pill p-vhigh">~40% cheaper blended</span></td></tr>
+<tr><td class=l>Open weights, self-hosting, fine-tuning</td><td class=l><span class="pill p-low">No</span></td><td class=l><span class="pill p-vhigh">Yes</span> 2.8T weights published</td></tr>
+<tr><td class=l>Ecosystem &amp; harness maturity</td><td class=l><span class="pill p-vhigh">First-party</span> Claude Code, thinking/effort controls, server tools</td><td class=l><span class="pill p-med">Compatible</span> rides Anthropic-compatible endpoints</td></tr>
+<tr><td class=l>Native multimodal / video</td><td class=l><span class="pill p-high">Images</span></td><td class=l><span class="pill p-vhigh">Built-in from the ground up</span></td></tr>
+</table>
+</section>
+
+<div class=divider><span>The practical part</span></div>
+
+<section id=switch>
+<h2><span class=n>5</span>The switching path</h2>
+<p>The reason this question is even live: Claude Code doesn't care whose model answers it. It reads
+a base URL, a token, and a model name from the environment, and Moonshot ships an
+Anthropic-compatible endpoint built specifically to be a drop-in target. Switching is three
+variables, not a new tool:</p>
+<div class=term><div class=blk-h><span class=dot></span><span class=dot></span><span class=dot></span>shell<button class=copy type=button>Copy</button></div>
+<pre><span class=cmt># Point Claude Code at Kimi K3 — Moonshot first-party or OpenRouter,</span>
+<span class=cmt># one API key from either console is enough.</span>
+<span class=cmd>export</span> ANTHROPIC_BASE_URL="&lt;anthropic-compatible endpoint&gt;"
+<span class=cmd>export</span> ANTHROPIC_AUTH_TOKEN="&lt;your Moonshot or OpenRouter key&gt;"
+<span class=cmd>export</span> ANTHROPIC_MODEL="kimi-k3"
+<span class=cmd>claude</span>   <span class=cmt># same harness, different brain</span></pre></div>
+<p class=mut>Get the endpoint URL and a key from Moonshot's console (platform.kimi.ai) or from
+OpenRouter. Unset the three variables &mdash; or keep them in a separate shell profile &mdash; and
+you're back on Claude. Switching cost is near zero in both directions.</p>
+<p>On OpenRouter, pick the routing mode deliberately: <em>Exacto</em> routes for tool-calling
+accuracy, which is what an agentic harness needs; <em>Nitro</em> optimizes speed, <em>Balanced</em>
+price. Flaky tool calls that look like model weaknesses are often just provider variance.</p>
+</section>
+
+<section id=giveup>
+<h2><span class=n>6</span>What you give up</h2>
+<ul>
+<li><b>The harness is tuned for Claude.</b> Claude Code's prompts, tool definitions, and thinking
+integration are built against Anthropic models. K3 through a compatibility shim runs well, but
+adaptive thinking, effort levels, server-side tools, compaction, and prompt-cache economics either
+change behavior or disappear. Expect to lose polish even where raw capability is equal.</li>
+<li><b>Throughput.</b> At ~33 tokens/sec vs ~54, long generations feel meaningfully slower, even
+though K3 starts answering sooner.</li>
+<li><b>A single accountable vendor.</b> First-party Anthropic API vs. a routing layer over multiple
+hosts. When something breaks at 2am, "which provider served that request" is a real question on
+OpenRouter and a non-question on Anthropic.</li>
+<li><b>Ecosystem gravity.</b> Managed agents, fallbacks, batch pricing, the models API &mdash; the
+supporting features accumulate on the first-party side.</li>
+</ul>
+<p>And what you gain beyond price: weights you control. No deprecation schedule, no retention
+policy you didn't write, fine-tuning on your own data, and the option &mdash; if you ever have the
+hardware &mdash; of running the thing yourself.</p>
+</section>
+
+<section id=next>
+<h2><span class=n>7</span>What happens next</h2>
+<p>Everything above is a snapshot: K3's weights shipped a week ago, and Anthropic's intro pricing
+ends <b>August 31</b>. Switching today is a bet on where both curves go. Six forecasts, each with
+the signal that confirms or kills it.</p>
+<table class=cap>
+<tr><th class=l>Prediction</th><th class=l>Confidence</th><th class=l>Watch for</th><th class=l>What it means for you</th></tr>
+<tr><td class=l><b>K3 serving prices fall below list</b> as independent hosts come online, the way DeepSeek and Qwen prices did within weeks of their weights dropping. K3 is cheap to serve for its size: ~104B active parameters, weights shipped natively in MXFP4.</td><td class=l><span class="pill p-vhigh">High</span></td><td class=l>A second and third provider on OpenRouter under $3/$15 by mid-August. As of July 30 there is exactly one listing, at effectively Moonshot's list price.</td><td class=l>The price case gets stronger if you wait; don't lock in anything annual this month.</td></tr>
+<tr><td class=l><b>The "Kimi K3 License" becomes the real fight.</b> The weights are downloadable but the license is proprietary, not Apache. Whether it permits commercial re-hosting decides whether the row above happens at full speed.</td><td class=l><span class="pill p-high">Med-high</span></td><td class=l>Independent hosts appearing (the license permits it) or still absent by mid-August (it doesn't). A definitional "is this even open?" dispute either way.</td><td class=l>Read the license before building on self-hosting or fine-tuning rights; "open weights" may be narrower than it sounds.</td></tr>
+<tr><td class=l><b>Routing beats picking a side.</b> Fireworks ran 1,030 agentic tasks through a K3-vs-frontier router and it beat either model alone, sending 72&ndash;96% of tasks to K3. The Exacto/Nitro modes in section 5 are an early version of the same idea.</td><td class=l><span class="pill p-vhigh">High</span></td><td class=l>Router layers becoming the default way teams consume models rather than a power-user trick.</td><td class=l>The hybrid verdict below is the end state, not a compromise.</td></tr>
+<tr><td class=l><b>Washington restricts government use, not yours.</b> A draft executive order on Chinese open models was reported in July and remains unsigned; ~200 startups, then Nvidia, Microsoft, and Meta, pushed back publicly. A blanket ban on a model already downloaded worldwide is hollow; procurement rules and hosting-liability conditions are the live options.</td><td class=l><span class="pill p-med">Medium</span></td><td class=l>A Commerce or OMB action scoped to government procurement or federal contractors, likely before September.</td><td class=l>If your work touches government or regulated clients, consume K3 through a US host &mdash; that's the compliance hedge.</td></tr>
+<tr><td class=l><b>Claude pricing keeps falling.</b> Opus 5 launched at half of Fable's price with selectable effort levels &mdash; a margin response to exactly this competition, and it won't be the last cut.</td><td class=l><span class="pill p-high">Med-high</span></td><td class=l>An Opus price cut, a cheaper fast-Opus tier, or intro rates spreading across the range after August 31.</td><td class=l>The savings from switching shrink even if you never switch. Re-run the math September 1.</td></tr>
+<tr><td class=l><b>Derivatives bring scrutiny.</b> Community quantizations of K3 hit Hugging Face within days of the weights, uncensored fine-tunes follow every major open release, and open weights keep no capability gate a fine-tune can't remove. A security incident traced to a K3 derivative would put employer model policies in motion quickly.</td><td class=l><span class="pill p-med">Medium</span></td><td class=l>A documented intrusion or worm attributed to a K3-based agent within a quarter.</td><td class=l>If your org might restrict Chinese-origin models later, keep the Claude path warm &mdash; switching back takes minutes.</td></tr>
+</table>
+<div class=note><b>The thread:</b> open weights turn "which model is better" into "who captures
+inference margin." Moonshot gave up pricing power the day the weights shipped; it bought ubiquity.
+Every prediction above is that trade playing out &mdash; hosts competing the margin away, licenses
+clawing some back, incumbents cutting prices to defend theirs, and regulators deciding whose
+infrastructure it runs on.</div>
+<p class=mut>Forecasts as of July 30, 2026; confidence labels are judgment, not measurement. The macro
+side of this &mdash; what commodity inference does to an AI buildout financed on off-balance-sheet debt
+&mdash; is tracked weekly in <a href="https://www.bwang.io/magikarp/" target=_blank rel=noopener>the
+newsletter</a>.</p>
+</section>
+
+<section id=verdict>
+<h2><span class=n>8</span>The verdict</h2>
+<p>This is a portfolio decision, not a clean switch.</p>
+<ul class=check>
+<li><input type=checkbox aria-label="High-volume routine coding"><span><span class=k>Switch the routine work</span> if your bill is dominated by high-volume, low-stakes coding &mdash; the discount compounds exactly where a failure costs little.</span></li>
+<li><input type=checkbox aria-label="Frontend and visual work"><span><span class=k>Switch the visual work</span> if you build UIs, dashboards, games, or anything where the model iterates against screenshots &mdash; the Frontend Arena #1 is exactly this workload.</span></li>
+<li><input type=checkbox aria-label="Open weights requirement"><span><span class=k>Switch on principle</span> if open weights, self-hosting, or data control are requirements rather than preferences. Claude has no answer to this one.</span></li>
+<li><input type=checkbox aria-label="Hard agentic work"><span><span class=k>Stay for the hard stuff</span> &mdash; repo-scale debugging, long-horizon agent runs, the work you already route to Opus or Fable. They remain the stronger defaults there.</span></li>
+<li><input type=checkbox aria-label="Run the experiment"><span><span class=k>Either way, run the experiment</span>: point the harness at K3 for one week of real tasks and keep your own pass/fail notes. Not testing is the only wrong answer.</span></li>
+</ul>
+</section>
+
+<section id=sources>
+<h3>Sources</h3>
+<ul class=mut>
+<li><a href="https://venturebeat.com/technology/chinas-moonshot-ai-releases-kimi-k3-the-largest-open-source-model-ever-rivaling-top-u-s-systems" target=_blank rel=noopener>VentureBeat &mdash; Moonshot AI releases Kimi K3, the largest open-source model ever</a></li>
+<li><a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/moonshot-releases-2-8-trillion-parameter-kimi-k3" target=_blank rel=noopener>Tom's Hardware &mdash; 2.8-trillion-parameter Kimi K3 beats Claude Fable 5 in Frontend Code Arena</a></li>
+<li><a href="https://openrouter.ai/moonshotai/kimi-k3" target=_blank rel=noopener>OpenRouter &mdash; Kimi K3 pricing &amp; specs</a></li>
+<li><a href="https://artificialanalysis.ai/models/comparisons/claude-opus-5-high-vs-kimi-k3" target=_blank rel=noopener>Artificial Analysis &mdash; Claude Opus 5 (high) vs Kimi K3</a></li>
+<li><a href="https://www.nxcode.io/resources/news/kimi-k3-benchmarks-coding-agent-evaluation-guide-2026" target=_blank rel=noopener>NxCode &mdash; Kimi K3 benchmarks explained</a></li>
+<li><a href="https://platform.kimi.ai/docs/guide/claude-code-kimi" target=_blank rel=noopener>Kimi API Platform &mdash; Use Kimi in Claude Code</a></li>
+<li><a href="https://llmgateway.io/blog/kimi-k3-claude-code" target=_blank rel=noopener>LLM Gateway &mdash; Kimi K3 with Claude Code, Cursor, and Cline</a></li>
+<li><a href="https://codingfleet.com/blog/claude-opus-5-vs-kimi-k3/" target=_blank rel=noopener>CodingFleet &mdash; Claude Opus 5 vs Kimi K3 benchmark comparison</a></li>
+</ul>
+<li><a href="https://epoch.ai/data-insights/llm-inference-price-trends" target=_blank rel=noopener>Epoch AI &mdash; LLM inference prices have fallen rapidly but unequally</a></li>
+<li><a href="https://tokenmix.ai/blog/ai-pricing-trends-history" target=_blank rel=noopener>TokenMix &mdash; AI API pricing history, GPT-4 to 2026</a></li>
+<li><a href="https://codeant.ai/blogs/swe-bench-scores" target=_blank rel=noopener>CodeAnt &mdash; SWE-bench leaderboard 2026</a></li>
+<li><a href="https://www.morphllm.com/claude-benchmarks" target=_blank rel=noopener>MorphLLM &mdash; Claude benchmark scores &amp; SWE-bench Verified history</a></li>
+<p class=mut>Claude pricing and model specs from Anthropic's published API pricing as of July 2026.</p>
+</section>
+
+<footer>A study, July 30, 2026. Codename <b>Ditto</b> &mdash; the one that transforms into whatever
+it's facing. Benchmarks, prices, and endpoints reflect late July 2026 and will drift; re-check
+before deciding. Not affiliated with Anthropic or Moonshot AI.</footer>
+</div>
+
+<script>
+(function(){
+  // phase stepper
+  var btns=[].slice.call(document.querySelectorAll('.pbtn'));
+  var panels=[].slice.call(document.querySelectorAll('.ppanel'));
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      var p=b.getAttribute('data-p');
+      btns.forEach(function(x){x.classList.toggle('on',x===b);});
+      panels.forEach(function(x){x.classList.toggle('on',x.getAttribute('data-p')===p);});
+    });
+  });
+  // copy buttons
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var pre=btn.closest('.term,.prompt').querySelector('pre');
+      var txt=pre.innerText.replace(/ /g,' ');
+      navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){
+        var o=btn.textContent;btn.textContent='Copied';btn.classList.add('done');
+        setTimeout(function(){btn.textContent=o;btn.classList.remove('done');},1400);
+      });
+    });
+  });
+  // checklist toggle (in-page only)
+  document.querySelectorAll('.check li').forEach(function(li){
+    var cb=li.querySelector('input');
+    function sync(){li.classList.toggle('done',cb.checked);}
+    li.addEventListener('click',function(e){if(e.target!==cb){cb.checked=!cb.checked;}sync();});
+    cb.addEventListener('change',sync);
+  });
+  // outline scroll-spy (matches the other reading articles)
+  var oLinks=[].slice.call(document.querySelectorAll('nav.outline a'));
+  var oTargets=oLinks.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  function syncOutline(){
+    var active=0;
+    oTargets.forEach(function(t,i){if(t&&t.getBoundingClientRect().top<=130)active=i;});
+    oLinks.forEach(function(a,i){a.classList.toggle('active',i===active);});
+  }
+  document.addEventListener('scroll',syncOutline,{passive:true});
+  syncOutline();
+})();
+</script>
+<script>
+(function(){
+  var tip=document.createElement('div');tip.className='viz-tip';document.body.appendChild(tip);
+  function show(el,x,y){tip.textContent=el.getAttribute('data-tip');tip.style.display='block';
+    var w=tip.offsetWidth,vw=window.innerWidth;
+    tip.style.left=Math.min(x+14,vw-w-8)+'px';tip.style.top=(y+14)+'px';}
+  function showFocus(el){var r=el.getBoundingClientRect();show(el,r.left+r.width/2,r.top+r.height/2);}
+  function hide(){tip.style.display='none';}
+  document.querySelectorAll('.pt[data-tip]').forEach(function(el){
+    el.addEventListener('mousemove',function(e){show(el,e.clientX,e.clientY);});
+    el.addEventListener('mouseleave',hide);
+    el.addEventListener('focus',function(){showFocus(el);});
+    el.addEventListener('blur',hide);
+  });
+})();
+</script>
+</body></html>
