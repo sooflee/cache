@@ -192,7 +192,7 @@ TITLE_OVERRIDES = {
 #                    hand-written markup); only its navigator tray is refreshed
 #                    in place, so reordering this list still reaches it.
 READING = [
-	("kimi-vs-claude", None, "Claude vs. Kimi K3: Should You Switch?"),
+	("kimi-vs-claude", None, "Claude vs Kimi"),
 	("klefki", None, "Penetration Testing with Claude Code"),
 	("world-cup-2026", "golem", "Who Will Win the 2026 World Cup?"),
 	("poker-pros", "voltorb", "High Roller Ledger"),
