@@ -129,7 +129,7 @@ def add_og_tags(text, title, rel_path):
 def build_sitemap():
 	"""Write sitemap.xml listing every page, anchored at BASE_URL."""
 	paths = (
-		["index.html"]
+		["index.html", "reading.html", "standalone.html"]
 		+ [f"{slug}.html" for slug in POSTS]
 		+ [f"reading/{slug}/index.html" for slug, _cn, _l in READING]
 		+ [target for target, _l in LOCAL_STANDALONE]
@@ -694,51 +694,46 @@ def build_index():
 		for target, label, local in STANDALONE_APPS
 	]
 
-	# Pure-CSS toggle: the radios + labels + feeds are all siblings of #wrapper
-	# so :checked ~ rules can show one feed at a time (no JavaScript). Default: cache.
-	toggle = (
-		'<input type="radio" name="feed" id="feed-cache" class="feed-radio" checked>\n'
-		'<input type="radio" name="feed" id="feed-reading" class="feed-radio">\n'
-		'<input type="radio" name="feed" id="feed-standalone" class="feed-radio">\n'
-		'<div class="feed-toggle">'
-		'<label for="feed-cache">cache</label>'
-		'<label for="feed-reading">reading</label>'
-		'<label for="feed-standalone">standalone</label>'
-		'</div>\n'
-	)
-	body = (
-		'<section id="wrapper">\n\n'
-		+ toggle
-		+ '<div class="feed feed-cache">\n' + "\n".join(cache_rows) + '\n</div>\n'
-		+ '<div class="feed feed-reading">\n' + "\n".join(reading_rows) + '\n</div>\n'
-		+ '<div class="feed feed-standalone">\n' + "\n".join(standalone_rows) + '\n</div>\n'
-		+ '\n\t\t</section>\n\n\t\t'
-	)
-	out = head + body + foot
-	with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
-		f.write(out)
-
-	# Shareable deep link into the standalone feed: the same homepage with the
-	# toggle's `checked` moved. The pure-CSS toggle can't be driven by a URL
-	# fragment without a :target/:checked fight that leaves the tabs stuck, so
-	# this ships a second static file instead — no JavaScript, and clicking the
-	# tabs afterwards behaves exactly as it does on the homepage.
-	#
-	# It lives at the repo root so every relative href in `out` still resolves,
-	# and its canonical points at the homepage so the two don't compete in
-	# search results. Deliberately absent from sitemap.xml for the same reason.
-	alt = out.replace(
-		'<input type="radio" name="feed" id="feed-cache" class="feed-radio" checked>',
-		'<input type="radio" name="feed" id="feed-cache" class="feed-radio">',
-	).replace(
-		'<input type="radio" name="feed" id="feed-standalone" class="feed-radio">',
-		'<input type="radio" name="feed" id="feed-standalone" class="feed-radio" checked>',
-	).replace(
-		'<link rel="canonical" href="index.html">',
-		f'<link rel="canonical" href="{BASE_URL}/">',
-	)
-	with open(os.path.join(OUT, "standalone.html"), "w", encoding="utf-8") as f:
-		f.write(alt)
+	# One static page per feed, so the URL always names the tab you are looking
+	# at: / for cache, /reading.html, /standalone.html. The tabs are ordinary
+	# links rather than the old hidden-radio toggle — still no JavaScript, but
+	# now every view is shareable and bookmarkable, the back button works, and
+	# search engines can index each list. The @view-transition rule in
+	# TRAY_STYLE animates the swap, so it still feels like an in-page toggle.
+	feeds = [
+		("cache", "index.html", "cache", cache_rows),
+		("reading", "reading.html", "cache — reading", reading_rows),
+		("standalone", "standalone.html", "cache — standalone", standalone_rows),
+	]
+	for name, filename, title, rows in feeds:
+		# The cache tab points at "./" so the default view keeps the bare
+		# https://cache.bwang.io/ URL rather than /index.html.
+		tabs = "".join(
+			f'<a href="{"./" if fn == "index.html" else fn}"'
+			f'{" class=active" if fn == filename else ""}>{n}</a>'
+			for n, fn, _t, _r in feeds
+		)
+		body = (
+			'<section id="wrapper">\n\n'
+			+ f'<div class="feed-toggle">{tabs}</div>\n'
+			+ f'<div class="feed feed-{name}">\n' + "\n".join(rows) + '\n</div>\n'
+			+ '\n\t\t</section>\n\n\t\t'
+		)
+		page = head + body + foot
+		if filename != "index.html":
+			# Each feed is a distinct list, so each is its own canonical rather
+			# than pointing back at the homepage.
+			page = page.replace(
+				'<link rel="canonical" href="index.html">',
+				f'<link rel="canonical" href="{BASE_URL}/{filename}">',
+			)
+			page = page.replace("<title>cache</title>", f"<title>{title}</title>", 1)
+			page = page.replace(
+				'<meta property="og:title" content="cache" />',
+				f'<meta property="og:title" content="{title}" />', 1,
+			)
+		with open(os.path.join(OUT, filename), "w", encoding="utf-8") as f:
+			f.write(page)
 
 
 def main():

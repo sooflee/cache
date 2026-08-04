@@ -146,30 +146,23 @@ header nav a.pinned:hover { color: #357BB3; }
 /* ---- Index: post list ---- */
 #wrapper { min-height: 50vh; }
 
-/* Feed toggle (cache | reading) — understated underline tabs, pure CSS. */
-body#collection .feed-radio { position: absolute; opacity: 0; pointer-events: none; }
+/* Feed tabs (cache | reading | standalone) — understated underline tabs.
+   These used to be hidden radios driven by :checked, which meant the URL never
+   changed and no view could be linked to. They are now ordinary links, one
+   static page per feed; the active tab is marked server-side. Still no JS. */
 body#collection .feed-toggle { display: inline-flex; gap: 1.6rem; margin: .2rem 0 2.2rem; }
-body#collection .feed-toggle label {
+body#collection .feed-toggle a {
 	font-size: 15px;
 	font-weight: 600;
 	color: #c4c4c4;
-	cursor: pointer;
+	text-decoration: none;
 	padding: 0 0 5px;
 	border-bottom: 2px solid transparent;
-	user-select: none;
 	transition: color .12s, border-color .12s;
 }
-body#collection .feed-toggle label:hover { color: #8a8a8a; }
-body#collection #feed-cache:checked ~ .feed-toggle label[for="feed-cache"],
-body#collection #feed-reading:checked ~ .feed-toggle label[for="feed-reading"],
-body#collection #feed-standalone:checked ~ .feed-toggle label[for="feed-standalone"] {
-	color: #111;
-	border-bottom-color: #357BB3;
-}
-body#collection .feed { display: none; }
-body#collection #feed-cache:checked ~ .feed-cache { display: block; }
-body#collection #feed-reading:checked ~ .feed-reading { display: block; }
-body#collection #feed-standalone:checked ~ .feed-standalone { display: block; }
+body#collection .feed-toggle a:hover { color: #8a8a8a; }
+body#collection .feed-toggle a.active { color: #111; border-bottom-color: #357BB3; }
+body#collection .feed { display: block; }
 
 body#collection #wrapper article.h-entry {
 	display: flex;

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://cache.bwang.io/index.html</loc></url>
+  <url><loc>https://cache.bwang.io/reading.html</loc></url>
+  <url><loc>https://cache.bwang.io/standalone.html</loc></url>
   <url><loc>https://cache.bwang.io/token-playbook.html</loc></url>
   <url><loc>https://cache.bwang.io/some-projects.html</loc></url>
   <url><loc>https://cache.bwang.io/practical-poker.html</loc></url>
