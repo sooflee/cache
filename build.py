@@ -192,6 +192,7 @@ TITLE_OVERRIDES = {
 #                    hand-written markup); only its navigator tray is refreshed
 #                    in place, so reordering this list still reaches it.
 READING = [
+	("iran-war", None, "The Iran War"),
 	("kimi-vs-claude", None, "Claude vs Kimi"),
 	("klefki", None, "Penetration Testing with Claude Code"),
 	("world-cup-2026", "golem", "Who Will Win the 2026 World Cup?"),
@@ -313,6 +314,24 @@ TRAY_STYLE = """<style>
 }
 @media (max-width:700px){
 	.nav-card{width:min(230px,calc(100vw - 36px));}
+	/* Phones have no side gutter for the pill to live in, so the fixed
+	   "posts" control landed on top of the first line of every headline.
+	   Tuck it into the corner and reserve the strip it occupies. The
+	   :has() guard keeps the reserved space off pages with no tray (the
+	   homepage, standalone apps); doubling it out-specifies the theme's
+	   own !important body padding. */
+	.nav-float{top:12px;left:12px;}
+	html body:has(.nav-float):has(.nav-float){padding-top:56px!important;}
+	/* Plotly's zoom/pan/export bar is absolutely positioned past the right
+	   edge of a phone-width plot and was the one thing on the whole site
+	   forcing a horizontal scroll. It is a mouse affordance anyway. */
+	.js-plotly-plot .modebar{display:none!important;}
+	/* Grid and flex items default to min-width:auto, so a tile wider than its
+	   track refuses to shrink and pushes the page sideways instead. Let the
+	   tile rows shrink, and drop the supplier grid to one column. */
+	.stats,.suppliers-grid,.headrow,.flow{min-width:0;}
+	.stats>*,.suppliers-grid>*,.headrow>*,.flow>*{min-width:0;}
+	.suppliers-grid{grid-template-columns:1fr;}
 }
 @media (prefers-reduced-motion: reduce){
 	.nav-card,.nav-restore{transition:none;}
@@ -586,10 +605,17 @@ def retray_native_reading():
 	"""Refresh only the navigator tray inside each natively-authored article.
 
 	These have no _mirror source, so they can't be regenerated — the built file
-	IS the source. Swapping just the <div class="nav-float"> block keeps their
-	hand-written markup intact while still picking up list reordering and new
-	entries. The surrounding <style> blocks are order-independent, so they are
-	left alone."""
+	IS the source. Swapping the TRAY_STYLE + <div class="nav-float"> pair keeps
+	their hand-written markup intact while still picking up list reordering, new
+	entries, and tray CSS changes.
+
+	The style block has to be swapped alongside the markup: it carries the tray's
+	own responsive rules, so refreshing only the <div> would leave these articles
+	pinned to whatever CSS shipped the day they were written. TRAY_STYLE's
+	@view-transition line is the anchor — it opens that block and appears
+	nowhere else. The preceding READING_EXTRA block (fonts, fade-in) is
+	order-independent and left alone."""
+	anchor = r'<style>\s*@view-transition\{navigation:auto;\}'
 	for slug, _cn, _label in NATIVE_READING:
 		path = os.path.join(OUT, "reading", slug, "index.html")
 		if not os.path.isfile(path):
@@ -598,15 +624,14 @@ def retray_native_reading():
 		with open(path, encoding="utf-8") as f:
 			text = f.read()
 		tray = re.search(
-			r'<div class="nav-float">.*?<div class="nav-feed nf-standalone">.*?</div></div></div>',
+			anchor + r'.*?<div class="nav-feed nf-standalone">.*?</div></div></div>',
 			text, flags=re.S,
 		)
 		if not tray:
 			print(f"  warning: no tray found in {path}, skipping")
 			continue
 		fresh = re.search(
-			r'<div class="nav-float">.*',
-			tray_html("reading", slug), flags=re.S,
+			anchor + r'.*', tray_html("reading", slug), flags=re.S,
 		).group(0)
 		with open(path, "w", encoding="utf-8") as f:
 			f.write(text[: tray.start()] + fresh + text[tray.end() :])
