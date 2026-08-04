@@ -718,6 +718,28 @@ def build_index():
 	with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
 		f.write(out)
 
+	# Shareable deep link into the standalone feed: the same homepage with the
+	# toggle's `checked` moved. The pure-CSS toggle can't be driven by a URL
+	# fragment without a :target/:checked fight that leaves the tabs stuck, so
+	# this ships a second static file instead — no JavaScript, and clicking the
+	# tabs afterwards behaves exactly as it does on the homepage.
+	#
+	# It lives at the repo root so every relative href in `out` still resolves,
+	# and its canonical points at the homepage so the two don't compete in
+	# search results. Deliberately absent from sitemap.xml for the same reason.
+	alt = out.replace(
+		'<input type="radio" name="feed" id="feed-cache" class="feed-radio" checked>',
+		'<input type="radio" name="feed" id="feed-cache" class="feed-radio">',
+	).replace(
+		'<input type="radio" name="feed" id="feed-standalone" class="feed-radio">',
+		'<input type="radio" name="feed" id="feed-standalone" class="feed-radio" checked>',
+	).replace(
+		'<link rel="canonical" href="index.html">',
+		f'<link rel="canonical" href="{BASE_URL}/">',
+	)
+	with open(os.path.join(OUT, "standalone.html"), "w", encoding="utf-8") as f:
+		f.write(alt)
+
 
 def main():
 	# Populate the navigator's cache list before building any page that injects it.
