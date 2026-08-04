@@ -132,6 +132,7 @@ def build_sitemap():
 		["index.html"]
 		+ [f"{slug}.html" for slug in POSTS]
 		+ [f"reading/{slug}/index.html" for slug, _cn, _l in READING]
+		+ [target for target, _l in LOCAL_STANDALONE]
 	)
 	rows = "\n".join(f"  <url><loc>{BASE_URL}/{p}</loc></url>" for p in paths)
 	xml = (
@@ -177,37 +178,60 @@ TITLE_OVERRIDES = {
     "nomad-and-waypoint": "Nomad & Waypoint",
 }
 
-# Reading-tab articles mirrored from GitHub Pages (www.bwang.io/<codename>/).
-# Each keeps its own original styling; we inject a shared navigator.
-# (slug, codename, display title).
+# Every reading article, ordered newest edit first — this order drives the
+# navigator tray, the homepage feed, and sitemap.xml. Keep it sorted by when
+# each article was last meaningfully edited: new or freshly revised ones go on
+# top. (slug, codename, display title).
+#
+# The codename is the GitHub Pages project the article was mirrored from
+# (www.bwang.io/<codename>/), and it doubles as the build marker:
+#   codename set  -> mirrored; rebuilt from _mirror/reading/<slug>.html every
+#                    run, so never hand-edit reading/<slug>/index.html.
+#   codename None -> authored directly in reading/<slug>/index.html with no
+#                    mirror source. Never regenerated (that would discard the
+#                    hand-written markup); only its navigator tray is refreshed
+#                    in place, so reordering this list still reaches it.
 READING = [
+	("kimi-vs-claude", None, "Claude vs. Kimi K3: Should You Switch?"),
+	("klefki", None, "Penetration Testing with Claude Code"),
+	("world-cup-2026", "golem", "Who Will Win the 2026 World Cup?"),
 	("poker-pros", "voltorb", "High Roller Ledger"),
 	("spacs", "jolteon", "Understanding SPACs"),
 	("ipos-spacex", "elekid", "Will the SpaceX IPO Beat the Market?"),
 	("making-an-iphone", "electabuzz", "Anatomy of an iPhone"),
-	("world-cup-2026", "golem", "Who Will Win the 2026 World Cup?"),
 	("watches", "magnemite", "Watches That Beat Retail"),
 	("wine", "squirtle", "Wine as an Investment Asset"),
 	("real-estate", "arbok", "What Predicts US Real-Estate Returns?"),
 	("ncaa", "omastar", "Predicting March Madness 2026"),
 ]
+# Derived from READING so the two can never drift apart.
+MIRRORED_READING = [e for e in READING if e[1] is not None]
+NATIVE_READING = [e for e in READING if e[1] is None]
 # Full-screen interactive apps that can't live in the narrow reading column (a
 # live chat app and a multi-page trading terminal). Listed under their own
 # "standalone" tab in the navigator, and built the same way as reading articles.
 # Mirrored standalone apps (built locally). Empty now — the interactive apps are
 # all linked out to their live versions instead (see EXTERNAL_STANDALONE).
 STANDALONE = []
-# Live, dynamic apps that can't be frozen into the static archive — listed in the
-# standalone feed but linked out to their running versions (open in a new tab).
-# (url, label).
-EXTERNAL_STANDALONE = [
-	("https://www.bwang.io/muk/", "Energy Trading Primer"),
-	("https://www.bwang.io/ekans/", "Trading Signals"),
-	("https://stonks.bwang.io/", "Stock Picker"),
-	("https://arbitrage.bwang.io", "Arbitrage Finder"),
-	("https://chansey.bwang.io", "Medical RAG"),
-	("https://www.bwang.io/magikarp/", "Newsletter"),
+# Apps in the standalone feed, ordered newest edit first (same convention as
+# READING). Two kinds, distinguished by "local":
+#   local True  -> built into this archive and served from this domain, so it
+#                  gets an ordinary same-tab link resolved relative to the page.
+#   local False -> a live, dynamic app that can't be frozen into a static
+#                  archive; linked out to its running version in a new tab.
+# (target, label, local). Targets for local apps are repo-root-relative dirs.
+STANDALONE_APPS = [
+	("whismur/", "Tone Skill Builder", True),
+	("https://www.bwang.io/ekans/", "Trading Signals", False),
+	("https://www.bwang.io/magikarp/", "Newsletter", False),
+	("https://www.bwang.io/muk/", "Energy Trading Primer", False),
+	("https://chansey.bwang.io", "Medical RAG", False),
+	("https://arbitrage.bwang.io", "Arbitrage Finder", False),
+	("https://stonks.bwang.io/", "Stock Picker", False),
 ]
+# Kept as a derived view: sitemap + build stats only care about the local ones.
+LOCAL_STANDALONE = [(t, l) for t, l, local in STANDALONE_APPS if local]
+EXTERNAL_STANDALONE = [(t, l) for t, l, local in STANDALONE_APPS if not local]
 # Every reading article now shares the cache narrow column for a consistent
 # format. The standalone apps keep their own full-bleed layout.
 NARROW_SLUGS = {slug for slug, _cn, _label in READING}
@@ -307,6 +331,7 @@ def tray_html(context, active_slug=None):
 		home = "../../index.html"
 		read_href = "../{}/index.html".format
 		cache_href = "../../{}.html".format
+		local_href = "../../{}".format
 		# Default the toggle to the feed that holds the current article.
 		if active_slug in standalone_slugs:
 			cache_checked, reading_checked, standalone_checked = "", "", " checked"
@@ -318,6 +343,7 @@ def tray_html(context, active_slug=None):
 		home = "index.html"
 		read_href = "reading/{}/index.html".format
 		cache_href = "{}.html".format
+		local_href = "{}".format
 		cache_checked, reading_checked, standalone_checked = " checked", "", ""
 		face = ""
 
@@ -327,9 +353,14 @@ def tray_html(context, active_slug=None):
 
 	cache_items = "".join(item(cache_href(slug), title, slug) for slug, title in CACHE_ITEMS)
 	reading_items = "".join(item(read_href(slug), label, slug) for slug, _cn, label in READING)
-	standalone_items = (
-		"".join(item(read_href(slug), label, slug) for slug, _cn, label in STANDALONE)
-		+ "".join(external_anchor(url, label, "item ext") for url, label in EXTERNAL_STANDALONE)
+	standalone_items = "".join(
+		item(read_href(slug), label, slug)
+		for slug, _cn, label in STANDALONE
+	) + "".join(
+		# One ordered pass so local and external apps interleave by recency.
+		item(local_href(target), label, None) if local
+		else external_anchor(target, label, "item ext")
+		for target, label, local in STANDALONE_APPS
 	)
 	return (
 		face
@@ -488,7 +519,7 @@ def build_reading_articles():
 	"""Mirror each reading article into reading/<slug>/index.html, preserving its
 	original styling. Copy any sibling assets and inject a back-link."""
 	src_dir = os.path.join(SRC, "reading")
-	for slug, codename, _label in READING + STANDALONE:
+	for slug, codename, _label in MIRRORED_READING + STANDALONE:
 		with open(os.path.join(src_dir, f"{slug}.html"), encoding="utf-8") as f:
 			text = f.read()
 		# Unify the browser tab title to the cache format: "<Title> — cache".
@@ -551,6 +582,36 @@ def build_reading_articles():
 						fout.write(data)
 
 
+def retray_native_reading():
+	"""Refresh only the navigator tray inside each natively-authored article.
+
+	These have no _mirror source, so they can't be regenerated — the built file
+	IS the source. Swapping just the <div class="nav-float"> block keeps their
+	hand-written markup intact while still picking up list reordering and new
+	entries. The surrounding <style> blocks are order-independent, so they are
+	left alone."""
+	for slug, _cn, _label in NATIVE_READING:
+		path = os.path.join(OUT, "reading", slug, "index.html")
+		if not os.path.isfile(path):
+			print(f"  warning: {path} missing, skipping tray refresh")
+			continue
+		with open(path, encoding="utf-8") as f:
+			text = f.read()
+		tray = re.search(
+			r'<div class="nav-float">.*?<div class="nav-feed nf-standalone">.*?</div></div></div>',
+			text, flags=re.S,
+		)
+		if not tray:
+			print(f"  warning: no tray found in {path}, skipping")
+			continue
+		fresh = re.search(
+			r'<div class="nav-float">.*',
+			tray_html("reading", slug), flags=re.S,
+		).group(0)
+		with open(path, "w", encoding="utf-8") as f:
+			f.write(text[: tray.start()] + fresh + text[tray.end() :])
+
+
 def extract_meta(slug):
 	"""Pull display title + published date from a post page."""
 	with open(os.path.join(SRC, f"{slug}.html"), encoding="utf-8") as f:
@@ -599,9 +660,13 @@ def build_index():
 	reading_rows = article_rows(READING)
 	standalone_rows = article_rows(STANDALONE) + [
 		'<article class="norm h-entry">\n'
-		f'\t<h2 class="post-title">{external_anchor(url, label, "ext")}</h2>\n'
-		'</article>'
-		for url, label in EXTERNAL_STANDALONE
+		+ (
+			f'\t<h2 class="post-title"><a href="{target}">{html.escape(label)}</a></h2>\n'
+			if local
+			else f'\t<h2 class="post-title">{external_anchor(target, label, "ext")}</h2>\n'
+		)
+		+ '</article>'
+		for target, label, local in STANDALONE_APPS
 	]
 
 	# Pure-CSS toggle: the radios + labels + feeds are all siblings of #wrapper
@@ -637,6 +702,7 @@ def main():
 	for slug in POSTS:
 		build_post(slug)
 	build_reading_articles()
+	retray_native_reading()
 	build_index()
 	build_sitemap()
 	print(
