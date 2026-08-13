@@ -150,17 +150,29 @@ html.cache-narrow h3{font-size:16px!important}
 .check li{font-size:13px}
 /* Phase-panel heads are now h3; keep them at panel scale, not the global h3. */
 .ppanel h3{font-size:14.5px!important;margin:0 0 3px!important}
+/* Six phases now: a grid shares the row evenly instead of leaving the last
+   button orphaned on a second line, which is what flex-wrap did at six. */
+.pbar{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.pbar .pbtn{min-width:0;padding:9px 5px}
+@media(max-width:600px){.pbar{grid-template-columns:repeat(3,1fr)}}
 /* Stat row: pin four tiles across on desktop so the 4th can't wrap into its
    label; smaller number + code so long values sit cleanly inside a tile. */
 .stats{grid-template-columns:repeat(4,1fr);gap:12px}
 .stat b{font-size:25px}.stat small{font-size:11.5px}
 .stat small code{font-size:10.5px;padding:1px 4px}
 @media(max-width:600px){.stats{grid-template-columns:1fr 1fr}}
-/* Tables: fixed layout + wrapping cells so the 3-4 column comparison tables
-   stay fully inside the narrow reading column on phones. */
-table.cap{table-layout:fixed;font-size:12px}
-.cap th,.cap td{padding:8px 6px;word-break:break-word;overflow-wrap:anywhere}
-.cap td code,.cap th code{font-size:11px;white-space:normal;word-break:break-word;
+/* Tables. The shared theme sets `display:block` on every table so wide ones can
+   scroll; that also drops them out of table layout, and combined with
+   break-anywhere wrapping the auto algorithm starved the narrow first column
+   (the "Actor" head came out one letter per line). So: put the comparison
+   tables back into real table layout with declared column widths (see the
+   <col> elements on each one), break inside a word only when it genuinely
+   cannot fit, and hand the scrolling to a wrapper div instead. */
+.tscroll{overflow-x:auto;margin:16px 0;-webkit-overflow-scrolling:touch}
+html.cache-narrow .tscroll table.cap{display:table;table-layout:fixed;width:100%;
+min-width:560px;margin:0;font-size:12px}
+.cap th,.cap td{padding:8px 7px;word-break:normal;overflow-wrap:break-word}
+.cap td code,.cap th code{font-size:11px;white-space:normal;overflow-wrap:break-word;
 padding:1px 4px;background:#f0ede5}
 /* Terminal / prompt blocks a hair smaller to match the new scale. */
 .term pre,.prompt pre{font-size:12px}
@@ -189,10 +201,10 @@ figcaption.mut{margin-top:8px}
 padding:7px 11px;font:12.5px/1.45 var(--sans);color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.09);
 z-index:2147483000;display:none;max-width:250px}
 </style>
-<meta name="description" content="Day 160 of the 2026 Iran war: the US and Israel killed Iran's Supreme Leader and hit almost every target they aimed at, yet Iran holds the Strait of Hormuz and the terms. The causes, the motivations on all sides, the economic damage, six forecasts, and the Oman-brokered deal now taking shape.">
-<meta property="og:description" content="Day 160 of the 2026 Iran war: the US and Israel killed Iran's Supreme Leader and hit almost every target they aimed at, yet Iran holds the Strait of Hormuz and the terms. The causes, the motivations on all sides, the economic damage, six forecasts, and the Oman-brokered deal now taking shape.">
-<meta name="twitter:description" content="Day 160 of the 2026 Iran war: the US and Israel killed Iran's Supreme Leader and hit almost every target they aimed at, yet Iran holds the Strait of Hormuz and the terms. The causes, the motivations on all sides, the economic damage, six forecasts, and the Oman-brokered deal now taking shape.">
-<meta property="og:title" content="The Iran War, Day 160: Who Is Actually Winning?">
+<meta name="description" content="Day 167 of the 2026 Iran war: the US and Israel hit almost every target they aimed at, yet Iran holds the Strait of Hormuz &mdash; and now prices reopening it as the end of the war. The causes, the motivations on all sides, the economic damage, and six forecasts scored a week on.">
+<meta property="og:description" content="Day 167 of the 2026 Iran war: the US and Israel hit almost every target they aimed at, yet Iran holds the Strait of Hormuz &mdash; and now prices reopening it as the end of the war. The causes, the motivations on all sides, the economic damage, and six forecasts scored a week on.">
+<meta name="twitter:description" content="Day 167 of the 2026 Iran war: the US and Israel hit almost every target they aimed at, yet Iran holds the Strait of Hormuz &mdash; and now prices reopening it as the end of the war. The causes, the motivations on all sides, the economic damage, and six forecasts scored a week on.">
+<meta property="og:title" content="The Iran War, Day 167: Who Is Actually Winning?">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="cache">
 <meta property="og:url" content="https://cache.bwang.io/reading/iran-war/index.html">
@@ -238,12 +250,18 @@ z-index:2147483000;display:none;max-width:250px}
 	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
 .nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
 .nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
-.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone],
+.nav-card #nav-private:checked ~ .nav-toggle label[for=nav-private]{
 	color:#111;border-bottom-color:#357BB3;}
 .nav-feed{display:none;}
 .nav-card #nav-cache:checked ~ .nf-cache{display:block;}
 .nav-card #nav-reading:checked ~ .nf-reading{display:block;}
 .nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+.nav-card #nav-private:checked ~ .nf-private{display:block;}
+/* The private feed lists nothing until the browser has decrypted it, so the
+   tray entry is a padlocked link to the locked index rather than titles. */
+.nav-card a.item.locked{color:#8a8a8a;font-style:italic;}
+.nav-card a.item.locked::before{content:"\1F512\FE0E";font-style:normal;margin-right:6px;opacity:.55;}
 /* The panel is a left rail beside the centered column. Until the viewport is
    wide enough for it to clear that column (same breakpoint as the article
    outline), start it minimized: the pill shows by default and tapping it
@@ -278,20 +296,21 @@ z-index:2147483000;display:none;max-width:250px}
 @media (prefers-reduced-motion: reduce){
 	.nav-card,.nav-restore{transition:none;}
 }
-</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label></div><div class="nav-feed nf-cache"><a class="item" href="../../token-playbook.html">Token Playbook</a><a class="item" href="../../some-projects.html">Some Projects</a><a class="item" href="../../practical-poker.html">Practical Poker</a><a class="item" href="../../ecom-experiments.html">Ecom Experiments</a><a class="item" href="../../why-crypto.html">Why Crypto</a><a class="item" href="../../growing-peppers.html">Growing Peppers</a><a class="item" href="../../book-reviews.html">Book Reviews</a><a class="item" href="../../wasted-time.html">Dumb Poker</a><a class="item" href="../../trading-automation.html">Trading Automation</a><a class="item" href="../../api-in-rust.html">API in Rust</a><a class="item" href="../../cicd-on-gcp.html">CI/CD on GCP + SQL</a><a class="item" href="../../nomad-and-waypoint.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item active" href="../iran-war/index.html">The Iran War</a><a class="item" href="../kimi-vs-claude/index.html">Claude vs Kimi</a><a class="item" href="../klefki/index.html">Penetration Testing with Claude Code</a><a class="item" href="../world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../poker-pros/index.html">High Roller Ledger</a><a class="item" href="../spacs/index.html">Understanding SPACs</a><a class="item" href="../ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../watches/index.html">Watches That Beat Retail</a><a class="item" href="../wine/index.html">Wine as an Investment Asset</a><a class="item" href="../real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item" href="../../whismur/">Tone Skill Builder</a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a></div></div></div>
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><input type="radio" name="nav-feed" id="nav-private" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label><label for="nav-private">private</label></div><div class="nav-feed nf-cache"><a class="item" href="../../cache/token-playbook/index.html">Token Playbook</a><a class="item" href="../../cache/some-projects/index.html">Some Projects</a><a class="item" href="../../cache/practical-poker/index.html">Practical Poker</a><a class="item" href="../../cache/ecom-experiments/index.html">Ecom Experiments</a><a class="item" href="../../cache/why-crypto/index.html">Why Crypto</a><a class="item" href="../../cache/growing-peppers/index.html">Growing Peppers</a><a class="item" href="../../cache/book-reviews/index.html">Book Reviews</a><a class="item" href="../../cache/wasted-time/index.html">Dumb Poker</a><a class="item" href="../../cache/trading-automation/index.html">Trading Automation</a><a class="item" href="../../cache/api-in-rust/index.html">API in Rust</a><a class="item" href="../../cache/cicd-on-gcp/index.html">CI/CD on GCP + SQL</a><a class="item" href="../../cache/nomad-and-waypoint/index.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../../reading/smartphone-addiction/index.html">Predicting Smartphone Addiction</a><a class="item" href="../../reading/kaggriculture/index.html">Improving Kaggriculture Bot</a><a class="item active" href="../../reading/iran-war/index.html">The Iran War</a><a class="item" href="../../reading/kimi-vs-claude/index.html">Claude vs Kimi</a><a class="item" href="../../reading/klefki/index.html">Penetration Testing with Claude Code</a><a class="item" href="../../reading/world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../../reading/poker-pros/index.html">High Roller Ledger</a><a class="item" href="../../reading/spacs/index.html">Understanding SPACs</a><a class="item" href="../../reading/ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../../reading/making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../../reading/watches/index.html">Watches That Beat Retail</a><a class="item" href="../../reading/wine/index.html">Wine as an Investment Asset</a><a class="item" href="../../reading/real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../../reading/ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item" href="../../whismur/">Tone Skill Builder</a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a></div><div class="nav-feed nf-private"><a class="item locked" href="../../private.html">unlock private posts</a></div></div></div>
 
 <div class=wrap>
 <header>
-<h1>The Iran war, day 160: who is actually winning?</h1>
+<h1>The Iran war, day 167: who is actually winning?</h1>
 <p class=dek>On 28 February 2026 the United States and Israel killed Iran's Supreme Leader and
-began the largest air campaign since the invasion of Iraq. Five months on, the strikes hit almost
-everything they aimed at &mdash; and Iran holds the one thing that matters. A guide to the
+began the largest air campaign since the invasion of Iraq. Nearly six months on, the strikes hit
+almost everything they aimed at &mdash; and Iran holds the one thing that matters. A guide to the
 <b>causes</b>, the <b>motivations</b>, the <b>costs</b>, and where this goes next.</p>
-<div class=byline>A study, August 4, 2026 &middot; <b>updated August 6</b> &middot; figures as of day 160 &middot; <a href="#update">jump to the update &darr;</a></div>
+<div class=byline>A study, August 4, 2026 &middot; <b>updated August 13</b> &middot; figures as of day 167 &middot; <a href="#update">jump to the latest update &darr;</a></div>
 </header>
 
 <nav class="outline" aria-label="Outline">
-  <a href="#update">&#9679; Update &middot; 6 Aug</a>
+  <a href="#update">&#9679; Update &middot; 13 Aug</a>
+  <a href="#update-aug6">Update &middot; 6 Aug</a>
   <a href="#tldr">0 &middot; TL;DR</a>
   <a href="#start">1 &middot; How it started</a>
   <a href="#phases">2 &middot; Five phases</a>
@@ -304,12 +323,101 @@ everything they aimed at &mdash; and Iran holds the one thing that matters. A gu
 </nav>
 
 <section id=update>
+<h2>Update &middot; 13 August 2026</h2>
+<p>A week ago a 60-day route arrangement was in final drafting and Washington expected the strait
+to reopen. It did not. Tehran spent the week separating the two things everyone had assumed were
+one deal &mdash; the lane through the water, and the strait's legal status &mdash; and attached to
+the second a price that is not a shipping term at all. Traffic fell to a three-month low, Brent went
+back to $90, and each government is now demanding reparations from the other.</p>
+
+<div class=warn><span class=h>The headline</span>On <b>8 August</b> Mohammad Bagher Zolghadr,
+secretary of Iran's Supreme National Security Council, set out what reopening the Strait of Hormuz
+now costs: the United States must never threaten Iran again, permanently end the war with Iran
+<em>and its regional allies</em>, lift the naval blockade and withdraw its forces from around Iran,
+compensate Iran in full for war damage, and lift sanctions while releasing frozen assets
+unconditionally. The Iran&ndash;Oman route talks continue in parallel. Iran's position is that
+finishing them does not reopen anything.</div>
+
+<h3>What Iran now says reopening costs</h3>
+<div class=tscroll><table class=cap><colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup>
+<tr><th class=l>Condition</th><th class=l>What it would take</th><th class=l>Why it is not a shipping term</th></tr>
+<tr><td class=l><b>No further threats against Iran or its leadership</b></td><td class=l>A standing US commitment not to strike &mdash; some outlets report it specifically as threats against the Supreme Leader.</td><td class=l>Unverifiable, and no administration binds its successor &mdash; which is the point.</td></tr>
+<tr><td class=l><b>End the war permanently, including with regional allies</b></td><td class=l>Covers Hezbollah, the Houthis and the Iraqi militias.</td><td class=l>Converts a lane on a map into a regional settlement, most of which Washington does not control and Israel is not party to.</td></tr>
+<tr><td class=l><b>Lift the blockade, withdraw forces</b></td><td class=l>Ending the naval blockade of Iranian ports and pulling US forces back from Iran's periphery.</td><td class=l>The blockade is the one instrument Washington believes is working &mdash; 55 vessels redirected, three disabled, two boarded as of 11 August.</td></tr>
+<tr><td class=l><b>Full compensation for war damage</b></td><td class=l>Reparations against roughly <b>$270 billion</b> of destruction.</td><td class=l>Trump's reply on 11 August was a counter-claim for &ldquo;50 years&rdquo; of Iranian damages, back to the 17 sailors killed on the USS <em>Cole</em> in 2000.</td></tr>
+<tr><td class=l><b>Sanctions lifted, assets released</b></td><td class=l>Unconditional release of frozen funds and an end to the sanctions architecture.</td><td class=l>The entire pre-war negotiating file, now priced into a shipping route.</td></tr>
+</table></div>
+
+<p class=mut>Reporting counts these as five demands or six, depending on whether lifting sanctions
+and releasing frozen assets are treated as one item; the substance is the same either way.</p>
+
+<div class=note><b>This is the toll booth, itemised.</b> Last week's read was that the draft was
+&ldquo;a toll booth with the toll temporarily set to zero&rdquo;. Iran has now published the price
+list, and the currency is not money but the war itself. That is a coherent negotiating position
+rather than a bluff: Iran cannot win back what it lost militarily, so it is trading the only thing
+it holds for the only things it wants.</div>
+
+<h3>Three things that happened while the deal stalled</h3>
+<ul>
+<li><b>The shooting moved onto the shipping.</b> On 8 August the UAE accused the IRGC of hitting an
+ADNOC tanker with a missile in the strait &mdash; no casualties, but ADNOC says <b>15</b> of its
+vessels have been attacked since February, three of them that week, killing one crew member and
+injuring twenty. Abu Dhabi called it piracy; the GCC called it a dangerous escalation. On 11 August
+six people died, including two coastguards on a rescue, when a commercial vessel was struck in the
+Bab al-Mandeb &mdash; an attack Yemen's internationally recognised government blames on the
+Houthis. The same day a US Navy MH-60 put two Hellfire missiles into the engine room of the
+Panama-flagged <em>Vela Nova</em>, which was running the blockade toward an Iranian port.</li>
+<li><b>Iran started talking about time rather than terms.</b> Mohammad Reza Naqdi, senior adviser to
+the IRGC commander, told PBS that one option is <em>&ldquo;to prolong this war until we get to the
+next term of the presidency and cause attrition, so that if anyone else wants to attack Iran, they
+will know there is a cost&rdquo;</em>. He framed it as a strategy, not a policy. On the other side,
+the chairman of the Joint Chiefs, General Dan Caine, is reported to have told administration
+colleagues privately that Washington needs an off-ramp. Both statements describe the same
+war.</li>
+<li><b>The economy kept getting worse in the way that actually matters.</b> The rial traded near
+<b>1.88 million</b> to the dollar on 12 August, within a few percent of the 1.96 million record it
+set on 18 July and against 1.47 million before the first bomb fell. July inflation printed at
+87.9%. The blockade is now producing fuel shortages <em>inside</em> an
+oil state, because Iran cannot import the refined product it never had the capacity to make. At
+least 916 people have been executed in Iran since January, 56 of them on national-security charges
+since 19 March.</li>
+</ul>
+
+<div class=stats>
+<div class=stat><b>13</b><small>vessels a day through Hormuz, five-day average to 11 August &mdash; near a three-month low</small></div>
+<div class=stat><b>$89.53</b><small>Brent on 12 August, up about 24% since the war began</small></div>
+<div class=stat><b>1.88M</b><small>rial to the dollar on 12 August &mdash; 1.47M before the war</small></div>
+<div class=stat><b>55</b><small>vessels CENTCOM has turned back since the blockade was reimposed on 14 July</small></div>
+</div>
+
+<h3>The six forecasts at day 167</h3>
+<div class=tscroll><table class=cap><colgroup><col style="width:32%"><col style="width:68%"></colgroup>
+<tr><th class=l>Forecast, 4 August</th><th class=l>Status at day 167</th></tr>
+<tr><td class=l><b>1 &middot; Stalemate holds through the midterms</b></td><td class=l><span class="pill p-vhigh">Strengthened</span> The talks that were meant to test this never convened, the near-deal produced a longer list of conditions instead of a signature, and each side is now demanding reparations from the other. Naqdi's attrition line and Caine's off-ramp are the two ends of a stalemate, not of a settlement.</td></tr>
+<tr><td class=l><b>2 &middot; Any durable deal concedes Iran a formal role in the strait</b></td><td class=l><span class="pill p-high">Firing, but the deal receded</span> The route, its coordinates and a proposed joint coordination centre to manage traffic all concede the role. Tehran then decoupled that arrangement from the strait's status, so the concession got larger while the prospect of a signed deal got smaller.</td></tr>
+<tr><td class=l><b>3 &middot; The nuclear programme is the defining strategic loss</b></td><td class=l><span class="pill p-vhigh">Confirmed</span> Iran's foreign ministry stated on 4 August that there are no IAEA inspectors in the country, and the deputy foreign minister says access will be settled only inside a final agreement. Every negotiation this week was maritime. Confidence raised to <b>very high</b>.</td></tr>
+<tr><td class=l><b>4 &middot; Brent holds a $75&ndash;95 band</b></td><td class=l><span class="pill p-high">Holding, upper half</span> $89.53 on 12 August after a 2% overnight move, roughly 24% above pre-war. The EIA's 2026 average projection is $87. The band survives; the risk premium has moved back into it.</td></tr>
+<tr><td class=l><b>5 &middot; The regime survives; the economy is the threat</b></td><td class=l><span class="pill p-med">Both halves worsening</span> A currency near its record low, 87.9% inflation, fuel queues in an oil state &mdash; and 916 executions since January, which is what suppression rather than stability looks like. Still no bazaar in the streets.</td></tr>
+<tr><td class=l><b>6 &middot; Gulf states hedge further toward Beijing</b></td><td class=l><span class="pill p-low">Cutting against</span> The UAE blamed the IRGC by name for the ADNOC strike, and Gulf officials read China's refusal to restrain Iran &mdash; plus its veto of the shipping-protection resolution &mdash; as complicity. The hedge may still come, but this week the Gulf moved toward Washington's hardware, not Beijing's. Confidence cut to <b>low-medium</b>.</td></tr>
+</table></div>
+
+<div class=note><b>The line this changes.</b> Last week's update said that if the draft were signed,
+section 4's <em>failed</em> verdict on reopening the strait would soften to <em>partially achieved,
+on Iranian terms</em>. It was not signed, and Iran has since said in terms that signing it would not
+reopen the strait. The row stands unchanged &mdash; and the thing being negotiated is no longer a
+waterway but the end of the war.</div>
+<p class=mut>Update as of August 13, 2026, day 167. Transit counts, oil prices and casualty figures
+move daily and disagree across sources; see the caveats in <a href="#cost">section 5</a>.</p>
+</section>
+
+<section id=update-aug6>
 <h2>Update &middot; 6 August 2026</h2>
 <p>Two days after this study was published, the diplomatic track moved further than it has since
 the June memorandum &mdash; and moved in the direction the forecasts said it would. Below this
 section the study is the one published on 4 August, with day-160 figures folded into the oil chart
 and the chokepoint table and the new week added as a fifth phase. The six forecasts in section 7 are
-left exactly as they were written and are scored here instead.</p>
+left exactly as they were written and are scored here instead. This update is kept as written;
+the <a href="#update">13 August update</a> above says what became of it.</p>
 
 <div class=warn><span class=h>The headline</span>The third round of US&ndash;Iran talks that was
 supposed to begin on 3 August &mdash; the test case named in <a href="#next">forecast 1</a> &mdash;
@@ -319,7 +427,7 @@ agreement on the <b>geographic coordinates of a temporary safe shipping route</b
 arrangement is in final drafting.</div>
 
 <h3>What is in the draft</h3>
-<table class=cap>
+<div class=tscroll><table class=cap><colgroup><col style="width:16%"><col style="width:54%"><col style="width:30%"></colgroup>
 <tr><th class=l>Term</th><th class=l>What it says</th><th class=l>Who it favours</th></tr>
 <tr><td class=l>Duration</td><td class=l>60 days, provisional. One Iranian negotiator put the range at one to three months.</td><td class=l>Neither &mdash; it defers the question</td></tr>
 <tr><td class=l>Transit fees</td><td class=l>None during the interim window. Iran wants authority to levy &ldquo;service fees&rdquo; for maritime security and environmental protection once it expires.</td><td class=l><b>Iran</b>, on a 60-day delay</td></tr>
@@ -327,7 +435,7 @@ arrangement is in final drafting.</div>
 <tr><td class=l>Iran's concession</td><td class=l>It dropped the demand to control traffic in both directions.</td><td class=l>US, marginally</td></tr>
 <tr><td class=l>Signatories</td><td class=l>Iran and Oman. The US takes part through calls between envoy Steve Witkoff, Iranian foreign minister Abbas Araghchi and Omani foreign minister Badr al-Busaidi &mdash; and signs nothing.</td><td class=l><b>Iran</b> &mdash; no admission that US talks happened</td></tr>
 <tr><td class=l>Left open</td><td class=l>Fees after day 60, naval mine clearance, and whether US sanctions even permit shipping companies to coordinate with Iranian authorities.</td><td class=l>&mdash;</td></tr>
-</table>
+</table></div>
 
 <div class=note><b>Read the structure, not the announcement.</b> An arrangement in which one coastal
 state draws a lane through its own waters, polices it, and defers the fee question for sixty days is
@@ -367,7 +475,7 @@ control systems from the internet and prepare to run them by hand.</li>
 </ul>
 
 <h3>What it does to the six forecasts</h3>
-<table class=cap>
+<div class=tscroll><table class=cap><colgroup><col style="width:32%"><col style="width:68%"></colgroup>
 <tr><th class=l>Forecast, 4 August</th><th class=l>Status at day 160</th></tr>
 <tr><td class=l><b>1 &middot; Stalemate holds through the midterms</b></td><td class=l><span class="pill p-vhigh">On track</span> The signal to watch was &ldquo;another ambiguous document rather than a verifiable one&rdquo;. A 60-day route arrangement that postpones the fee question is precisely that, and it did not even come from the round that was supposed to produce it.</td></tr>
 <tr><td class=l><b>2 &middot; Any durable deal concedes Iran a formal role in the strait</b></td><td class=l><span class="pill p-vhigh">Signal fired</span> The signal named transit fees, service charges, a joint authority, and the Oman track. All four are in the draft &mdash; which is neither signed nor durable, so the forecast is not yet won. Confidence raised from med-high to <b>high</b>.</td></tr>
@@ -375,7 +483,7 @@ control systems from the internet and prepare to run them by hand.</li>
 <tr><td class=l><b>4 &middot; Brent holds a $75&ndash;95 band</b></td><td class=l><span class="pill p-high">Holding</span> $83.82 on 3 August, two days of decline on deal optimism, then back to about $80 on the Red Sea attack. The price is still moving on diplomacy rather than on barrels.</td></tr>
 <tr><td class=l><b>5 &middot; The regime survives; the economy is the threat</b></td><td class=l><span class="pill p-med">Unchanged</span> Pezeshkian called this the hardest period since 1979 &mdash; an economic statement, not a military one. No sign yet of the bazaar returning to the streets.</td></tr>
 <tr><td class=l><b>6 &middot; Gulf states hedge further toward Beijing</b></td><td class=l><span class="pill p-med">Slow</span> Qatar insisting that the strait's long-term governance be settled regionally, rather than by Washington's broker, is a small instance of the same drift.</td></tr>
-</table>
+</table></div>
 
 <div class=note><b>The line this changes.</b> Section 4 scores &ldquo;reopen the Strait of
 Hormuz&rdquo; as <em>failed</em>. If the draft is signed, that becomes <em>partially achieved, on
@@ -397,10 +505,10 @@ military, and its economy, and gained the only leverage that has actually worked
 a hand on the tap for a fifth of the world's oil.</div>
 
 <div class=stats>
-<div class=stat><b>160</b><small>days of war as of August 6, 2026</small></div>
+<div class=stat><b>167</b><small>days of war as of August 13, 2026</small></div>
 <div class=stat><b>5%</b><small>of pre-war oil volume still transiting Hormuz</small></div>
 <div class=stat><b>3.2M</b><small>Iranians displaced &mdash; most since the Iran&ndash;Iraq war</small></div>
-<div class=stat><b>33%</b><small>of Americans approve of the war; 62% disapprove</small></div>
+<div class=stat><b>23%</b><small>of Americans say US military action in Iran should continue</small></div>
 </div>
 </section>
 
@@ -428,9 +536,10 @@ decapitation, is why the war is still running.</p>
 </section>
 
 <section id=phases>
-<h2><span class=n>2</span>The war in five phases</h2>
+<h2><span class=n>2</span>The war in six phases</h2>
 <p>The shape of this conflict is not a front line. It is a cycle: overwhelming air campaign,
-Iranian chokepoint retaliation, negotiation, collapse, repeat. It has now run through twice.</p>
+Iranian chokepoint retaliation, negotiation, collapse, repeat. It has now run through twice, and
+the third pass stalled before it reached a signature.</p>
 
 <div class=stepper>
 <div class=pbar>
@@ -439,6 +548,7 @@ Iranian chokepoint retaliation, negotiation, collapse, repeat. It has now run th
 <button class="pbtn" data-p=3><span class=pn>Phase 3</span>The MOU</button>
 <button class="pbtn" data-p=4><span class=pn>Phase 4</span>Collapse</button>
 <button class="pbtn" data-p=5><span class=pn>Phase 5</span>The Oman track</button>
+<button class="pbtn" data-p=6><span class=pn>Phase 6</span>The price list</button>
 </div>
 
 <div class="ppanel on" data-p=1>
@@ -547,27 +657,56 @@ the charges question removed from the text entirely and parked sixty days out. I
 deal, which is why it has a better chance of being signed &mdash; and why signing it settles less
 than it appears to.</p>
 </div>
+
+<div class=ppanel data-p=6>
+<h3>7 &ndash; 13 August: the price list</h3>
+<p class=goal>Iran separates the lane from the waterway, and names what the waterway costs.</p>
+<div class=lbl>What happened</div>
+<ul>
+<li><b>8 August:</b> Zolghadr, secretary of the Supreme National Security Council, lists five
+conditions for reopening the strait &mdash; no further threats, a permanent end to the war including
+with Iran's regional allies, the blockade lifted and US forces withdrawn, full compensation for war
+damage, sanctions lifted and frozen assets released. The Oman route talks continue separately.</li>
+<li><b>8 August:</b> the UAE accuses the IRGC of striking an ADNOC tanker in the strait. ADNOC counts
+fifteen of its ships attacked since February, one crew member killed, twenty injured.</li>
+<li><b>11 August:</b> six killed, including two coastguards, in a missile attack on a commercial
+vessel in the Bab al-Mandeb, which Yemen's government blames on the Houthis. A US MH-60
+disables the Panama-flagged <em>Vela Nova</em> with two
+Hellfire missiles for running the blockade to an Iranian port.</li>
+<li><b>11 August:</b> Trump demands compensation from Iran for &ldquo;50 years&rdquo; of damages.
+An IRGC adviser tells PBS Iran could prolong the war until the next presidency.</li>
+<li><b>12 August:</b> Trump says the US controls the strait and it is open. Iran's Persian Gulf
+Strait Authority replies that it &ldquo;remains blocked and will not be reopened until Iran's
+conditions are accepted&rdquo;. Transits sit near a three-month low; Brent returns to about $90.</li>
+</ul>
+<div class=lbl>What changed</div>
+<p>Until this week both sides were negotiating over a waterway. Iran has now repriced it as a war
+settlement, and the mechanism it is bargaining with &mdash; a route it polices, plus a proposed
+joint coordination centre &mdash; would survive any deal that gets signed. The fight is no longer
+about whether Iran gets a role in the strait. It is about what Iran gets paid for using it.</p>
 </div>
-<p class=mut>CENTCOM has redirected 44 commercial vessels since mid-July. The blockade and the
-counter-blockade are now both in force at once.</p>
+</div>
+<p class=mut>CENTCOM has redirected 55 commercial vessels, disabled three and boarded two since the
+blockade was reimposed on 14 July. The blockade and the counter-blockade are now both in force at
+once.</p>
 </section>
 
 <section id=motives>
 <h2><span class=n>3</span>Who wants what</h2>
 <p>The stated reasons and the operative reasons are not the same for anyone here. Both are worth
 tracking, because the gap explains why the war has no natural stopping point.</p>
-<table class=cap>
+<div class=tscroll><table class=cap><colgroup><col style="width:13%"><col style="width:26%"><col style="width:36%"><col style="width:25%"></colgroup>
 <tr><th class=l>Actor</th><th class=l>Stated aim</th><th class=l>Operative interest</th><th class=l>Constraint</th></tr>
-<tr><td class=l><b>United States</b></td><td class=l>Stop the nuclear programme; destroy missile and naval capability; end proxy support; reopen the strait. Rubio framed it as pre-emption against an &ldquo;imminent threat&rdquo; to US bases.</td><td class=l>Contested. Senator Warner stated there was <em>&ldquo;no evidence that Iran was going to launch a pre-emptive strike&rdquo;</em>. Critics call it a diversionary war &mdash; it began amid the Epstein files release and falling approval. Securing Iranian oil and gas was named as an objective by officials.</td><td class=l>No congressional authorisation. Approval below 40% for the war's entire duration. Midterms in November.</td></tr>
+<tr><td class=l><b>United States</b></td><td class=l>Stop the nuclear programme; destroy missile and naval capability; end proxy support; reopen the strait. Rubio framed it as pre-emption against an &ldquo;imminent threat&rdquo; to US bases.</td><td class=l>Contested. Senator Warner stated there was <em>&ldquo;no evidence that Iran was going to launch a pre-emptive strike&rdquo;</em>. Critics call it a diversionary war &mdash; it began amid the Epstein files release and falling approval. Securing Iranian oil and gas was named as an objective by officials.</td><td class=l>No congressional authorisation. Approval below 40% for the war's entire duration &mdash; 33% job approval by mid-August, with about two-thirds of Americans saying the war is not worth the risks. Midterms in November.</td></tr>
 <tr><td class=l><b>Israel</b></td><td class=l>Existential: an Iranian bomb and the missiles to deliver it, plus decades of sponsorship of hostile militias.</td><td class=l>Netanyahu had sought this strike for years and lacked a willing US president until now. The war coincided with his own legal jeopardy; polling moved from a tie to 62% support.</td><td class=l>Cannot reopen Hormuz alone. Simultaneous fronts in Lebanon and Gaza.</td></tr>
 <tr><td class=l><b>Iran</b></td><td class=l>Self-defence against unprovoked aggression and the assassination of its head of state.</td><td class=l>Regime survival first. Then: prove the state functions without Khamenei, and convert the one asset airpower cannot destroy &mdash; geography &mdash; into sanctions relief and unfrozen assets.</td><td class=l>An economy in free fall. Missile stocks halved. Cannot escalate without inviting the ground war it is trying to avoid.</td></tr>
 <tr><td class=l><b>Gulf states</b></td><td class=l>De-escalation and reopened shipping.</td><td class=l>They are being hit by both sides' war: Iranian missiles on Ras Tanura and Qatari LNG, drones over Kuwait, and an oil windfall they cannot ship. Saudi Arabia lobbied Washington directly to call off the August campaign.</td><td class=l>Host US bases that make them targets. No independent security guarantee.</td></tr>
 <tr><td class=l><b>Russia</b></td><td class=l>Condemns the strikes as unacceptable aggression; convened emergency UNSC sessions.</td><td class=l>Straightforwardly enriched. Higher oil prices, relief on export sanctions, and a distracted Washington. Offered China an energy lifeline as Gulf supply choked.</td><td class=l>Little ability &mdash; or desire &mdash; to change the outcome.</td></tr>
 <tr><td class=l><b>China</b></td><td class=l>Concern for Gulf sovereignty; blames the war's &ldquo;root causes&rdquo;.</td><td class=l>Buys Iranian crude and depends on Hormuz, yet gains by standing aside: it vetoed a US-backed reopening resolution with Russia while keeping Gulf ties intact, since those relationships are economic rather than security-based.</td><td class=l>Most exposed of anyone to a prolonged closure.</td></tr>
-</table>
+</table></div>
 <div class=note><b>The asymmetry that defines the war:</b> the US needs Iran to concede something
 specific and verifiable. Iran only needs the war to continue being expensive. Those are not
-symmetric burdens, which is why five months of overwhelming air superiority has not produced
+symmetric burdens, which is why five and a half months of overwhelming air superiority has not produced
 terms.</div>
 </section>
 
@@ -577,14 +716,14 @@ terms.</div>
 
 <h3>On the battlefield: not close</h3>
 <p>Iran's conventional military has effectively collapsed as a fighting force.</p>
-<table class=cap>
+<div class=tscroll><table class=cap><colgroup><col style="width:23%"><col style="width:13%"><col style="width:14%"><col style="width:50%"></colgroup>
 <tr><th class=l>Measure</th><th>Before</th><th>Now</th><th class=l>Read</th></tr>
 <tr><td class=l>Missile launches per day</td><td>480</td><td>&lt;10</td><td class=l>The high-intensity phase is over &mdash; Iran cannot sustain volume fire</td></tr>
 <tr><td class=l>Ballistic missile inventory</td><td>&mdash;</td><td>500&ndash;1,500</td><td class=l>Roughly a third to a half destroyed</td></tr>
 <tr><td class=l>Operational mobile launchers</td><td>&mdash;</td><td>&lt;120</td><td class=l>About half lost; the binding constraint on any salvo</td></tr>
 <tr><td class=l>Guidance &amp; radar production</td><td>Parchin, Shiraz</td><td>Destroyed</td><td class=l>The &ldquo;brain&rdquo; of the programme &mdash; surviving missiles are harder to aim</td></tr>
 <tr><td class=l>Navy</td><td>Surface + subsurface</td><td>Speedboats</td><td class=l>Corvette and submarine sunk; IRGCN small craft survive</td></tr>
-</table>
+</table></div>
 <p>US intelligence still assesses that Iran maintains significant launch capability, and the
 &ldquo;missile city&rdquo; architecture is decentralised enough to survive. But the character of the
 threat has changed from conventional deterrent to <b>guerrilla harassment</b> &mdash; a speedboat
@@ -592,14 +731,14 @@ and a drone against a tanker, not a salvo against Tel Aviv.</p>
 
 <h3>On the objective: Iran, by default</h3>
 <p>Measure each side against what it said it wanted, and the scoreboard inverts.</p>
-<table class=cap>
+<div class=tscroll><table class=cap><colgroup><col style="width:30%"><col style="width:16%"><col style="width:54%"></colgroup>
 <tr><th class=l>War aim</th><th class=l>Status</th><th class=l>Assessment</th></tr>
 <tr><td class=l>Destroy missile &amp; naval capability</td><td class=l><span class="pill p-vhigh">Achieved</span></td><td class=l>Halved arsenal, navy sunk, production hit</td></tr>
 <tr><td class=l>Remove the leadership</td><td class=l><span class="pill p-vhigh">Achieved</span></td><td class=l>And replaced within 8 days by a harder-line successor</td></tr>
 <tr><td class=l>Regime change</td><td class=l><span class="pill p-low">Failed</span></td><td class=l>The IRGC consolidated rather than fractured</td></tr>
-<tr><td class=l>Reopen the Strait of Hormuz</td><td class=l><span class="pill p-low">Failed</span></td><td class=l>5% of pre-war volume; Iran now charges tolls</td></tr>
+<tr><td class=l>Reopen the Strait of Hormuz</td><td class=l><span class="pill p-low">Failed</span></td><td class=l>5% of pre-war volume; Iran now prices reopening as an end to the war &mdash; see the <a href="#update">13 August update</a></td></tr>
 <tr><td class=l>End the nuclear programme</td><td class=l><span class="pill p-med">Unknown</span></td><td class=l>Unverifiable &mdash; inspectors have no access at all. See <a href="#nuclear">section 6</a></td></tr>
-</table>
+</table></div>
 <div class=warn><span class=h>The structural problem</span>Reopening a strait is not an air-power
 task. It requires controlling both shores, which means a ground invasion of Iran. As one analyst
 put it, there is &ldquo;no upside for the Trump camp now&rdquo;: absent that invasion, any
@@ -617,52 +756,55 @@ about <b>$270 billion</b> in damage to hold that position &mdash; and it is hold
 <figure class=fig>
 <div class=fig-title>Brent crude through the war, February &rarr; August 2026</div>
 <div class=fig-sub>$ per barrel, with the events that moved it</div>
-<div class=fig-scroll><svg class="chart" viewBox="0 0 760 380" role="img" aria-label="Line chart of Brent crude from about 72 dollars before the war, spiking to 118 dollars when the Strait of Hormuz closed in March, easing to 95 dollars during the April ceasefire, returning to about 72 dollars after the June memorandum, rising to about 84 dollars by early August after the ceasefire collapsed, and easing to about 80 dollars on 5 August as a Hormuz deal neared" preserveAspectRatio="xMidYMid meet">
-<line x1="48" y1="326" x2="656" y2="326" class="grid"/><text x="40" y="330" text-anchor="end" class="tick">$60</text>
-<line x1="48" y1="244.3" x2="656" y2="244.3" class="grid"/><text x="40" y="248.3" text-anchor="end" class="tick">$80</text>
-<line x1="48" y1="162.6" x2="656" y2="162.6" class="grid"/><text x="40" y="166.6" text-anchor="end" class="tick">$100</text>
-<line x1="48" y1="80.9" x2="656" y2="80.9" class="grid"/><text x="40" y="84.9" text-anchor="end" class="tick">$120</text>
+<div class=fig-scroll><svg class="chart" viewBox="0 0 760 380" role="img" aria-label="Line chart of Brent crude from about 72 dollars before the war, spiking to 118 dollars when the Strait of Hormuz closed in March, easing to 95 dollars during the April ceasefire, returning to about 72 dollars after the June memorandum, rising to about 84 dollars by early August after the ceasefire collapsed, easing to about 80 dollars on 5 August as a Hormuz deal neared, and climbing back to 89.53 dollars on 12 August as the deal stalled" preserveAspectRatio="xMidYMid meet">
+<line x1="48" y1="326" x2="694" y2="326" class="grid"/><text x="40" y="330" text-anchor="end" class="tick">$60</text>
+<line x1="48" y1="244.3" x2="694" y2="244.3" class="grid"/><text x="40" y="248.3" text-anchor="end" class="tick">$80</text>
+<line x1="48" y1="162.6" x2="694" y2="162.6" class="grid"/><text x="40" y="166.6" text-anchor="end" class="tick">$100</text>
+<line x1="48" y1="80.9" x2="694" y2="80.9" class="grid"/><text x="40" y="84.9" text-anchor="end" class="tick">$120</text>
 <line x1="55.6" y1="340" x2="55.6" y2="345" class="grid"/><text x="55.6" y="361" text-anchor="middle" class="tick">Mar</text>
 <line x1="174.1" y1="340" x2="174.1" y2="345" class="grid"/><text x="174.1" y="361" text-anchor="middle" class="tick">Apr</text>
 <line x1="288.8" y1="340" x2="288.8" y2="345" class="grid"/><text x="288.8" y="361" text-anchor="middle" class="tick">May</text>
 <line x1="407.3" y1="340" x2="407.3" y2="345" class="grid"/><text x="407.3" y="361" text-anchor="middle" class="tick">Jun</text>
 <line x1="522.0" y1="340" x2="522.0" y2="345" class="grid"/><text x="522.0" y="361" text-anchor="middle" class="tick">Jul</text>
 <line x1="640.5" y1="340" x2="640.5" y2="345" class="grid"/><text x="640.5" y="361" text-anchor="middle" class="tick">Aug</text>
-<line x1="48" y1="340" x2="656" y2="340" class="axis"/>
-<polyline points="48.0,277.0 59.5,89.0 250.6,183.0 529.6,277.0 648.0,228.7 655.6,244.3" fill="none" stroke="#b4453a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="48" y1="340" x2="694" y2="340" class="axis"/>
+<polyline points="48.0,277.0 59.5,89.0 250.6,183.0 529.6,277.0 648.0,228.7 655.6,244.3 682.5,205.4" fill="none" stroke="#b4453a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <text x="52" y="297" text-anchor="start" class="dl">Pre-war <tspan class="dlv">$72</tspan></text>
 <text x="72" y="86" text-anchor="start" class="dl">Strait closed <tspan class="dlv">$118</tspan></text>
 <text x="258" y="180" text-anchor="start" class="dl">Ceasefire holds <tspan class="dlv">$95</tspan></text>
 <text x="524" y="269" text-anchor="end" class="dl">MOU trough <tspan class="dlv">~$72</tspan></text>
 <text x="642" y="214" text-anchor="end" class="dl">Aug 3 <tspan class="dlv">$83.82</tspan></text>
-<text x="663" y="248" text-anchor="start" class="dl">Aug 5 <tspan class="dlv">~$80</tspan></text>
+<text x="676" y="192" text-anchor="end" class="dl">Aug 12 <tspan class="dlv">$89.53</tspan></text>
 <g class="pt" tabindex="0" role="img" aria-label="27 February 2026 — about 72 dollars — the day before the war" data-tip="27 Feb — ~$72 · day before the war"><circle cx="48.0" cy="277.0" r="13" fill="transparent"/><circle cx="48.0" cy="277.0" r="4.5" fill="#b4453a" stroke="#fbfaf7" stroke-width="2"/></g>
 <g class="pt" tabindex="0" role="img" aria-label="2 March 2026 — 118 dollars — Iran declares the Strait of Hormuz closed" data-tip="2 Mar — $118 · Hormuz declared closed (+64%)"><circle cx="59.5" cy="89.0" r="13" fill="transparent"/><circle cx="59.5" cy="89.0" r="4.5" fill="#b4453a" stroke="#fbfaf7" stroke-width="2"/></g>
 <g class="pt" tabindex="0" role="img" aria-label="21 April 2026 — about 95 dollars — the ceasefire is extended indefinitely" data-tip="21 Apr — ~$95 · ceasefire extended indefinitely"><circle cx="250.6" cy="183.0" r="13" fill="transparent"/><circle cx="250.6" cy="183.0" r="4.5" fill="#b4453a" stroke="#fbfaf7" stroke-width="2"/></g>
 <g class="pt" tabindex="0" role="img" aria-label="Early July 2026 — about 72 dollars — the post-memorandum low, back to pre-war levels" data-tip="Early Jul — ~$72 · post-MOU low, back to pre-war"><circle cx="529.6" cy="277.0" r="13" fill="transparent"/><circle cx="529.6" cy="277.0" r="4.5" fill="#b4453a" stroke="#fbfaf7" stroke-width="2"/></g>
 <g class="pt" tabindex="0" role="img" aria-label="3 August 2026 — 83.82 dollars — falling nearly 5 percent in a day on news of talks" data-tip="3 Aug — $83.82 · −4.7% in a day on talks news"><circle cx="648.0" cy="228.7" r="13" fill="transparent"/><circle cx="648.0" cy="228.7" r="4.5" fill="#b4453a" stroke="#fbfaf7" stroke-width="2"/></g>
 <g class="pt" tabindex="0" role="img" aria-label="5 August 2026 — about 80 dollars — two days of decline on deal optimism, then a bounce on the Red Sea tanker attack" data-tip="5 Aug — ~$80 · slid on deal optimism, bounced on the Red Sea attack"><circle cx="655.6" cy="244.3" r="13" fill="transparent"/><circle cx="655.6" cy="244.3" r="4.5" fill="#b4453a" stroke="#fbfaf7" stroke-width="2"/></g>
+<g class="pt" tabindex="0" role="img" aria-label="12 August 2026 — 89.53 dollars — the Hormuz deal stalls and Iran issues five conditions for reopening" data-tip="12 Aug — $89.53 · deal stalls, Iran names its price"><circle cx="682.5" cy="205.4" r="13" fill="transparent"/><circle cx="682.5" cy="205.4" r="4.5" fill="#b4453a" stroke="#fbfaf7" stroke-width="2"/></g>
 </svg></div>
-<details class=card><summary><b>Data table</b><span class=tag>chart data</span></summary><div class=body><table class=cap><tr><th class=l>Date</th><th>Brent</th><th class=l>Event</th></tr><tr><td class=l>27 Feb 2026</td><td>~$72</td><td class=l>Day before the war</td></tr><tr><td class=l>2 Mar 2026</td><td>$118</td><td class=l>Strait declared closed &mdash; peak, +64%</td></tr><tr><td class=l>21 Apr 2026</td><td>~$95</td><td class=l>Ceasefire extended indefinitely</td></tr><tr><td class=l>early Jul 2026</td><td>~$72</td><td class=l>Post-MOU low (derived: Brent is +16.4% over the month to 3 Aug)</td></tr><tr><td class=l>3 Aug 2026</td><td>$83.82</td><td class=l>&minus;4.68% on the day, on news of talks</td></tr><tr><td class=l>5 Aug 2026</td><td>~$80</td><td class=l>Two days of decline on Hormuz-deal optimism, then a bounce on the Red Sea tanker attack</td></tr></table></div></details>
+<details class=card><summary><b>Data table</b><span class=tag>chart data</span></summary><div class=body><div class=tscroll><table class=cap><colgroup><col style="width:18%"><col style="width:12%"><col style="width:70%"></colgroup><tr><th class=l>Date</th><th>Brent</th><th class=l>Event</th></tr><tr><td class=l>27 Feb 2026</td><td>~$72</td><td class=l>Day before the war</td></tr><tr><td class=l>2 Mar 2026</td><td>$118</td><td class=l>Strait declared closed &mdash; peak, +64%</td></tr><tr><td class=l>21 Apr 2026</td><td>~$95</td><td class=l>Ceasefire extended indefinitely</td></tr><tr><td class=l>early Jul 2026</td><td>~$72</td><td class=l>Post-MOU low (derived: Brent is +16.4% over the month to 3 Aug)</td></tr><tr><td class=l>3 Aug 2026</td><td>$83.82</td><td class=l>&minus;4.68% on the day, on news of talks</td></tr><tr><td class=l>5 Aug 2026</td><td>~$80</td><td class=l>Two days of decline on Hormuz-deal optimism, then a bounce on the Red Sea tanker attack</td></tr><tr><td class=l>12 Aug 2026</td><td>$89.53</td><td class=l>Deal stalls; Iran sets five conditions for reopening &mdash; about +24% on pre-war</td></tr></table></div></div></details>
 <figcaption class=mut>The early-July figure is derived from the reported one-month change rather
 than a direct quote, and the 5 August figure is a round number from market reporting rather than a
 settlement print; treat both as approximate. Note the shape: the spike is instant, the recovery is
-slow, the second rise begins the day the MOU dies, and the last leg down is diplomacy again.</figcaption>
+slow, the second rise begins the day the MOU dies &mdash; and the last two legs are both diplomacy,
+down on the draft and back up when Iran named its conditions.</figcaption>
 </figure>
 
 <h3>The chokepoint, in numbers</h3>
-<table class=cap>
+<div class=tscroll><table class=cap><colgroup><col style="width:30%"><col style="width:22%"><col style="width:48%"></colgroup>
 <tr><th class=l>Metric</th><th>Before</th><th>Now</th></tr>
 <tr><td class=l>Oil through Hormuz</td><td>10.3 Mb/d</td><td>0.515 Mb/d <b>(5%)</b></td></tr>
-<tr><td class=l>Daily transits</td><td>~60 ships</td><td>14; <b>8</b> on 5 August</td></tr>
+<tr><td class=l>Daily transits</td><td>~60 ships</td><td><b>13</b> &mdash; five-day average to 11 August, near a three-month low</td></tr>
 <tr><td class=l>War-risk insurance (VLCC)</td><td>0.125% of hull</td><td>~1% (~$2M/transit); peaked at 2.5&ndash;5%</td></tr>
+<tr><td class=l>Marine insurance claims</td><td>&mdash;</td><td>$1.5&ndash;2B from about 70 casualties since late February</td></tr>
 <tr><td class=l>Asia&ndash;Europe container spot rates</td><td>&mdash;</td><td>+150%</td></tr>
 <tr><td class=l>Reroute via Cape of Good Hope</td><td>&mdash;</td><td>+3,800 nm, 10&ndash;14 days, ~$40&ndash;50M/week fleet-wide</td></tr>
-</table>
+</table></div>
 <p class=mut>Vessel counts disagree across sources and across what they count: the tally used here
 puts the pre-war baseline near 60 transits a day, while the reporting around the August talks uses
-about 130 before the war against 8 on 5 August. The oil-volume line is the firmer number, and it
-says 5%.</p>
+about 130 before the war against 8 on 5 August and 13 a day in the week to 11 August. The
+oil-volume line is the firmer number, and it says 5%.</p>
 <p>The strait normally carries roughly <b>a fifth of the world's oil and a quarter of its LNG</b>.
 The Dallas Fed projected the closure would cut annualised global GDP growth by <b>2.9 percentage
 points</b> in Q2 2026 and push WTI to $98 in Q2 and $115 in Q3. The heaviest losses fall on
@@ -671,13 +813,17 @@ energy-importing developing countries that have no strategic reserve and no alte
 <h3>Iran's economy is the real casualty</h3>
 <div class=stats>
 <div class=stat><b>&minus;6.1%</b><small>IMF-projected Iranian GDP, 2026</small></div>
-<div class=stat><b>68.9%</b><small>inflation</small></div>
+<div class=stat><b>87.9%</b><small>inflation, July print; 68.9% is the IMF's 2026 average</small></div>
 <div class=stat><b>430%</b><small>cooking oil price rise, year on year</small></div>
 <div class=stat><b>$270B</b><small>estimated war damage</small></div>
 </div>
-<p>The rial passed 1.47 million to the dollar in January, before the war. Government figures put
+<p>The rial passed 1.47 million to the dollar in January, before the war; by 12 August it was near
+<b>1.88 million</b> on the open market, off a record 1.96 million set on 18 July. Government figures
+put
 eggs up 345%, rice 287%, milk 139%. Iran has lost around <b>230 million cubic metres per day</b> of
-gas production and is warning citizens of blackouts. Senior officials have told President
+gas production and is warning citizens of blackouts. By August the blockade had produced fuel
+shortages inside an oil state: Iran cannot refine enough gasoline and diesel for its own demand and
+can no longer import the difference. Senior officials have told President
 Pezeshkian that rebuilding will take more than a decade. The blockade threatens roughly 70% of
 export revenue.</p>
 <p>This matters strategically: the largest and longest wave of unrest since 1979 began in
@@ -686,7 +832,7 @@ currency collapse. The war interrupted that movement by supplying an external en
 that caused it have since become far worse.</p>
 
 <h3>The human cost, and why the numbers disagree</h3>
-<table class=cap>
+<div class=tscroll><table class=cap><colgroup><col style="width:26%"><col style="width:38%"><col style="width:36%"></colgroup>
 <tr><th class=l>Source</th><th class=l>Figure</th><th class=l>Scope</th></tr>
 <tr><td class=l>Cross-source tracker</td><td class=l>8,976&ndash;18,310 killed</td><td class=l>All sides, to 30 July</td></tr>
 <tr><td class=l>Conservative count</td><td class=l>7,144&ndash;9,676+ killed, ~46,965 injured</td><td class=l>All fronts, to 20 July</td></tr>
@@ -694,7 +840,7 @@ that caused it have since become far worse.</p>
 <tr><td class=l>Hengaw</td><td class=l>7,650 killed, 1,030 civilian (13.5%)</td><td class=l>Iran, first 40 days</td></tr>
 <tr><td class=l>Lebanese Ministry of Public Health</td><td class=l>4,328 killed, 12,229 wounded</td><td class=l>Lebanon, since 2 March</td></tr>
 <tr><td class=l>OCHA and UNHCR</td><td class=l>3.2 million displaced, 60% women and children</td><td class=l>Internal displacement in Iran</td></tr>
-</table>
+</table></div>
 <p class=mut>The spread between the high and low totals is roughly a factor of two. That is normal
 for an active war with no independent access, and it is a reason to distrust confident precision
 &mdash; including anyone citing a single number without a source.</p>
@@ -729,7 +875,7 @@ Iranian bomb is stronger today than it was on 27 February.</div>
 <p>Analysts converge on four scenarios: strategic stalemate (most likely), diplomatic
 breakthrough, full escalation, or state collapse. Below are six specific forecasts, each with the
 signal that would confirm or kill it.</p>
-<table class=cap>
+<div class=tscroll><table class=cap><colgroup><col style="width:34%"><col style="width:12%"><col style="width:27%"><col style="width:27%"></colgroup>
 <tr><th class=l>Prediction</th><th class=l>Confidence</th><th class=l>Watch for</th><th class=l>What it means</th></tr>
 <tr><td class=l><b>Stalemate holds through the November midterms.</b> Neither side can achieve its aim at acceptable cost. The cycle &mdash; strike, chokepoint retaliation, talks, collapse &mdash; has already run twice and has no built-in stopping point.</td><td class=l><span class="pill p-vhigh">High</span></td><td class=l>A third round of talks that produces another ambiguous document rather than a verifiable one. The 3 August round is the test case.</td><td class=l>Plan for elevated energy costs and closed Gulf shipping as the base case, not the risk case.</td></tr>
 <tr><td class=l><b>Any durable deal concedes Iran a formal role in the strait.</b> The MOU already conceded it implicitly with &ldquo;no charge for 60 days only&rdquo;. Iran's negotiating position rests entirely on that concession being made permanent.</td><td class=l><span class="pill p-high">Med-high</span></td><td class=l>Language about &ldquo;transit fees&rdquo;, &ldquo;service charges&rdquo;, or a joint authority. Iran's parallel talks with <b>Oman</b> over an alternative route are the same idea in another form.</td><td class=l>The war's likely settlement ratifies the thing it was fought to prevent.</td></tr>
@@ -737,14 +883,15 @@ signal that would confirm or kill it.</p>
 <tr><td class=l><b>Oil settles structurally higher but well below the March panic.</b> Markets have priced a long closure; the residual premium is now about diplomacy, not supply. Brent fell 4.7% in a day on a rumour of talks.</td><td class=l><span class="pill p-high">Med-high</span></td><td class=l>Whether Brent holds a $75&ndash;95 band. A break above $100 means escalation the market didn't expect; below $75 means it believes a deal.</td><td class=l>The price is now the most honest real-time poll on whether this ends.</td></tr>
 <tr><td class=l><b>The regime survives the year; the economy is the threat, not airpower.</b> Decapitation consolidated the IRGC rather than fracturing it. But 68.9% inflation and pre-existing bazaar protests are a different kind of pressure, and one the war has been suppressing rather than solving.</td><td class=l><span class="pill p-med">Medium</span></td><td class=l>Protests resuming with economic rather than political slogans, especially if blackouts arrive with winter. Watch the bazaar, not the campuses.</td><td class=l>Regime change, if it comes, arrives through the currency &mdash; on a timeline no air campaign controls.</td></tr>
 <tr><td class=l><b>Gulf states hedge further toward Beijing.</b> They took Iranian missiles because they host US bases, then watched Washington plan an escalation they had to lobby against. China vetoed the reopening resolution and kept its Gulf relationships intact anyway.</td><td class=l><span class="pill p-med">Medium</span></td><td class=l>Gulf&ndash;China security language, not just trade deals. Saudi's successful August lobbying is the precedent to watch.</td><td class=l>The war's durable geopolitical effect may be in the Gulf's alignment, not Iran's.</td></tr>
-</table>
+</table></div>
 <div class=note><b>The thread:</b> this war has demonstrated that overwhelming air superiority can
 destroy a state's military and still not produce a political outcome, while a country with a
 collapsing currency and half its missiles can set the terms by holding a waterway. Every forecast
 above is that asymmetry continuing to run.</div>
 <p class=mut>Forecasts as of August 4, 2026; confidence labels are judgment, not measurement. They
-are frozen as written &mdash; see the <a href="#update">6 August update</a> for how each one is
-doing two days later, and for the one confidence level that has since been raised.</p>
+are frozen as written and scored twice since: in the <a href="#update-aug6">6 August update</a> at
+day 160, and again in the <a href="#update">13 August update</a> at day 167, where two confidence
+levels moved &mdash; one up, one down.</p>
 </section>
 
 <section id=verdict>
@@ -752,9 +899,9 @@ doing two days later, and for the one confidence level that has since been raise
 <p>If you read nothing else, these five things:</p>
 <ul class=check>
 <li><input type=checkbox aria-label="Nobody is winning"><span><span class=k>Nobody is winning.</span> The US and Israel won the war they planned for and are losing the one they got. Iran has lost more of everything and is closer to its objective.</span></li>
-<li><input type=checkbox aria-label="Geography beat airpower"><span><span class=k>Geography beat airpower.</span> The Strait of Hormuz &mdash; not the nuclear programme, not the missiles &mdash; is the axis the entire war now turns on, because reopening it requires a ground invasion nobody will authorise. The draft now on the table reopens it the other way: by agreeing a lane through Iranian waters and postponing the question of what Iran may charge for it. See the <a href="#update">6 August update</a>.</span></li>
+<li><input type=checkbox aria-label="Geography beat airpower"><span><span class=k>Geography beat airpower.</span> The Strait of Hormuz &mdash; not the nuclear programme, not the missiles &mdash; is the axis the entire war now turns on, because reopening it requires a ground invasion nobody will authorise. The draft that was meant to reopen it the other way &mdash; a lane through Iranian waters, with the charging question postponed &mdash; stalled, and Iran now says the lane and the strait are separate questions. See the <a href="#update">13 August update</a>.</span></li>
 <li><input type=checkbox aria-label="Decapitation backfired"><span><span class=k>Decapitation backfired.</span> Killing Khamenei produced a successor in eight days who is more hardline, an IRGC that consolidated, and a global demonstration that states without deterrents lose their leaders.</span></li>
-<li><input type=checkbox aria-label="Watch the currency"><span><span class=k>Watch the currency, not the front.</span> The Islamic Republic's genuine vulnerability is 68.9% inflation and a protest movement that predates the war &mdash; which the war has been suppressing.</span></li>
+<li><input type=checkbox aria-label="Watch the currency"><span><span class=k>Watch the currency, not the front.</span> The Islamic Republic's genuine vulnerability is 87.9% inflation, a rial near its record low and a protest movement that predates the war &mdash; which the war has been suppressing, at the rate of 916 executions since January.</span></li>
 <li><input type=checkbox aria-label="The numbers are contested"><span><span class=k>Distrust precise numbers.</span> Casualty estimates differ by a factor of two, no inspector has seen a centrifuge in months, and both governments have reason to overstate. Including in this article.</span></li>
 </ul>
 </section>
@@ -768,13 +915,27 @@ doing two days later, and for the one confidence level that has since been raise
 <li><a href="https://theconversation.com/why-iran-broke-the-ceasefire-in-the-strait-of-hormuz-and-what-might-happen-next-expert-qanda-287218" target=_blank rel=noopener>The Conversation &mdash; Why Iran broke the ceasefire in the Strait of Hormuz</a></li>
 <li><a href="https://www.aljazeera.com/news/liveblog/2026/8/3/iran-war-live-trump-says-talks-set-to-begin-tehran-urges-us-to-honour-mou" target=_blank rel=noopener>Al Jazeera &mdash; Iran war live updates, 3 August</a></li>
 <li><a href="https://www.cnn.com/2026/08/02/world/live-news/iran-war-trump" target=_blank rel=noopener>CNN &mdash; Trump on Iranian leadership, 2&ndash;3 August</a></li>
-<li><a href="https://www.aljazeera.com/news/2026/8/5/iran-oman-us-close-to-hormuz-deal-what-do-they-all-want" target=_blank rel=noopener>Al Jazeera &mdash; Iran, Oman and the US &ldquo;close&rdquo; to a Hormuz deal: what each wants <b>(update)</b></a></li>
-<li><a href="https://www.aljazeera.com/news/liveblog/2026/8/5/iran-war-live-tehran-oman-talks-on-hormuz-positive-ship-hit-in-red-sea" target=_blank rel=noopener>Al Jazeera &mdash; Tehran and Oman agree route coordinates, 5 August <b>(update)</b></a></li>
-<li><a href="https://www.cnn.com/2026/08/05/middleeast/hormuz-iran-oman-agreement-analysis-intl" target=_blank rel=noopener>CNN &mdash; An agreement on the strait is taking shape, but not the one Trump wants <b>(update)</b></a></li>
-<li><a href="https://www.cnn.com/2026/08/05/world/live-news/iran-war-trump" target=_blank rel=noopener>CNN &mdash; Houthi attack on a Saudi tanker; Trump says Hormuz reopens &ldquo;soon&rdquo;, 5 August <b>(update)</b></a></li>
-<li><a href="https://www.cnbc.com/2026/08/05/us-iran-war-trump-hormuz-bessent-iran-deal-close.html" target=_blank rel=noopener>CNBC &mdash; Iran and Oman say Hormuz talks are in final stages <b>(update)</b></a></li>
-<li><a href="https://www.axios.com/2026/08/05/us-iran-strait-of-hormuz-deal-nears" target=_blank rel=noopener>Axios &mdash; US nears a 60-day interim deal to reopen the strait <b>(update)</b></a></li>
-<li><a href="https://www.justsecurity.org/151837/early-edition-august-5-2026/" target=_blank rel=noopener>Just Security &mdash; Early Edition, 5 August: munitions stocks, Red Sea, utility intrusions <b>(update)</b></a></li>
+<li><a href="https://www.aljazeera.com/news/2026/8/5/iran-oman-us-close-to-hormuz-deal-what-do-they-all-want" target=_blank rel=noopener>Al Jazeera &mdash; Iran, Oman and the US &ldquo;close&rdquo; to a Hormuz deal: what each wants <b>(6 Aug update)</b></a></li>
+<li><a href="https://www.aljazeera.com/news/liveblog/2026/8/5/iran-war-live-tehran-oman-talks-on-hormuz-positive-ship-hit-in-red-sea" target=_blank rel=noopener>Al Jazeera &mdash; Tehran and Oman agree route coordinates, 5 August <b>(6 Aug update)</b></a></li>
+<li><a href="https://www.cnn.com/2026/08/05/middleeast/hormuz-iran-oman-agreement-analysis-intl" target=_blank rel=noopener>CNN &mdash; An agreement on the strait is taking shape, but not the one Trump wants <b>(6 Aug update)</b></a></li>
+<li><a href="https://www.cnn.com/2026/08/05/world/live-news/iran-war-trump" target=_blank rel=noopener>CNN &mdash; Houthi attack on a Saudi tanker; Trump says Hormuz reopens &ldquo;soon&rdquo;, 5 August <b>(6 Aug update)</b></a></li>
+<li><a href="https://www.cnbc.com/2026/08/05/us-iran-war-trump-hormuz-bessent-iran-deal-close.html" target=_blank rel=noopener>CNBC &mdash; Iran and Oman say Hormuz talks are in final stages <b>(6 Aug update)</b></a></li>
+<li><a href="https://www.axios.com/2026/08/05/us-iran-strait-of-hormuz-deal-nears" target=_blank rel=noopener>Axios &mdash; US nears a 60-day interim deal to reopen the strait <b>(6 Aug update)</b></a></li>
+<li><a href="https://www.justsecurity.org/151837/early-edition-august-5-2026/" target=_blank rel=noopener>Just Security &mdash; Early Edition, 5 August: munitions stocks, Red Sea, utility intrusions <b>(6 Aug update)</b></a></li>
+<li><a href="https://www.cnn.com/2026/08/08/world/live-news/iran-war-trump" target=_blank rel=noopener>CNN &mdash; Iran demands concessions as it nears a Hormuz deal with Oman, 8 August <b>(13 Aug update)</b></a></li>
+<li><a href="https://fortune.com/2026/08/08/iran-demands-strait-of-hormuz-us-conditions-total-compensation-war-damage/" target=_blank rel=noopener>Fortune &mdash; Zolghadr's list of conditions for reopening the strait <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.aljazeera.com/news/2026/8/8/uae-says-iran-targeted-adnoc-tanker-in-hormuz-no-casualties-2" target=_blank rel=noopener>Al Jazeera &mdash; UAE says Iran targeted an ADNOC tanker in Hormuz, 8 August <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.aljazeera.com/news/2026/8/11/trump-demands-compensation-from-iran-as-talks-on-strait-of-hormuz-continue" target=_blank rel=noopener>Al Jazeera &mdash; Trump demands compensation from Iran, 11 August <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.aljazeera.com/news/2026/8/11/us-military-fires-on-cargo-vessel-it-said-sought-to-break-iran-blockade" target=_blank rel=noopener>Al Jazeera &mdash; US fires on the <em>Vela Nova</em> for running the blockade, 11 August <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.aljazeera.com/economy/2026/8/12/oil-prices-rise-as-attacks-dent-hopes-for-strait-of-hormuz-reopening" target=_blank rel=noopener>Al Jazeera &mdash; Oil rises as attacks dent hopes for a reopening, 12 August <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.cnbc.com/2026/08/12/strait-hormuz-ship-traffic-iran-war-deal.html" target=_blank rel=noopener>CNBC &mdash; Hormuz ship traffic near a three-month low, 12 August <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.cnbc.com/2026/08/13/us-iran-war-trump-hormuz-irgc.html" target=_blank rel=noopener>CNBC &mdash; &ldquo;Hormuz remains blocked&rdquo;: Iran disputes Trump's claims, 13 August <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.lloydslistintelligence.com/resources/blog/strait-of-hormuz-brief-12-august-2026" target=_blank rel=noopener>Lloyd's List Intelligence &mdash; Strait of Hormuz brief, 12 August: transits and insurance claims <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.iranintl.com/en/202608124129" target=_blank rel=noopener>Iran International &mdash; IRGC adviser says Iran could prolong the war to outlast Trump <b>(13 Aug update)</b></a></li>
+<li><a href="https://www.iranintl.com/en/202608122187" target=_blank rel=noopener>Iran International &mdash; At least 916 executed in Iran since January <b>(13 Aug update)</b></a></li>
+<li><a href="https://news.un.org/en/story/2026/08/1168081" target=_blank rel=noopener>UN News &mdash; Sharp spike in executions and death sentences in Iran, 5 August <b>(13 Aug update)</b></a></li>
+<li><a href="https://thehill.com/homenews/administration/6024533-donald-trump-approval-rating-sours-economist-yougov/" target=_blank rel=noopener>The Hill &mdash; Trump approval at 33% in Economist/YouGov polling <b>(13 Aug update)</b></a></li>
+<li><a href="https://thehill.com/policy/international/5998807-us-iran-war-worth-risk-ap-norc-survey/" target=_blank rel=noopener>The Hill &mdash; AP-NORC: two-thirds say the war is not worth the risks, about two in ten want it to continue <b>(13 Aug update)</b></a></li>
 <li><a href="https://www.dallasfed.org/research/economics/2026/0320" target=_blank rel=noopener>Dallas Fed &mdash; What the closure of the Strait of Hormuz means for the global economy</a></li>
 <li><a href="https://militaryspend.org/strait-of-hormuz" target=_blank rel=noopener>Strait of Hormuz closure tracker &mdash; throughput, insurance, rerouting</a></li>
 <li><a href="https://tradingeconomics.com/commodity/brent-crude-oil" target=_blank rel=noopener>Trading Economics &mdash; Brent crude price history</a></li>
@@ -792,9 +953,9 @@ doing two days later, and for the one confidence level that has since been raise
 </ul>
 </section>
 
-<footer>A study, August 4, 2026, updated August 6. Codename <b>Kingler</b> &mdash; the one that wins
-by holding the chokepoint. This is an active war: figures, front lines, and negotiating positions
-reflect day 160 and will be wrong soon. Casualty and economic numbers are contested and drawn from the sources
+<footer>A study, August 4, 2026, updated August 6 and August 13. Codename <b>Kingler</b> &mdash; the
+one that wins by holding the chokepoint. This is an active war: figures, front lines, and negotiating
+positions reflect day 167 and will be wrong soon. Casualty and economic numbers are contested and drawn from the sources
 above, several of which disagree with each other. Not affiliated with any party to the conflict.</footer>
 </div>
 
