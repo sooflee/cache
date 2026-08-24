@@ -1,0 +1,433 @@
+<!DOCTYPE HTML>
+<html  dir="auto">
+	<head>
+
+		<meta charset="utf-8">
+
+		<title>cache — private</title>
+		
+		<link rel="stylesheet" type="text/css" href="assets/css/inside.css" />
+		
+		<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%204%2028%2010%2016%2016%204%2010Z%27/%3E%3Cpath%20d%3D%27M4%2016%2016%2022%2028%2016%27/%3E%3Cpath%20d%3D%27M4%2022%2016%2028%2028%2022%27/%3E%3C/svg%3E">
+		
+		<link rel="canonical" href="https://cache.bwang.io/private.html">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<meta name="generator" content="Write.as">
+		<meta name="description" content="">
+		
+		<meta itemprop="name" content="cache">
+		<meta itemprop="description" content="">
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:title" content="cache">
+		<meta name="twitter:description" content="">
+		
+		<meta property="og:title" content="cache — private" />
+		<meta property="og:site_name" content="cache" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="https://cache.bwang.io/" />
+		<meta property="og:description" content="" />
+		
+		
+	
+	
+
+		<style type="text/css">body footer nav { display: none; }
+
+.book {
+	display: none;
+}
+
+.read-more {
+	display: none;
+}
+
+.h-entry {
+	justify-content: space-between;
+	display: flex;
+}
+
+body#collection #wrapper article,
+body#subpage #wrapper article {
+	margin-bottom: 1em;
+}
+
+.dt-published {
+	flex-shrink: 0;
+}
+
+</style>
+		
+
+	<meta name="robots" content="noindex, nofollow">
+<style>
+.lock{max-width:22rem;margin:2rem 0 3rem;}
+.lock p{color:#757575;font-size:14px;margin:0 0 1rem;}
+.lock form{display:flex;gap:.5rem;}
+.lock input{flex:1;min-width:0;font:inherit;font-size:15px;padding:.5rem .7rem;
+	border:1px solid #d8d8d8;border-radius:7px;background:#fff;color:#222;}
+.lock input:focus{outline:none;border-color:#357BB3;}
+.lock button{font:inherit;font-size:15px;font-weight:600;padding:.5rem 1.1rem;cursor:pointer;
+	border:1px solid #357BB3;border-radius:7px;background:#357BB3;color:#fff;}
+.lock button:hover{background:#2c6795;border-color:#2c6795;}
+.lock button[disabled]{opacity:.55;cursor:default;}
+.lock-msg{min-height:1.2em;margin:.8rem 0 0;font-size:14px;color:#757575;}
+.lock-msg.error{color:#b3402f;}
+</style>
+</head>
+	<body id="collection" itemscope itemtype="http://schema.org/WebPage">
+		
+
+		
+
+		<header>
+		<h1 dir="auto" id="blog-title"><a href="index.html" class="h-card p-author u-url" rel="me author">cache</a></h1>
+		
+		
+		<nav>
+			</nav>
+		
+		</header>
+
+		
+		
+		<section id="wrapper">
+
+<div class="feed-toggle"><a href="./">cache</a><a href="reading.html">reading</a><a href="standalone.html">standalone</a><a href="private.html" class=active>private</a></div>
+<div class="feed feed-private">
+<div class="lock" id="lock">
+<p>These posts are encrypted. The passphrase never leaves your browser.</p>
+<form id="unlock-form" autocomplete="off">
+<input type="password" name="pass" placeholder="passphrase" aria-label="Passphrase" autofocus>
+<button type="submit">unlock</button>
+</form>
+<p class="lock-msg" id="unlock-msg" role="status" aria-live="polite"></p>
+</div>
+<div id="private-list"></div>
+<script id="vault" type="application/json">{"salt":"xiSoZIpKY7SbYluMuNuz4A==","iters":600000,"store":"cache.private.key","data":"ztT7ssYqAmSaYGwSH6aefG16C5dLyqPphZG1PV9METVklZ5HZPPoOY2X4jH3h87sK+8WD6H1hX1uXJ9U9Nsyq0KwfSmZGjv14m8HZOgL/Z5hNB9s0WmIAa/X1fsBD9RHzRi2EKyJ0ffdsh4Eh6AuhPY66BZTKij74kVuPf4="}</script>
+<script>
+function renderVault(v){
+	var esc = function(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+	document.getElementById('private-list').innerHTML = v.posts.map(function(p){
+		return '<article class="norm h-entry"><h2 class="post-title">'
+			+ '<a href="private/' + encodeURIComponent(p.slug) + '/index.html">' + esc(p.title) + '</a>'
+			+ '</h2>' + (p.date ? '<time class="dt-published" datetime="' + esc(p.iso) + '">'
+			+ esc(p.date) + '</time>' : '') + '</article>';
+	}).join('');
+}
+</script>
+<script>(function(){
+	var V = JSON.parse(document.getElementById('vault').textContent);
+	var form = document.getElementById('unlock-form');
+	var msg = document.getElementById('unlock-msg');
+	var lock = document.getElementById('lock');
+
+	function bytes(s){ return Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); }); }
+	function b64(buf){
+		var b = new Uint8Array(buf), s = '';
+		for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+		return btoa(s);
+	}
+	function say(text, isError){
+		msg.textContent = text;
+		msg.classList.toggle('error', !!isError);
+	}
+	function derive(pass){
+		return crypto.subtle.importKey('raw', new TextEncoder().encode(pass),
+			'PBKDF2', false, ['deriveKey']).then(function(base){
+			return crypto.subtle.deriveKey(
+				{name:'PBKDF2', salt:bytes(V.salt), iterations:V.iters, hash:'SHA-256'},
+				base, {name:'AES-GCM', length:256}, true, ['decrypt']);
+		});
+	}
+	function open_(key){
+		var raw = bytes(V.data);
+		return crypto.subtle.decrypt({name:'AES-GCM', iv:raw.slice(0,12)}, key, raw.slice(12))
+			.then(function(pt){ return JSON.parse(new TextDecoder().decode(pt)); });
+	}
+	function use(key){
+		return open_(key).then(function(data){
+			return crypto.subtle.exportKey('raw', key).then(function(raw){
+				try { sessionStorage.setItem(V.store, b64(raw)); } catch (e) {}
+				lock.hidden = true;
+				renderVault(data);
+			});
+		});
+	}
+
+	form.addEventListener('submit', function(e){
+		e.preventDefault();
+		var btn = form.querySelector('button');
+		btn.disabled = true;
+		say('unlocking\u2026');
+		derive(form.pass.value).then(use).catch(function(){
+			say('That passphrase does not open this.', true);
+			form.pass.value = '';
+			form.pass.focus();
+		}).then(function(){ btn.disabled = false; });
+	});
+
+	// SubtleCrypto only exists in a secure context, so a file:// preview can't
+	// decrypt anything. Say so rather than failing silently.
+	if (!window.crypto || !crypto.subtle){
+		form.hidden = true;
+		say('Unlocking needs a secure context \u2014 open this over https, or localhost.', true);
+		return;
+	}
+	// Already unlocked earlier this session? Reuse the key and skip the prompt.
+	var stored = null;
+	try { stored = sessionStorage.getItem(V.store); } catch (e) {}
+	if (stored){
+		crypto.subtle.importKey('raw', bytes(stored), {name:'AES-GCM'}, true, ['decrypt'])
+			.then(use)
+			.catch(function(){ try { sessionStorage.removeItem(V.store); } catch (e) {} });
+	}
+})();</script>
+</div>
+
+		</section>
+
+		<footer>
+			<hr />
+			
+			<nav>
+				published with <a class="home pubd" href="https://write.as/">write.as</a>
+			</nav>
+			
+		</footer>
+		
+
+		
+			
+		
+		<noscript><p><img src="https://analytics.write.as/piwik.php?idsite=16" style="border:0;" alt="" /></p></noscript>
+	</body>
+
+	
+		
+		
+	
+	<script src="https://cdn.writeas.net/js/h.6913452.js" integrity="sha384-gzAEDS5p0coF6LNwWlQYV2Hm4lHYr/OAXJBZqeHzTCFw4Hj6LNgYV2stS+Y77FuS" crossorigin="anonymous"></script>
+	<script src="https://cdn.writeas.net/js/postactions.8532dc2.js" integrity="sha384-0CdjNfYuZCswXbq2nM3x8397yvUlWSHFXhwJXUx5Bf8E7u+BqXphLHrJSp7qB38K" crossorigin="anonymous"></script>
+	<script src="https://cdn.writeas.net/js/localdate.js" integrity="sha384-2h0jAAXW06POyeBB2kpmJH+tWBF2mCWnv4DucLFRZXs+D8NX/MjGV7C/aCC2Ywki" crossorigin="anonymous"></script>
+	
+<script>
+  
+  addEventListener('DOMContentLoaded', function () {
+    var hlbaseUri = "https:\/\/cdn.writeas.net/js/";
+    var lb = document.querySelectorAll("code[class^='language-']");
+
+    
+    var aliasmap = {
+      "elisp"      : "lisp",
+      "emacs-lisp" : "lisp",
+      "c"          : "cpp",
+      "cc"         : "cpp",
+      "h"          : "cpp",
+      "c++"        : "cpp",
+      "h++"        : "cpp",
+      "hpp"        : "cpp",
+      "hh"         : "cpp",
+      "hxx"        : "cpp",
+      "cxx"        : "cpp",
+      "sh"         : "bash",
+      "js"         : "javascript",
+      "jsx"        : "javascript",
+      "html"       : "xml"
+    };
+
+    
+    function highlight(nodes) {
+      for (i=0; i < nodes.length; i++) {
+        hljs.highlightBlock(nodes[i]);
+      }
+    }
+
+    
+    function loadLanguages(uris, callback) {
+      uris.forEach(function(uri) {
+        var sc = document.createElement('script');
+        sc.src = uri;
+        sc.async = false; 
+        
+        if (uris.indexOf(uri) == uris.length-1) {
+          
+          
+          
+          sc.onload = callback;
+          sc.onerror = callback;
+        }
+        document.head.appendChild(sc);
+      });
+    }
+
+    
+    if (lb.length > 0) {
+      
+      var st = document.createElement('link');
+      st.rel = "stylesheet";
+      st.href = "https:\/\/cdn.writeas.net/css/lib/atom-one-light.min.css";
+      document.head.appendChild(st);
+
+      
+      var jss = [hlbaseUri + "highlight.min.js"];
+      
+      for (i=0; i < lb.length; i++) {
+        lang = lb[i].className.replace('language-','').toLowerCase();
+        
+        if (aliasmap[lang]) lang = aliasmap[lang];
+        lurl = hlbaseUri + "highlightjs/" + lang + ".min.js";
+        if (!jss.includes(lurl)) {
+          jss.push(lurl);
+        }
+      }
+      
+      loadLanguages(jss, () => {highlight(lb)});
+    }
+  });
+</script>
+
+	<script src="https://cdn.writeas.net/js/menu.94518a2.js"></script>
+	<script type="text/javascript">
+	
+
+	
+		var http = new XMLHttpRequest();
+		var url = "/api/collections/benson/stat";
+		http.open("POST", url, true);
+		http.setRequestHeader("Content-type", "application/json");
+		http.send();
+	
+
+var deleting = false;
+function delPost(e, id, owned) {
+	e.preventDefault();
+	if (deleting) {
+		return;
+	}
+
+	
+	if (window.confirm('Are you sure you want to delete this post?')) {
+		
+		deletePost(id, "", function() {
+			
+			var $postEl = document.getElementById('post-' + id);
+			$postEl.parentNode.removeChild($postEl);
+			try { _paq.push(['trackEvent', 'Post', 'delete', 'collection']); } catch(e) {}
+			
+		});
+	}
+}
+
+var deletePost = function(postID, token, callback) {
+	deleting = true;
+
+	var $delBtn = document.getElementById('post-' + postID).getElementsByClassName('delete action')[0];
+	$delBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/posts/" + postID;
+	http.open("DELETE", url, true);
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			deleting = false;
+			if (http.status == 204) {
+				callback();
+			} else if (http.status == 409) {
+				$delBtn.innerHTML = 'delete';
+				alert("Post is synced to another account. Delete the post from that account instead.");
+				
+				
+				
+			} else {
+				$delBtn.innerHTML = 'delete';
+				alert("Failed to delete." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send();
+};
+
+var pinning = false;
+function pinPost(e, postID, slug, title) {
+	e.preventDefault();
+	if (pinning) {
+		return;
+	}
+	pinning = true;
+
+	var callback = function() {
+		
+		var $postEl = document.getElementById('post-' + postID);
+		$postEl.parentNode.removeChild($postEl);
+		var $header = document.getElementsByTagName('header')[0];
+		var $pinnedNavs = $header.getElementsByTagName('nav');
+		
+		var link = '<a class="pinned" href="/benson/'+slug+'">'+title+'</a>';
+		if ($pinnedNavs.length == 0) {
+			$header.insertAdjacentHTML("beforeend", '<nav>'+link+'</nav>');
+		} else {
+			$pinnedNavs[0].insertAdjacentHTML("beforeend", link);
+		}
+		try { _paq.push(['trackEvent', 'Post', 'pin', 'collection']); } catch(e) {}
+	};
+
+	var $pinBtn = document.getElementById('post-' + postID).getElementsByClassName('pin action')[0];
+	$pinBtn.innerHTML = '...';
+
+	var http = new XMLHttpRequest();
+	var url = "/api/collections/benson/pin";
+	var params = [ { "id": postID } ];
+	http.open("POST", url, true);
+	http.setRequestHeader("Content-type", "application/json");
+	http.onreadystatechange = function() {
+		if (http.readyState == 4) {
+			pinning = false;
+			if (http.status == 200) {
+				callback();
+			} else if (http.status == 409) {
+				$pinBtn.innerHTML = 'pin';
+				alert("Post is synced to another account. Delete the post from that account instead.");
+				
+				
+				
+			} else {
+				$pinBtn.innerHTML = 'pin';
+				alert("Failed to pin." + (http.status>=500?" Please try again.":""));
+			}
+		}
+	}
+	http.send(JSON.stringify(params));
+};
+	
+	try { 
+	  var _paq = _paq || [];
+	  
+	  _paq.push(['trackPageView']);
+	  _paq.push(['enableLinkTracking']);
+	  _paq.push(['enableHeartBeatTimer']);
+	  (function() {
+		var u="https://analytics.write.as/";
+		_paq.push(['setTrackerUrl', u+'piwik.php']);
+		_paq.push(['setSiteId', 16]);
+		var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+	  })();
+	} catch (e) {   }
+	
+
+	try {
+	  WebFontConfig = {
+		custom: { families: [ 'Lora:400,700:latin', 'Open+Sans:400,700:latin' ], urls: [ 'https:\/\/cdn.writeas.net/css/fonts.4ce1882.css' ] }
+	  };
+	  (function() {
+		var wf = document.createElement('script');
+		wf.src = 'https:\/\/cdn.writeas.net/js/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'true';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(wf, s);
+	  })();
+	} catch (e) {}
+	</script>
+</html>

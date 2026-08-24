@@ -4,11 +4,38 @@
 Reads the mirrored source pages from SRC, rewrites them to use local assets and
 local .html links, injects an "no longer maintained" notice, and regenerates a
 complete index listing every post. Idempotent: re-running rebuilds from SRC.
+
+Layout of the built site:
+
+    index.html  reading.html  standalone.html  private.html   feed index pages
+    cache/<slug>/index.html                                   blog posts
+    reading/<slug>/index.html                                 reading articles
+    private/<slug>/index.html                                 encrypted posts
+    <slug>.html                                               redirect stubs
+    assets/                                                   css, fonts, img
+    _mirror/                                                  page sources
+    _private/                                                 private sources
+
+Everything outside _mirror/, _private/ and assets/ is generated; don't hand-edit
+it. The one exception is the natively-authored reading articles, which have no
+mirror source and are only re-trayed in place (see retray_native_reading).
 """
 import os
 import re
+import sys
+import json
 import html
+import hmac
+import base64
+import getpass
+import hashlib
+import secrets
+import datetime
 import urllib.parse
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
+import aesgcm
+import markdown
 
 # Paths are resolved relative to this script so the build is portable and
 # self-contained: the mirrored Write.as / GitHub-Pages sources live in _mirror/
@@ -17,10 +44,28 @@ import urllib.parse
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.environ.get("CACHE_SRC", os.path.join(ROOT, "_mirror"))
 OUT = os.environ.get("CACHE_OUT", ROOT)
+# Plaintext sources for the private feed. Git-ignored: nothing in here should
+# ever be committed, only the encrypted output built from it.
+PRIVATE_SRC = os.environ.get("CACHE_PRIVATE_SRC", os.path.join(ROOT, "_private"))
 
 # Canonical address of the archived blog (used for og:url + sitemap.xml). Change
 # this if the archive is deployed somewhere else.
 BASE_URL = "https://cache.bwang.io"
+
+# Blog posts used to sit at the repo root as bare <slug>.html, which put a dozen
+# files next to the build script and the site config. They now live one per
+# directory under cache/, matching how reading/ and private/ are laid out, so
+# the root is just the four feed pages plus site metadata. The old URLs are kept
+# alive by the redirect stubs build_redirects() writes; set this False once the
+# links have aged out and the stubs can go.
+POST_DIR = "cache"
+REDIRECT_OLD_POST_URLS = True
+POSTS_DIR_NOTE = f"{POST_DIR}/"
+
+
+def post_url(slug):
+	"""Site-root-relative URL of a blog post."""
+	return f"{POST_DIR}/{slug}/index.html"
 
 # One shared favicon on every page (a layered/"cache" stack mark in the accent
 # blue), replacing the leftover Write.as icon on cache posts and the per-article
@@ -127,10 +172,15 @@ def add_og_tags(text, title, rel_path):
 
 
 def build_sitemap():
-	"""Write sitemap.xml listing every page, anchored at BASE_URL."""
+	"""Write sitemap.xml listing every public page, anchored at BASE_URL.
+
+	Deliberately absent: private.html and everything under private/ (the point
+	is not to advertise them), and the /<slug>.html redirect stubs (a sitemap
+	entry that immediately redirects is just noise to a crawler).
+	"""
 	paths = (
 		["index.html", "reading.html", "standalone.html"]
-		+ [f"{slug}.html" for slug in POSTS]
+		+ [post_url(slug) for slug in POSTS]
 		+ [f"reading/{slug}/index.html" for slug, _cn, _l in READING]
 		+ [target for target, _l in LOCAL_STANDALONE]
 	)
@@ -141,6 +191,98 @@ def build_sitemap():
 		f"{rows}\n</urlset>\n"
 	)
 	with open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8") as f:
+		f.write(xml)
+
+
+def build_robots():
+	"""robots.txt. Private URLs are disallowed here *and* carry a noindex meta:
+	the Disallow keeps polite crawlers out, the meta is what actually keeps a
+	page out of an index if it gets linked from somewhere else."""
+	lines = [
+		"User-agent: *",
+		"Allow: /",
+		"Disallow: /_mirror/",
+		"Disallow: /_private/",
+		"Disallow: /private/",
+		"Disallow: /private.html",
+		"",
+		f"Sitemap: {BASE_URL}/sitemap.xml",
+		"",
+	]
+	with open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8") as f:
+		f.write("\n".join(lines))
+
+
+def page_description(path):
+	"""<meta name=description> of a built page, or "" if it has none."""
+	try:
+		with open(path, encoding="utf-8") as f:
+			text = f.read()
+	except OSError:
+		return ""
+	m = re.search(r'<meta name="description" content="([^"]*)"', text, re.I)
+	return html.unescape(m.group(1)) if m else ""
+
+
+def build_feed():
+	"""Regenerate feed.xml from the same lists that drive everything else.
+
+	It used to be maintained by hand and had drifted: still advertising the old
+	/<slug>.html post URLs, and missing every reading article added since it was
+	last touched. Private posts are never included — a feed is a broadcast.
+
+	Moving the posts does change their guids, so subscribers will see the twelve
+	cache posts once more. The alternative, keeping the feed pointed at the old
+	URLs, would route every reader through a redirect forever.
+	"""
+	def item(title, path, desc, iso=""):
+		url = f"{BASE_URL}/{path}"
+		pub = ""
+		if iso:
+			dt = datetime.datetime.strptime(iso, "%Y-%m-%dT%H:%M:%SZ")
+			pub = f"      <pubDate>{dt.strftime('%a, %d %b %Y %H:%M:%S +0000')}</pubDate>\n"
+		return (
+			"    <item>\n"
+			f"      <title>{html.escape(title)}</title>\n"
+			f"      <link>{url}</link>\n"
+			f'      <guid isPermaLink="true">{url}</guid>\n'
+			+ pub
+			+ f"      <description>{html.escape(desc)}</description>\n"
+			"    </item>"
+		)
+
+	items, latest = [], ""
+	for slug in POSTS:
+		title, iso, _disp = extract_meta(slug)
+		items.append(item(title, post_url(slug),
+		                  page_description(os.path.join(SRC, f"{slug}.html")), iso))
+		latest = max(latest, iso)
+	for slug, _cn, label in READING:
+		items.append(item(
+			label, f"reading/{slug}/index.html",
+			page_description(os.path.join(OUT, "reading", slug, "index.html")),
+		))
+
+	# Stamped from the newest post rather than "now", so an unchanged site
+	# rebuilds to a byte-identical feed instead of showing up in every diff.
+	built = datetime.datetime.strptime(latest, "%Y-%m-%dT%H:%M:%SZ").strftime(
+		"%a, %d %b %Y %H:%M:%S +0000") if latest else ""
+	xml = (
+		'<?xml version="1.0" encoding="UTF-8"?>\n'
+		'<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n'
+		"  <channel>\n"
+		"    <title>cache</title>\n"
+		f"    <link>{BASE_URL}/</link>\n"
+		"    <description>Benson Wang&#39;s blog and reading room: essays and "
+		"interactive, data-driven articles.</description>\n"
+		"    <language>en</language>\n"
+		f'    <atom:link href="{BASE_URL}/feed.xml" rel="self" '
+		'type="application/rss+xml" />\n'
+		+ (f"    <lastBuildDate>{built}</lastBuildDate>\n" if built else "")
+		+ "\n".join(items)
+		+ "\n  </channel>\n</rss>\n"
+	)
+	with open(os.path.join(OUT, "feed.xml"), "w", encoding="utf-8") as f:
 		f.write(xml)
 
 # Reverse-chronological order (newest first), matching the original homepage feed.
@@ -192,6 +334,8 @@ TITLE_OVERRIDES = {
 #                    hand-written markup); only its navigator tray is refreshed
 #                    in place, so reordering this list still reaches it.
 READING = [
+	("smartphone-addiction", None, "Predicting Smartphone Addiction"),
+	("kaggriculture", None, "Improving Kaggriculture Bot"),
 	("iran-war", None, "The Iran War"),
 	("kimi-vs-claude", None, "Claude vs Kimi"),
 	("klefki", None, "Penetration Testing with Claude Code"),
@@ -296,12 +440,18 @@ TRAY_STYLE = """<style>
 	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
 .nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
 .nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
-.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone],
+.nav-card #nav-private:checked ~ .nav-toggle label[for=nav-private]{
 	color:#111;border-bottom-color:#357BB3;}
 .nav-feed{display:none;}
 .nav-card #nav-cache:checked ~ .nf-cache{display:block;}
 .nav-card #nav-reading:checked ~ .nf-reading{display:block;}
 .nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+.nav-card #nav-private:checked ~ .nf-private{display:block;}
+/* The private feed lists nothing until the browser has decrypted it, so the
+   tray entry is a padlocked link to the locked index rather than titles. */
+.nav-card a.item.locked{color:#8a8a8a;font-style:italic;}
+.nav-card a.item.locked::before{content:"\\1F512\\FE0E";font-style:normal;margin-right:6px;opacity:.55;}
 /* The panel is a left rail beside the centered column. Until the viewport is
    wide enough for it to clear that column (same breakpoint as the article
    outline), start it minimized: the pill shows by default and tapping it
@@ -342,29 +492,31 @@ TRAY_STYLE = """<style>
 def tray_html(context, active_slug=None):
 	"""Left-drawer tray listing the home link + every post (cache + reading).
 
-	`context` sets the relative link prefixes: "root" for top-level pages,
-	"reading" for the mirrored articles under reading/<slug>/.
+	`context` says where the page sits, which fixes both the relative link
+	prefixes and which feed tab opens by default: "root" for the top-level feed
+	pages, or "cache" / "reading" / "private" for a post one directory deep.
+
+	Note what the private feed does *not* contain: this tray is baked into every
+	public page, so listing private titles here would publish exactly what the
+	encryption is protecting. It gets a single link to the locked index instead,
+	and the real list is decrypted in the browser.
 	"""
 	standalone_slugs = {slug for slug, _cn, _label in STANDALONE}
-	if context == "reading":
-		home = "../../index.html"
-		read_href = "../{}/index.html".format
-		cache_href = "../../{}.html".format
-		local_href = "../../{}".format
-		# Default the toggle to the feed that holds the current article.
-		if active_slug in standalone_slugs:
-			cache_checked, reading_checked, standalone_checked = "", "", " checked"
-		else:
-			cache_checked, reading_checked, standalone_checked = "", " checked", ""
-		# These pages don't load inside.css, so ship Josefin Sans + entrance anim.
-		face = READING_EXTRA.format(p="../../assets")
-	else:
-		home = "index.html"
-		read_href = "reading/{}/index.html".format
-		cache_href = "{}.html".format
-		local_href = "{}".format
-		cache_checked, reading_checked, standalone_checked = " checked", "", ""
-		face = ""
+	up = "" if context == "root" else "../../"
+	home = f"{up}index.html"
+	read_href = f"{up}reading/{{}}/index.html".format
+	cache_href = f"{up}{POST_DIR}/{{}}/index.html".format
+	local_href = f"{up}{{}}".format
+	private_href = f"{up}private.html"
+
+	# Default the toggle to the feed holding the current page.
+	open_feed = context if context in ("cache", "reading", "private") else "cache"
+	if context == "reading" and active_slug in standalone_slugs:
+		open_feed = "standalone"
+	checked = {name: " checked" if name == open_feed else ""
+	           for name in ("cache", "reading", "standalone", "private")}
+	# Reading articles don't load inside.css, so ship Josefin Sans + entrance anim.
+	face = READING_EXTRA.format(p="../../assets") if context == "reading" else ""
 
 	def item(href, label, slug):
 		cls = "item active" if slug == active_slug else "item"
@@ -381,6 +533,7 @@ def tray_html(context, active_slug=None):
 		else external_anchor(target, label, "item ext")
 		for target, label, local in STANDALONE_APPS
 	)
+	private_items = f'<a class="item locked" href="{private_href}">unlock private posts</a>'
 	return (
 		face
 		+ TRAY_STYLE
@@ -395,15 +548,18 @@ def tray_html(context, active_slug=None):
 		+ '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a>'
 		+ '<label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label>'
 		+ '</div>'
-		+ f'<input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"{cache_checked}>'
-		+ f'<input type="radio" name="nav-feed" id="nav-reading" class="nav-radio"{reading_checked}>'
-		+ f'<input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"{standalone_checked}>'
+		+ f'<input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"{checked["cache"]}>'
+		+ f'<input type="radio" name="nav-feed" id="nav-reading" class="nav-radio"{checked["reading"]}>'
+		+ f'<input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"{checked["standalone"]}>'
+		+ f'<input type="radio" name="nav-feed" id="nav-private" class="nav-radio"{checked["private"]}>'
 		+ '<div class="nav-toggle"><label for="nav-cache">cache</label>'
 		+ '<label for="nav-reading">reading</label>'
-		+ '<label for="nav-standalone">standalone</label></div>'
+		+ '<label for="nav-standalone">standalone</label>'
+		+ '<label for="nav-private">private</label></div>'
 		+ f'<div class="nav-feed nf-cache">{cache_items}</div>'
 		+ f'<div class="nav-feed nf-reading">{reading_items}</div>'
 		+ f'<div class="nav-feed nf-standalone">{standalone_items}</div>'
+		+ f'<div class="nav-feed nf-private">{private_items}</div>'
 		+ '</div>'
 		+ '</div>'
 	)
@@ -426,7 +582,10 @@ def inject_tray(text, context, active_slug=None):
 	return new
 
 # The whole site is styled by a local adaptation of the Typora "Inside" theme.
-THEME_LINK = '<link rel="stylesheet" type="text/css" href="assets/css/inside.css" />'
+# `up` is the hop back to the site root ("" for the feed pages at the root,
+# "../../" for anything under cache/, reading/ or private/).
+def theme_link(up=""):
+	return f'<link rel="stylesheet" type="text/css" href="{up}assets/css/inside.css" />'
 
 # Plays a lite-YouTube facade inline when served over http(s); from a file://
 # preview it lets the anchor open the video on YouTube instead (Error 153 there).
@@ -446,18 +605,25 @@ YT_SCRIPT = """\t<script id="yt-lite-script">
 	</script>"""
 
 
-def rewrite_common(text):
-	"""Asset + link rewrites shared by every page."""
+def rewrite_common(text, up=""):
+	"""Asset + link rewrites shared by every page.
+
+	`up` is the relative hop from the page back to the site root: "" for the
+	feed pages, "../../" for a post at cache/<slug>/index.html.
+	"""
 	# Replace the Write.as theme stylesheet with our local Inside theme.
 	text = text.replace(
 		'<link rel="stylesheet" type="text/css" '
 		'href="https://cdn.writeas.net/css/write.7a8d594726b6871de2afc.css" />',
-		THEME_LINK,
+		theme_link(up),
 	)
 	# Local snap.as images
-	text = re.sub(r"https://i\.snap\.as/([A-Za-z0-9]+\.png)", r"assets/img/\1", text)
+	text = re.sub(r"https://i\.snap\.as/([A-Za-z0-9]+\.png)", rf"{up}assets/img/\1", text)
 	# Drop the RSS alternate <link> (no feed on the archive)
 	text = re.sub(r'\s*<link rel="alternate"[^>]*?/>\n?', "\n", text)
+	# Write.as paginated the collection; this archive doesn't, so the inherited
+	# <link rel="next" href="/page/2"> pointed at a page that never existed here.
+	text = re.sub(r'\s*<link rel="next"[^>]*?>\n?', "\n", text)
 	# Remove the write.as follow iframe embed if present
 	text = re.sub(r'<iframe[^>]*write\.as/me/iframe[^>]*>.*?</iframe>', "", text, flags=re.S)
 	text = re.sub(r'<p>\s*<iframe[^>]*write\.as/me/iframe[^>]*>\s*</iframe>\s*</p>', "", text, flags=re.S)
@@ -472,7 +638,7 @@ def rewrite_common(text):
 			'<a class="yt-lite" target="_blank" rel="noopener" '
 			f'href="https://www.youtube.com/watch?v={m.group(1)}" '
 			f'data-id="{m.group(1)}" '
-			f'style="background-image:url(\'assets/img/yt/{m.group(1)}.jpg\')">'
+			f'style="background-image:url(\'{up}assets/img/yt/{m.group(1)}.jpg\')">'
 			'<span class="yt-play"></span></a>'
 		),
 		text,
@@ -488,16 +654,19 @@ def rewrite_common(text):
 		"",
 		text,
 	)
+	# Cross-post links. build_post() rewrites canonical/og:url to absolute URLs
+	# before calling this, and those rewritten values no longer contain the bare
+	# ".../<slug>" form matched here, so they survive untouched.
 	for slug in POSTS:
-		text = text.replace(f"https://cache.bwang.io/{slug}", f"{slug}.html")
+		text = text.replace(f"https://cache.bwang.io/{slug}", f"{up}{post_url(slug)}")
 	# Any leftover feed link -> homepage
-	text = text.replace("https://cache.bwang.io/feed/", "index.html")
+	text = text.replace("https://cache.bwang.io/feed/", f"{up}index.html")
 	# Root / blog-title links -> index.html
-	text = re.sub(r'href="https?://cache\.bwang\.io/"', 'href="index.html"', text)
-	text = re.sub(r'href="https?://cache\.bwang\.io"', 'href="index.html"', text)
+	text = re.sub(r'href="https?://cache\.bwang\.io/"', f'href="{up}index.html"', text)
+	text = re.sub(r'href="https?://cache\.bwang\.io"', f'href="{up}index.html"', text)
 	# blog-title and author links use href="/"
-	text = text.replace('href="/" class="h-card', 'href="index.html" class="h-card')
-	text = text.replace('rel="author" href="/"', 'rel="author" href="index.html"')
+	text = text.replace('href="/" class="h-card', f'href="{up}index.html" class="h-card')
+	text = text.replace('rel="author" href="/"', f'rel="author" href="{up}index.html"')
 	# One shared favicon on every page (cache posts + homepage).
 	text = set_favicon(text)
 	# Analytics on every page.
@@ -508,7 +677,18 @@ def rewrite_common(text):
 def build_post(slug):
 	with open(os.path.join(SRC, f"{slug}.html"), encoding="utf-8") as f:
 		text = f.read()
-	text = rewrite_common(text)
+	# Pin canonical + og:url to the post's absolute URL before the generic link
+	# rewrite below turns every other mention of it into a relative path. A
+	# relative canonical works but says less, and og:url has to be absolute to
+	# be useful to anything that unfurls the link.
+	abs_url = f"{BASE_URL}/{post_url(slug)}"
+	text = re.sub(
+		r'(<link rel="canonical" href=")https?://cache\.bwang\.io/' + re.escape(slug) + r'(")',
+		lambda m: m.group(1) + abs_url + m.group(2), text, count=1)
+	text = re.sub(
+		r'(<meta property="og:url" content=")https?://cache\.bwang\.io/' + re.escape(slug) + r'(")',
+		lambda m: m.group(1) + abs_url + m.group(2), text, count=1)
+	text = rewrite_common(text, up="../../")
 	# Recase the post title (visible <h2> + browser <title>) to match reading.
 	new_title = TITLE_OVERRIDES.get(slug)
 	if new_title:
@@ -528,10 +708,48 @@ def build_post(slug):
 			lambda m: m.group(1) + esc + m.group(2), text, count=1)
 		text = re.sub(r'(<meta name="twitter:title" content=")[^"]*(")',
 			lambda m: m.group(1) + esc + " &mdash; cache" + m.group(2), text, count=1)
-	text = inject_tray(text, "root", slug)
+	text = inject_tray(text, "cache", slug)
 	text = inject_backtotop(text)
-	with open(os.path.join(OUT, f"{slug}.html"), "w", encoding="utf-8") as f:
+	out_dir = os.path.join(OUT, POST_DIR, slug)
+	os.makedirs(out_dir, exist_ok=True)
+	with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
 		f.write(text)
+
+
+REDIRECT_TEMPLATE = """<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Moved &mdash; cache</title>
+<link rel="canonical" href="{abs_url}">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url={rel_url}">
+{favicon}
+</head>
+<body>
+<p>This post moved to <a href="{rel_url}">{rel_url}</a>.</p>
+</body>
+</html>
+"""
+
+
+def build_redirects():
+	"""Keep the pre-move URLs working.
+
+	Posts used to live at /<slug>.html and those links are out in the world —
+	in the RSS feed readers already hold, in search results, in anything anyone
+	bookmarked. GitHub Pages has no redirect config, so the standard static
+	substitute is a stub page: rel=canonical points search engines at the new
+	URL, meta refresh moves actual readers, and noindex keeps the stub itself
+	out of results.
+	"""
+	for slug in POSTS:
+		rel = post_url(slug)
+		page = REDIRECT_TEMPLATE.format(
+			abs_url=f"{BASE_URL}/{rel}", rel_url=rel, favicon=FAVICON_TAG,
+		)
+		with open(os.path.join(OUT, f"{slug}.html"), "w", encoding="utf-8") as f:
+			f.write(page)
 
 
 def build_reading_articles():
@@ -650,17 +868,74 @@ def extract_meta(slug):
 	return title, iso, disp
 
 
-def build_index():
-	# Reuse the real homepage as a template so header/footer/styles match exactly.
+# One static page per feed, so the URL always names the tab you are looking at:
+# / for cache, /reading.html, /standalone.html, /private.html. The tabs are
+# ordinary links rather than the old hidden-radio toggle — still no JavaScript
+# on the three public feeds, but every view is shareable and bookmarkable, the
+# back button works, and search engines can index each list. The
+# @view-transition rule in TRAY_STYLE animates the swap, so it still feels like
+# an in-page toggle. (name, filename, <title>).
+FEEDS = [
+	("cache", "index.html", "cache"),
+	("reading", "reading.html", "cache — reading"),
+	("standalone", "standalone.html", "cache — standalone"),
+	("private", "private.html", "cache — private"),
+]
+
+
+def feed_tabs(current):
+	"""The cache tab points at "./" so the default view keeps the bare
+	https://cache.bwang.io/ URL rather than /index.html."""
+	return "".join(
+		f'<a href="{"./" if fn == "index.html" else fn}"'
+		f'{" class=active" if fn == current else ""}>{n}</a>'
+		for n, fn, _t in FEEDS
+	)
+
+
+def index_template():
+	"""(head, foot) lifted from the mirrored homepage, so every feed page keeps
+	the real header, footer and styles."""
 	with open(os.path.join(SRC, "index.html"), encoding="utf-8") as f:
 		tpl = f.read()
 	tpl = rewrite_common(tpl)
-
 	head = tpl[: tpl.index("<section")]
-	# Footer: from the real footer tag onward. The homepage lists posts but shows
+	# Footer: from the real footer tag onward. The feed pages list posts but show
 	# no video, so drop the lite-YouTube script that rewrite_common injected.
 	foot = tpl[tpl.index("<footer") :]
 	foot = re.sub(r'\t*<script id="yt-lite-script">.*?</script>\n?', "", foot, flags=re.S)
+	return head, foot
+
+
+def feed_page(head, foot, name, filename, title, inner, extra_head=""):
+	"""Assemble and write one feed page."""
+	body = (
+		'<section id="wrapper">\n\n'
+		+ f'<div class="feed-toggle">{feed_tabs(filename)}</div>\n'
+		+ f'<div class="feed feed-{name}">\n' + inner + '\n</div>\n'
+		+ '\n\t\t</section>\n\n\t\t'
+	)
+	page = head + body + foot
+	if filename != "index.html":
+		# Each feed is a distinct list, so each is its own canonical rather than
+		# pointing back at the homepage.
+		page = page.replace(
+			'<link rel="canonical" href="index.html">',
+			f'<link rel="canonical" href="{BASE_URL}/{filename}">',
+		)
+		page = page.replace("<title>cache</title>", f"<title>{title}</title>", 1)
+		page = page.replace(
+			'<meta property="og:title" content="cache" />',
+			f'<meta property="og:title" content="{title}" />', 1,
+		)
+	if extra_head:
+		page = re.sub(r'</head>', extra_head + "\n</head>", page, count=1, flags=re.I)
+	with open(os.path.join(OUT, filename), "w", encoding="utf-8") as f:
+		f.write(page)
+
+
+def build_index():
+	head, foot = index_template()
 
 	# Cache posts (dated, reverse-chronological).
 	cache_rows = []
@@ -668,7 +943,7 @@ def build_index():
 		title, iso, disp = extract_meta(slug)
 		cache_rows.append(
 			'<article class="norm h-entry">\n'
-			f'\t<h2 class="post-title"><a href="{slug}.html">{html.escape(title)}</a></h2>\n'
+			f'\t<h2 class="post-title"><a href="{post_url(slug)}">{html.escape(title)}</a></h2>\n'
 			f'\t<time class="dt-published" datetime="{iso}">{html.escape(disp)}</time>\n'
 			'</article>'
 		)
@@ -694,46 +969,394 @@ def build_index():
 		for target, label, local in STANDALONE_APPS
 	]
 
-	# One static page per feed, so the URL always names the tab you are looking
-	# at: / for cache, /reading.html, /standalone.html. The tabs are ordinary
-	# links rather than the old hidden-radio toggle — still no JavaScript, but
-	# now every view is shareable and bookmarkable, the back button works, and
-	# search engines can index each list. The @view-transition rule in
-	# TRAY_STYLE animates the swap, so it still feels like an in-page toggle.
-	feeds = [
-		("cache", "index.html", "cache", cache_rows),
-		("reading", "reading.html", "cache — reading", reading_rows),
-		("standalone", "standalone.html", "cache — standalone", standalone_rows),
-	]
-	for name, filename, title, rows in feeds:
-		# The cache tab points at "./" so the default view keeps the bare
-		# https://cache.bwang.io/ URL rather than /index.html.
-		tabs = "".join(
-			f'<a href="{"./" if fn == "index.html" else fn}"'
-			f'{" class=active" if fn == filename else ""}>{n}</a>'
-			for n, fn, _t, _r in feeds
+	rows_by_feed = {
+		"cache": cache_rows, "reading": reading_rows, "standalone": standalone_rows,
+	}
+	for name, filename, title in FEEDS:
+		if name == "private":  # built separately, from encrypted sources
+			continue
+		feed_page(head, foot, name, filename, title, "\n".join(rows_by_feed[name]))
+
+
+# ------------------------------------------------------------- private feed
+#
+# The private posts are encrypted at build time and decrypted in the reader's
+# browser, so the server (GitHub Pages) only ever holds ciphertext. That is the
+# only kind of "private" a static site can actually offer: there is no backend
+# to check a password against, so anything gated in JavaScript alone is gated
+# only against people who don't open devtools.
+#
+# What this does and does not protect:
+#   - Post bodies, titles and dates are AES-256-GCM ciphertext. Without the
+#     passphrase they are not recoverable from the published files.
+#   - The *existence* of the private feed is public, as is the number of posts
+#     and roughly how long each one is. Slugs are inside the encrypted index, so
+#     the per-post URLs aren't discoverable from the site itself.
+#   - The passphrase is the whole security boundary and it is never stored
+#     anywhere in the repo. Lose it and the posts are gone; there is no reset.
+#
+# Key derivation is PBKDF2-HMAC-SHA256 with a per-site random salt. The salt
+# lives in _private/salt (git-ignored) and is reused across builds so an already
+# unlocked browser session survives a rebuild.
+PBKDF2_ITERS = 600_000
+SALT_FILE = "salt"
+# sessionStorage key holding the derived AES key, so unlocking the index also
+# unlocks the posts you click through to, and a refresh doesn't re-prompt.
+# Session-scoped: it's gone when the tab closes.
+KEYSTORE = "cache.private.key"
+
+PRIVATE_STYLE = """<style>
+.lock{max-width:22rem;margin:2rem 0 3rem;}
+.lock p{color:#757575;font-size:14px;margin:0 0 1rem;}
+.lock form{display:flex;gap:.5rem;}
+.lock input{flex:1;min-width:0;font:inherit;font-size:15px;padding:.5rem .7rem;
+	border:1px solid #d8d8d8;border-radius:7px;background:#fff;color:#222;}
+.lock input:focus{outline:none;border-color:#357BB3;}
+.lock button{font:inherit;font-size:15px;font-weight:600;padding:.5rem 1.1rem;cursor:pointer;
+	border:1px solid #357BB3;border-radius:7px;background:#357BB3;color:#fff;}
+.lock button:hover{background:#2c6795;border-color:#2c6795;}
+.lock button[disabled]{opacity:.55;cursor:default;}
+.lock-msg{min-height:1.2em;margin:.8rem 0 0;font-size:14px;color:#757575;}
+.lock-msg.error{color:#b3402f;}
+</style>"""
+
+# Shared client half of the scheme. The page defines renderVault(data) above
+# this, and this drives the unlock: derive a key from the typed passphrase, try
+# to decrypt, and treat a GCM authentication failure as "wrong passphrase" —
+# no separate password check to get wrong.
+PRIVATE_JS = """(function(){
+	var V = JSON.parse(document.getElementById('vault').textContent);
+	var form = document.getElementById('unlock-form');
+	var msg = document.getElementById('unlock-msg');
+	var lock = document.getElementById('lock');
+
+	function bytes(s){ return Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); }); }
+	function b64(buf){
+		var b = new Uint8Array(buf), s = '';
+		for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+		return btoa(s);
+	}
+	function say(text, isError){
+		msg.textContent = text;
+		msg.classList.toggle('error', !!isError);
+	}
+	function derive(pass){
+		return crypto.subtle.importKey('raw', new TextEncoder().encode(pass),
+			'PBKDF2', false, ['deriveKey']).then(function(base){
+			return crypto.subtle.deriveKey(
+				{name:'PBKDF2', salt:bytes(V.salt), iterations:V.iters, hash:'SHA-256'},
+				base, {name:'AES-GCM', length:256}, true, ['decrypt']);
+		});
+	}
+	function open_(key){
+		var raw = bytes(V.data);
+		return crypto.subtle.decrypt({name:'AES-GCM', iv:raw.slice(0,12)}, key, raw.slice(12))
+			.then(function(pt){ return JSON.parse(new TextDecoder().decode(pt)); });
+	}
+	function use(key){
+		return open_(key).then(function(data){
+			return crypto.subtle.exportKey('raw', key).then(function(raw){
+				try { sessionStorage.setItem(V.store, b64(raw)); } catch (e) {}
+				lock.hidden = true;
+				renderVault(data);
+			});
+		});
+	}
+
+	form.addEventListener('submit', function(e){
+		e.preventDefault();
+		var btn = form.querySelector('button');
+		btn.disabled = true;
+		say('unlocking\\u2026');
+		derive(form.pass.value).then(use).catch(function(){
+			say('That passphrase does not open this.', true);
+			form.pass.value = '';
+			form.pass.focus();
+		}).then(function(){ btn.disabled = false; });
+	});
+
+	// SubtleCrypto only exists in a secure context, so a file:// preview can't
+	// decrypt anything. Say so rather than failing silently.
+	if (!window.crypto || !crypto.subtle){
+		form.hidden = true;
+		say('Unlocking needs a secure context \\u2014 open this over https, or localhost.', true);
+		return;
+	}
+	// Already unlocked earlier this session? Reuse the key and skip the prompt.
+	var stored = null;
+	try { stored = sessionStorage.getItem(V.store); } catch (e) {}
+	if (stored){
+		crypto.subtle.importKey('raw', bytes(stored), {name:'AES-GCM'}, true, ['decrypt'])
+			.then(use)
+			.catch(function(){ try { sessionStorage.removeItem(V.store); } catch (e) {} });
+	}
+})();"""
+
+LOCK_HTML = """<div class="lock" id="lock">
+<p>{blurb}</p>
+<form id="unlock-form" autocomplete="off">
+<input type="password" name="pass" placeholder="passphrase" aria-label="Passphrase" autofocus>
+<button type="submit">unlock</button>
+</form>
+<p class="lock-msg" id="unlock-msg" role="status" aria-live="polite"></p>
+</div>"""
+
+
+def private_salt():
+	"""Read the site's PBKDF2 salt, creating it on first run.
+
+	Kept stable across builds on purpose: the browser caches the *derived* key
+	for the session, and rotating the salt would invalidate it on every deploy.
+	"""
+	path = os.path.join(PRIVATE_SRC, SALT_FILE)
+	if os.path.isfile(path):
+		with open(path, encoding="utf-8") as f:
+			return bytes.fromhex(f.read().strip())
+	salt = secrets.token_bytes(16)
+	with open(path, "w", encoding="utf-8") as f:
+		f.write(salt.hex() + "\n")
+	print(f"  created {os.path.relpath(path, ROOT)} (git-ignored — back it up)")
+	return salt
+
+
+def private_passphrase():
+	"""Passphrase from the environment, or prompted for interactively."""
+	p = os.environ.get("CACHE_PRIVATE_PASSPHRASE")
+	if p:
+		return p
+	if sys.stdin.isatty():
+		return getpass.getpass("Passphrase for the private feed: ") or None
+	return None
+
+
+def seal(key, obj):
+	"""JSON -> base64(iv || ciphertext || tag), the layout the page's JS expects.
+
+	The nonce is derived from the plaintext rather than drawn at random, so a
+	post that hasn't changed re-encrypts to the same bytes and doesn't show up
+	in every commit. That is a synthetic-IV construction, and it is safe for the
+	reason random nonces are: what GCM cannot survive is one nonce covering two
+	*different* plaintexts under the same key, and distinct plaintexts here get
+	distinct nonces. Repeating a nonce for byte-identical input just reproduces
+	the identical ciphertext, which leaks only that the post didn't change —
+	something the commit history says anyway.
+	"""
+	plaintext = json.dumps(obj, separators=(",", ":"), sort_keys=True).encode("utf-8")
+	nonce = hmac.new(key, plaintext, hashlib.sha256).digest()[:12]
+	return base64.b64encode(nonce + aesgcm.encrypt(key, nonce, plaintext)).decode("ascii")
+
+
+def vault_script(salt, payload):
+	return (
+		'<script id="vault" type="application/json">'
+		+ json.dumps({
+			"salt": base64.b64encode(salt).decode("ascii"),
+			"iters": PBKDF2_ITERS,
+			"store": KEYSTORE,
+			"data": payload,
+		}, separators=(",", ":"))
+		+ "</script>"
+	)
+
+
+# Front matter: --- fenced for Markdown (the usual convention), an HTML comment
+# for raw .html fragments. Both are just `key: value` lines.
+_FRONT_MD = re.compile(r"\A﻿?---[ \t]*\n(.*?)\n---[ \t]*\n?", re.S)
+_FRONT_HTML = re.compile(r"\A\s*<!--(.*?)-->\s*", re.S)
+# Not posts: this directory's own README, the salt, and anything hidden.
+PRIVATE_SKIP = {"readme.md", "readme.html", SALT_FILE}
+
+
+def _front_matter(text, pattern):
+	"""(metadata dict, remaining body)."""
+	m = pattern.match(text)
+	if not m:
+		return {}, text
+	meta = {}
+	for line in m.group(1).splitlines():
+		if ":" in line and not line.lstrip().startswith("#"):
+			k, _, v = line.partition(":")
+			meta[k.strip().lower()] = v.strip().strip('"').strip("'")
+	return meta, text[m.end():]
+
+
+def read_private_sources():
+	"""Parse _private/<slug>.md into post dicts, newest first.
+
+	    ---
+	    title: What I Actually Think About It
+	    date: 2026-08-13
+	    ---
+
+	    Body in **Markdown**.
+
+	Both keys are optional. Without `title` the post takes its first `# heading`
+	(the heading is then dropped from the body, since the page renders the title
+	itself); without `date` it shows no date and sorts last.
+
+	`.html` files still work for anything Markdown can't express, using an HTML
+	comment for the front matter instead of the --- fence. Their contents are
+	used as-is.
+	"""
+	if not os.path.isdir(PRIVATE_SRC):
+		return []
+	posts = []
+	for name in sorted(os.listdir(PRIVATE_SRC)):
+		slug, ext = os.path.splitext(name)
+		if ext not in (".md", ".markdown", ".html") or name.startswith((".", "_")):
+			continue
+		if name.lower() in PRIVATE_SKIP:
+			continue
+		with open(os.path.join(PRIVATE_SRC, name), encoding="utf-8") as f:
+			text = f.read()
+
+		is_markdown = ext != ".html"
+		meta, body = _front_matter(text, _FRONT_MD if is_markdown else _FRONT_HTML)
+		title = meta.get("title")
+		if is_markdown:
+			# Always lift a leading H1 out of the body — the page template puts
+			# the title above the content, so leaving it would print it twice.
+			heading, body = markdown.first_heading(body)
+			title = title or heading
+			body = markdown.convert(body)
+		iso = meta.get("date", "")
+		try:
+			disp = datetime.date.fromisoformat(iso).strftime("%B %-d, %Y")
+		except ValueError:
+			disp = iso
+		posts.append({
+			"slug": slug,
+			"title": title or slug.replace("-", " "),
+			"iso": iso,
+			"date": disp,
+			"html": body.strip(),
+		})
+	# Newest first; slug breaks ties so the order can't wobble between builds.
+	posts.sort(key=lambda p: (p["iso"], p["slug"]), reverse=True)
+	return posts
+
+
+def build_private(head, foot):
+	"""Write private.html plus one encrypted page per private post.
+
+	Returns the number of posts sealed, or None if the private build was skipped
+	(in which case any previously built pages are left exactly as they were —
+	better a stale private feed than one silently emptied by a build on a
+	machine that doesn't have the sources).
+	"""
+	posts = read_private_sources()
+	head = head.replace(GA_TAG, "")  # no analytics beacons on the private feed
+	noindex = '<meta name="robots" content="noindex, nofollow">'
+
+	if not posts:
+		if os.path.isdir(PRIVATE_SRC):
+			print("  note: _private/ has no posts; writing an empty private feed")
+		feed_page(
+			head, foot, "private", "private.html", "cache — private",
+			'<p style="color:#757575">No private posts yet.</p>',
+			extra_head=noindex,
 		)
-		body = (
-			'<section id="wrapper">\n\n'
-			+ f'<div class="feed-toggle">{tabs}</div>\n'
-			+ f'<div class="feed feed-{name}">\n' + "\n".join(rows) + '\n</div>\n'
-			+ '\n\t\t</section>\n\n\t\t'
+		return 0
+
+	passphrase = private_passphrase()
+	if not passphrase:
+		print("  warning: no passphrase (set CACHE_PRIVATE_PASSPHRASE); "
+		      "leaving the private feed as-is")
+		return None
+
+	salt = private_salt()
+	key = hashlib.pbkdf2_hmac("sha256", passphrase.encode("utf-8"), salt,
+	                          PBKDF2_ITERS, dklen=32)
+
+	# The index: titles, dates and slugs together, encrypted as one blob. None
+	# of it is in the page as plaintext, so the slugs stay unguessable too.
+	index_payload = seal(key, {"posts": [
+		{k: p[k] for k in ("slug", "title", "iso", "date")} for p in posts
+	]})
+	render_index = """<script>
+function renderVault(v){
+	var esc = function(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+	document.getElementById('private-list').innerHTML = v.posts.map(function(p){
+		return '<article class="norm h-entry"><h2 class="post-title">'
+			+ '<a href="private/' + encodeURIComponent(p.slug) + '/index.html">' + esc(p.title) + '</a>'
+			+ '</h2>' + (p.date ? '<time class="dt-published" datetime="' + esc(p.iso) + '">'
+			+ esc(p.date) + '</time>' : '') + '</article>';
+	}).join('');
+}
+</script>"""
+	inner = (
+		LOCK_HTML.format(blurb="These posts are encrypted. The passphrase never "
+		                       "leaves your browser.")
+		+ '\n<div id="private-list"></div>\n'
+		+ vault_script(salt, index_payload)
+		+ "\n" + render_index
+		+ f'\n<script>{PRIVATE_JS}</script>'
+	)
+	feed_page(head, foot, "private", "private.html", "cache — private", inner,
+	          extra_head=noindex + "\n" + PRIVATE_STYLE)
+
+	for post in posts:
+		payload = seal(key, {k: post[k] for k in ("title", "iso", "date", "html")})
+		page = PRIVATE_POST_TEMPLATE.format(
+			noindex=noindex,
+			favicon=FAVICON_TAG,
+			theme=theme_link("../../"),
+			style=PRIVATE_STYLE,
+			tray=tray_html("private", post["slug"]),
+			lock=LOCK_HTML.format(blurb="This post is encrypted."),
+			vault=vault_script(salt, payload),
+			script=PRIVATE_JS,
+			backtotop=BACKTOTOP,
 		)
-		page = head + body + foot
-		if filename != "index.html":
-			# Each feed is a distinct list, so each is its own canonical rather
-			# than pointing back at the homepage.
-			page = page.replace(
-				'<link rel="canonical" href="index.html">',
-				f'<link rel="canonical" href="{BASE_URL}/{filename}">',
-			)
-			page = page.replace("<title>cache</title>", f"<title>{title}</title>", 1)
-			page = page.replace(
-				'<meta property="og:title" content="cache" />',
-				f'<meta property="og:title" content="{title}" />', 1,
-			)
-		with open(os.path.join(OUT, filename), "w", encoding="utf-8") as f:
+		out_dir = os.path.join(OUT, "private", post["slug"])
+		os.makedirs(out_dir, exist_ok=True)
+		with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
 			f.write(page)
+	return len(posts)
+
+
+# Built by hand rather than lifted from a mirrored page: a private post has no
+# Write.as source, and nothing here may leak into the served HTML, so the title
+# element, headings and body are all left empty for the JS to fill in.
+PRIVATE_POST_TEMPLATE = """<!DOCTYPE HTML>
+<html lang="en" dir="auto">
+<head>
+<meta charset="utf-8">
+<title>private &mdash; cache</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{noindex}
+{theme}
+{favicon}
+{style}
+</head>
+<body id="post">
+{tray}
+<article id="post-body" class="norm h-entry">
+{lock}
+<div id="private-post" hidden>
+<h2 id="title" class="p-name dated"></h2>
+<time class="dt-published" datetime=""></time>
+<div class="e-content"></div>
+</div>
+</article>
+{vault}
+<script>
+function renderVault(v){{
+	document.title = v.title + ' \\u2014 cache';
+	document.getElementById('title').textContent = v.title;
+	var t = document.querySelector('#private-post time');
+	if (v.date) {{ t.textContent = v.date; t.setAttribute('datetime', v.iso); }}
+	else {{ t.remove(); }}
+	// v.html is the author's own markup from _private/, decrypted client-side.
+	document.querySelector('#private-post .e-content').innerHTML = v.html;
+	document.getElementById('private-post').hidden = false;
+}}
+</script>
+<script>{script}</script>
+{backtotop}
+</body>
+</html>
+"""
 
 
 def main():
@@ -743,14 +1366,27 @@ def main():
 		CACHE_ITEMS.append((slug, title))
 	for slug in POSTS:
 		build_post(slug)
+	if REDIRECT_OLD_POST_URLS:
+		build_redirects()
 	build_reading_articles()
 	retray_native_reading()
 	build_index()
+	# private.html reuses the feed template, so it is built from the same
+	# head/foot as the public feeds — with the analytics tag stripped back out.
+	sealed = build_private(*index_template())
 	build_sitemap()
+	build_robots()
+	build_feed()  # after the reading pages: it reads their descriptions
 	print(
-		"Built:", len(POSTS), "posts + index +", len(READING), "reading articles",
-		f"({len(EXTERNAL_STANDALONE)} external standalone links) + sitemap.xml",
+		"Built:", len(POSTS), f"posts -> {POSTS_DIR_NOTE} +", len(READING),
+		"reading articles",
+		f"({len(EXTERNAL_STANDALONE)} external standalone links)",
+		"+ 4 feed pages + sitemap.xml + feed.xml",
 	)
+	if sealed is None:
+		print("  private feed: skipped (unchanged)")
+	else:
+		print(f"  private feed: {sealed} post(s) encrypted")
 
 
 if __name__ == "__main__":

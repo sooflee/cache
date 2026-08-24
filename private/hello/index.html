@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+<html lang="en" dir="auto">
+<head>
+<meta charset="utf-8">
+<title>private &mdash; cache</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" type="text/css" href="../../assets/css/inside.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%204%2028%2010%2016%2016%204%2010Z%27/%3E%3Cpath%20d%3D%27M4%2016%2016%2022%2028%2016%27/%3E%3Cpath%20d%3D%27M4%2022%2016%2028%2028%2022%27/%3E%3C/svg%3E">
+<style>
+.lock{max-width:22rem;margin:2rem 0 3rem;}
+.lock p{color:#757575;font-size:14px;margin:0 0 1rem;}
+.lock form{display:flex;gap:.5rem;}
+.lock input{flex:1;min-width:0;font:inherit;font-size:15px;padding:.5rem .7rem;
+	border:1px solid #d8d8d8;border-radius:7px;background:#fff;color:#222;}
+.lock input:focus{outline:none;border-color:#357BB3;}
+.lock button{font:inherit;font-size:15px;font-weight:600;padding:.5rem 1.1rem;cursor:pointer;
+	border:1px solid #357BB3;border-radius:7px;background:#357BB3;color:#fff;}
+.lock button:hover{background:#2c6795;border-color:#2c6795;}
+.lock button[disabled]{opacity:.55;cursor:default;}
+.lock-msg{min-height:1.2em;margin:.8rem 0 0;font-size:14px;color:#757575;}
+.lock-msg.error{color:#b3402f;}
+</style>
+</head>
+<body id="post">
+<style>
+@view-transition{navigation:auto;}
+.nav-float{position:fixed;top:22px;left:22px;z-index:2147483647;pointer-events:none;
+	font:400 14px/1.45 'Josefin Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-min-cb{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.nav-card{width:230px;max-height:calc(100vh - 44px);overflow-y:auto;
+	background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.16);
+	border-radius:13px;padding:14px 0 16px;pointer-events:auto;transform-origin:top left;
+	transition:opacity .24s ease,transform .24s ease;}
+.nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;}
+.nav-home{display:inline-flex;align-items:center;color:#9a9a9a;text-decoration:none;
+	padding:2px;transition:color .15s;}
+.nav-home:hover{color:#333;}
+.nav-mini{cursor:pointer;color:#c4c4c4;font-size:21px;line-height:.5;padding:0 3px 6px;
+	user-select:none;transition:color .15s;}
+.nav-mini:hover{color:#333;}
+.nav-restore{position:absolute;top:0;left:0;display:inline-flex;align-items:center;gap:8px;
+	cursor:pointer;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.2);
+	color:#555;border-radius:11px;padding:8px 14px;font-size:13px;user-select:none;
+	opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.nav-restore::before{content:"";width:15px;height:11px;flex:none;color:#888;
+	background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left center/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left bottom/100% 1.5px no-repeat;}
+.nav-restore:hover{color:#111;}
+.nav-min-cb:checked ~ .nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+.nav-min-cb:checked ~ .nav-restore{opacity:1;pointer-events:auto;}
+.nav-card a.item{display:block;padding:7px 20px;color:#333;text-decoration:none;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-card a.item:hover{background:#f6f6f6;color:#111;}
+.nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-radio{position:absolute;opacity:0;pointer-events:none;}
+.nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
+.nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
+	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
+.nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
+.nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone],
+.nav-card #nav-private:checked ~ .nav-toggle label[for=nav-private]{
+	color:#111;border-bottom-color:#357BB3;}
+.nav-feed{display:none;}
+.nav-card #nav-cache:checked ~ .nf-cache{display:block;}
+.nav-card #nav-reading:checked ~ .nf-reading{display:block;}
+.nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+.nav-card #nav-private:checked ~ .nf-private{display:block;}
+/* The private feed lists nothing until the browser has decrypted it, so the
+   tray entry is a padlocked link to the locked index rather than titles. */
+.nav-card a.item.locked{color:#8a8a8a;font-style:italic;}
+.nav-card a.item.locked::before{content:"\1F512\FE0E";font-style:normal;margin-right:6px;opacity:.55;}
+/* The panel is a left rail beside the centered column. Until the viewport is
+   wide enough for it to clear that column (same breakpoint as the article
+   outline), start it minimized: the pill shows by default and tapping it
+   expands the list. Otherwise the card slides out over the post text. */
+@media (max-width:1330px){
+	.nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+	.nav-restore{opacity:1;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-card{opacity:1;transform:none;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-restore{opacity:0;pointer-events:none;}
+}
+@media (max-width:700px){
+	.nav-card{width:min(230px,calc(100vw - 36px));}
+	/* Phones have no side gutter for the pill to live in, so the fixed
+	   "posts" control landed on top of the first line of every headline.
+	   Tuck it into the corner and reserve the strip it occupies. The
+	   :has() guard keeps the reserved space off pages with no tray (the
+	   homepage, standalone apps); doubling it out-specifies the theme's
+	   own !important body padding. */
+	.nav-float{top:12px;left:12px;}
+	html body:has(.nav-float):has(.nav-float){padding-top:56px!important;}
+	/* Plotly's zoom/pan/export bar is absolutely positioned past the right
+	   edge of a phone-width plot and was the one thing on the whole site
+	   forcing a horizontal scroll. It is a mouse affordance anyway. */
+	.js-plotly-plot .modebar{display:none!important;}
+	/* Grid and flex items default to min-width:auto, so a tile wider than its
+	   track refuses to shrink and pushes the page sideways instead. Let the
+	   tile rows shrink, and drop the supplier grid to one column. */
+	.stats,.suppliers-grid,.headrow,.flow{min-width:0;}
+	.stats>*,.suppliers-grid>*,.headrow>*,.flow>*{min-width:0;}
+	.suppliers-grid{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion: reduce){
+	.nav-card,.nav-restore{transition:none;}
+}
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio"><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><input type="radio" name="nav-feed" id="nav-private" class="nav-radio" checked><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label><label for="nav-private">private</label></div><div class="nav-feed nf-cache"><a class="item" href="../../cache/token-playbook/index.html">Token Playbook</a><a class="item" href="../../cache/some-projects/index.html">Some Projects</a><a class="item" href="../../cache/practical-poker/index.html">Practical Poker</a><a class="item" href="../../cache/ecom-experiments/index.html">Ecom Experiments</a><a class="item" href="../../cache/why-crypto/index.html">Why Crypto</a><a class="item" href="../../cache/growing-peppers/index.html">Growing Peppers</a><a class="item" href="../../cache/book-reviews/index.html">Book Reviews</a><a class="item" href="../../cache/wasted-time/index.html">Dumb Poker</a><a class="item" href="../../cache/trading-automation/index.html">Trading Automation</a><a class="item" href="../../cache/api-in-rust/index.html">API in Rust</a><a class="item" href="../../cache/cicd-on-gcp/index.html">CI/CD on GCP + SQL</a><a class="item" href="../../cache/nomad-and-waypoint/index.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../../reading/smartphone-addiction/index.html">Predicting Smartphone Addiction</a><a class="item" href="../../reading/kaggriculture/index.html">Improving Kaggriculture Bot</a><a class="item" href="../../reading/iran-war/index.html">The Iran War</a><a class="item" href="../../reading/kimi-vs-claude/index.html">Claude vs Kimi</a><a class="item" href="../../reading/klefki/index.html">Penetration Testing with Claude Code</a><a class="item" href="../../reading/world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../../reading/poker-pros/index.html">High Roller Ledger</a><a class="item" href="../../reading/spacs/index.html">Understanding SPACs</a><a class="item" href="../../reading/ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../../reading/making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../../reading/watches/index.html">Watches That Beat Retail</a><a class="item" href="../../reading/wine/index.html">Wine as an Investment Asset</a><a class="item" href="../../reading/real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../../reading/ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item" href="../../whismur/">Tone Skill Builder</a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a></div><div class="nav-feed nf-private"><a class="item locked" href="../../private.html">unlock private posts</a></div></div></div>
+<article id="post-body" class="norm h-entry">
+<div class="lock" id="lock">
+<p>This post is encrypted.</p>
+<form id="unlock-form" autocomplete="off">
+<input type="password" name="pass" placeholder="passphrase" aria-label="Passphrase" autofocus>
+<button type="submit">unlock</button>
+</form>
+<p class="lock-msg" id="unlock-msg" role="status" aria-live="polite"></p>
+</div>
+<div id="private-post" hidden>
+<h2 id="title" class="p-name dated"></h2>
+<time class="dt-published" datetime=""></time>
+<div class="e-content"></div>
+</div>
+</article>
+<script id="vault" type="application/json">{"salt":"xiSoZIpKY7SbYluMuNuz4A==","iters":600000,"store":"cache.private.key","data":"2WOcLbfHkqxUNyoPqIIrZEEc2SqJmmdv/wR0cc+mn7BqnW9fty0iqdiUAUqXnuPtGdTf2174a0gzuLx2uzM2Zlrj12vpjuRYdS8pditJ4bsBElz6WqR9X66nOA31dPnHhb3l6qMYGwj1uRhGJbCyYHWtW+QczkRgFRRC2mO4y1hHYYA6ltCUdx9OnanpsqWgcfqOsoivj2YJO7WH21/wvZPurdio2/9YXxu0A/LgA5r97CFc67X9DjBHWZLm0qhGPGCuKGaE1mnNsXSsEi50P1DnIac2HkrAEtALYXRDHf8EFDNtp+F9z5bZVkTWnwrU+KZkHheWSOQkskNC1Vd27V2FfvjFMRXXtOKxyhF2uKN8/xY/imoV6TvhcxXpce37g460/hvGaZM+4nKq7eRIzgocHJsuoG2aorJtyNUndQSHff/lHoGs3+5Zw8eThdLw3dZZ+u2/Z+Dxmg70KNXOjq212ahc6ZCQkyFce8Tld5X3eaQ46mL4qHc84DRrYTpW7+di+zPiykU6Gi0WFPn8mNQBXzN+KFJbNy405g9ebzk5BH9nSIoJQtr26MAI5rzlOTM5TYr7Yb8vL4euU0FnTRp9INRrYxeUIOAE5Wax7vWKM5nQXdv3YfuQTwhc40BFEpf+8dhtJQL2hSF2k8BKTfurXz4QYEHCtqNsbCy/Me7IW/rBVJLxZGO/NLvDIkeurN0NrTXBNY4+FHBz4qZJK88OvNUqGGjIfA5iQue3Ssv/kWyj5elDyTasA0AK2EvucqLzI1gzWxIWsvfF0YXBhHAC1MEnBaYXwnwc5QJChWtd2BT4cCliyLh8qlY6KOM6abG01tRKoFLDIuigO2vuqsz1XgErzHGFyJLbw7z/qFhUpPUE7X1K99XnNTWGyue+ByU6Xuuob0ixU+MxJ/EUY4+sHv5X6u+8D9AQ+zzmrosLRbQfA6OljIE/XUoR6BVqExa+686ChAHr5Wbe46syJXjw9/lhkuIfO48hHKwtzFybUny5+RXL4fZAtwyAwpHPFnDXYXKrG0qbv+2+q46X65GI41dR03tqy9kHOlOa4zqpRlqC3dT8/IMJLFPzaYxBZdZ6D11WNSD/IVOn1aA+GhcThNsABSwtGtxPzYrb2vse2C4l+pvF7SDIFqxJfyBazY9aMHsg7elpolV5pFWl8UoKL27goaWKEhwSUY01JCkPQn58JuRYILtXaAEt6pdm+WXgdXwDTqUCtJ3qCd/Rz1CqTh4o5LoNtxcc1EKKE6qrfNDPiqPMQn98DzZik3yxWREDy5iMawk7GUkSEA7BWwt2hwEqpcU="}</script>
+<script>
+function renderVault(v){
+	document.title = v.title + ' \u2014 cache';
+	document.getElementById('title').textContent = v.title;
+	var t = document.querySelector('#private-post time');
+	if (v.date) { t.textContent = v.date; t.setAttribute('datetime', v.iso); }
+	else { t.remove(); }
+	// v.html is the author's own markup from _private/, decrypted client-side.
+	document.querySelector('#private-post .e-content').innerHTML = v.html;
+	document.getElementById('private-post').hidden = false;
+}
+</script>
+<script>(function(){
+	var V = JSON.parse(document.getElementById('vault').textContent);
+	var form = document.getElementById('unlock-form');
+	var msg = document.getElementById('unlock-msg');
+	var lock = document.getElementById('lock');
+
+	function bytes(s){ return Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); }); }
+	function b64(buf){
+		var b = new Uint8Array(buf), s = '';
+		for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+		return btoa(s);
+	}
+	function say(text, isError){
+		msg.textContent = text;
+		msg.classList.toggle('error', !!isError);
+	}
+	function derive(pass){
+		return crypto.subtle.importKey('raw', new TextEncoder().encode(pass),
+			'PBKDF2', false, ['deriveKey']).then(function(base){
+			return crypto.subtle.deriveKey(
+				{name:'PBKDF2', salt:bytes(V.salt), iterations:V.iters, hash:'SHA-256'},
+				base, {name:'AES-GCM', length:256}, true, ['decrypt']);
+		});
+	}
+	function open_(key){
+		var raw = bytes(V.data);
+		return crypto.subtle.decrypt({name:'AES-GCM', iv:raw.slice(0,12)}, key, raw.slice(12))
+			.then(function(pt){ return JSON.parse(new TextDecoder().decode(pt)); });
+	}
+	function use(key){
+		return open_(key).then(function(data){
+			return crypto.subtle.exportKey('raw', key).then(function(raw){
+				try { sessionStorage.setItem(V.store, b64(raw)); } catch (e) {}
+				lock.hidden = true;
+				renderVault(data);
+			});
+		});
+	}
+
+	form.addEventListener('submit', function(e){
+		e.preventDefault();
+		var btn = form.querySelector('button');
+		btn.disabled = true;
+		say('unlocking\u2026');
+		derive(form.pass.value).then(use).catch(function(){
+			say('That passphrase does not open this.', true);
+			form.pass.value = '';
+			form.pass.focus();
+		}).then(function(){ btn.disabled = false; });
+	});
+
+	// SubtleCrypto only exists in a secure context, so a file:// preview can't
+	// decrypt anything. Say so rather than failing silently.
+	if (!window.crypto || !crypto.subtle){
+		form.hidden = true;
+		say('Unlocking needs a secure context \u2014 open this over https, or localhost.', true);
+		return;
+	}
+	// Already unlocked earlier this session? Reuse the key and skip the prompt.
+	var stored = null;
+	try { stored = sessionStorage.getItem(V.store); } catch (e) {}
+	if (stored){
+		crypto.subtle.importKey('raw', bytes(stored), {name:'AES-GCM'}, true, ['decrypt'])
+			.then(use)
+			.catch(function(){ try { sessionStorage.removeItem(V.store); } catch (e) {} });
+	}
+})();</script>
+<a href="#top" class="to-top" aria-label="Back to top" title="Back to top">↑</a>
+<style>
+.to-top{position:fixed;bottom:22px;right:22px;z-index:2147483646;width:40px;height:40px;
+	display:flex;align-items:center;justify-content:center;border-radius:50%;
+	background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+	border:1px solid rgba(140,140,140,.28);color:#555;font-size:19px;line-height:1;text-decoration:none;
+	opacity:0;pointer-events:none;transition:opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.to-top.show{opacity:1;pointer-events:auto;}
+.to-top:hover{color:#111;border-color:rgba(140,140,140,.5);}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none;}html{scroll-behavior:auto;}}
+</style>
+<script>(function(){var b=document.querySelector('.to-top');if(!b)return;
+function f(){b.classList.toggle('show',window.scrollY>500);}
+window.addEventListener('scroll',f,{passive:true});f();
+b.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});})();</script>
+</body>
+</html>

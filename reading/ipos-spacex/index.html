@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Will the SpaceX IPO Beat the Market? &mdash; cache</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%204%2028%2010%2016%2016%204%2010Z%27/%3E%3Cpath%20d%3D%27M4%2016%2016%2022%2028%2016%27/%3E%3Cpath%20d%3D%27M4%2022%2016%2028%2028%2022%27/%3E%3C/svg%3E">
-<meta name="description" content="An on-the-record forecast for the SpaceX (SPCX) IPO, frozen before the first trade and scored eight weeks later, with a dated revision — plus the evidence behind it: the factors that predict post-IPO returns and how US IPOs from 2022 through 2026 have performed relative to their offer prices.">
+<meta name="description" content="An on-the-record forecast for the SpaceX (SPCX) IPO, frozen before the first trade, scored at eight weeks and again through the first lockup expiry — plus the evidence behind it: the factors that predict post-IPO returns and how US IPOs from 2023 through 2026 have performed relative to their offer prices.">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
 <style>
   :root {
@@ -125,6 +125,14 @@
   .wt-high { background: var(--text); color: var(--bg); border: 1px solid var(--text); }
   .wt-med { background: transparent; color: var(--text); border: 1px solid var(--text); }
   .wt-low { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  /* Corrections stay inline with the sentence they fix, in the author's voice
+     rather than the article's, so the record shows what was changed and when
+     instead of quietly reading as if it had always been right. */
+  .corr {
+    display: block; font-family: var(--sans); font-size: 12.5px; line-height: 1.5;
+    color: var(--muted); border-left: 2px solid var(--red); padding: 2px 0 2px 10px; margin: 6px 0 2px;
+  }
+  td .corr { margin-top: 5px; font-size: 11.5px; }
   .callout {
     background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
     border-radius: 8px; padding: 14px 18px; margin: 22px 0; font-size: 15.5px; line-height: 1.6;
@@ -151,10 +159,10 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="cache">
 <meta property="og:url" content="https://cache.bwang.io/reading/ipos-spacex/index.html">
-<meta property="og:description" content="An on-the-record forecast for the SpaceX (SPCX) IPO, frozen before the first trade and scored eight weeks later, with a dated revision — plus the evidence behind it: the factors that predict post-IPO returns and how US IPOs from 2022 through 2026 have performed relative to their offer prices.">
+<meta property="og:description" content="An on-the-record forecast for the SpaceX (SPCX) IPO, frozen before the first trade, scored at eight weeks and again through the first lockup expiry — plus the evidence behind it: the factors that predict post-IPO returns and how US IPOs from 2023 through 2026 have performed relative to their offer prices.">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Will the SpaceX IPO Beat the Market? &mdash; cache">
-<meta name="twitter:description" content="An on-the-record forecast for the SpaceX (SPCX) IPO, frozen before the first trade and scored eight weeks later, with a dated revision — plus the evidence behind it: the factors that predict post-IPO returns and how US IPOs from 2022 through 2026 have performed relative to their offer prices.">
+<meta name="twitter:description" content="An on-the-record forecast for the SpaceX (SPCX) IPO, frozen before the first trade, scored at eight weeks and again through the first lockup expiry — plus the evidence behind it: the factors that predict post-IPO returns and how US IPOs from 2023 through 2026 have performed relative to their offer prices.">
 </head>
 <body>
 <style>@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:400;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');}@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:600;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');}@keyframes cacheFadeIn{from{opacity:0;}to{opacity:1;}}body{animation:cacheFadeIn .4s ease both;}</style><style>
@@ -196,12 +204,18 @@
 	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
 .nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
 .nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
-.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone]{
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone],
+.nav-card #nav-private:checked ~ .nav-toggle label[for=nav-private]{
 	color:#111;border-bottom-color:#357BB3;}
 .nav-feed{display:none;}
 .nav-card #nav-cache:checked ~ .nf-cache{display:block;}
 .nav-card #nav-reading:checked ~ .nf-reading{display:block;}
 .nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+.nav-card #nav-private:checked ~ .nf-private{display:block;}
+/* The private feed lists nothing until the browser has decrypted it, so the
+   tray entry is a padlocked link to the locked index rather than titles. */
+.nav-card a.item.locked{color:#8a8a8a;font-style:italic;}
+.nav-card a.item.locked::before{content:"\1F512\FE0E";font-style:normal;margin-right:6px;opacity:.55;}
 /* The panel is a left rail beside the centered column. Until the viewport is
    wide enough for it to clear that column (same breakpoint as the article
    outline), start it minimized: the pill shows by default and tapping it
@@ -236,14 +250,14 @@
 @media (prefers-reduced-motion: reduce){
 	.nav-card,.nav-restore{transition:none;}
 }
-</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label></div><div class="nav-feed nf-cache"><a class="item" href="../../token-playbook.html">Token Playbook</a><a class="item" href="../../some-projects.html">Some Projects</a><a class="item" href="../../practical-poker.html">Practical Poker</a><a class="item" href="../../ecom-experiments.html">Ecom Experiments</a><a class="item" href="../../why-crypto.html">Why Crypto</a><a class="item" href="../../growing-peppers.html">Growing Peppers</a><a class="item" href="../../book-reviews.html">Book Reviews</a><a class="item" href="../../wasted-time.html">Dumb Poker</a><a class="item" href="../../trading-automation.html">Trading Automation</a><a class="item" href="../../api-in-rust.html">API in Rust</a><a class="item" href="../../cicd-on-gcp.html">CI/CD on GCP + SQL</a><a class="item" href="../../nomad-and-waypoint.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../iran-war/index.html">The Iran War</a><a class="item" href="../kimi-vs-claude/index.html">Claude vs Kimi</a><a class="item" href="../klefki/index.html">Penetration Testing with Claude Code</a><a class="item" href="../world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../poker-pros/index.html">High Roller Ledger</a><a class="item" href="../spacs/index.html">Understanding SPACs</a><a class="item active" href="../ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../watches/index.html">Watches That Beat Retail</a><a class="item" href="../wine/index.html">Wine as an Investment Asset</a><a class="item" href="../real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item" href="../../whismur/">Tone Skill Builder</a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a></div></div></div>
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><input type="radio" name="nav-feed" id="nav-private" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label><label for="nav-private">private</label></div><div class="nav-feed nf-cache"><a class="item" href="../../cache/token-playbook/index.html">Token Playbook</a><a class="item" href="../../cache/some-projects/index.html">Some Projects</a><a class="item" href="../../cache/practical-poker/index.html">Practical Poker</a><a class="item" href="../../cache/ecom-experiments/index.html">Ecom Experiments</a><a class="item" href="../../cache/why-crypto/index.html">Why Crypto</a><a class="item" href="../../cache/growing-peppers/index.html">Growing Peppers</a><a class="item" href="../../cache/book-reviews/index.html">Book Reviews</a><a class="item" href="../../cache/wasted-time/index.html">Dumb Poker</a><a class="item" href="../../cache/trading-automation/index.html">Trading Automation</a><a class="item" href="../../cache/api-in-rust/index.html">API in Rust</a><a class="item" href="../../cache/cicd-on-gcp/index.html">CI/CD on GCP + SQL</a><a class="item" href="../../cache/nomad-and-waypoint/index.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../../reading/smartphone-addiction/index.html">Predicting Smartphone Addiction</a><a class="item" href="../../reading/kaggriculture/index.html">Improving Kaggriculture Bot</a><a class="item" href="../../reading/iran-war/index.html">The Iran War</a><a class="item" href="../../reading/kimi-vs-claude/index.html">Claude vs Kimi</a><a class="item" href="../../reading/klefki/index.html">Penetration Testing with Claude Code</a><a class="item" href="../../reading/world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../../reading/poker-pros/index.html">High Roller Ledger</a><a class="item" href="../../reading/spacs/index.html">Understanding SPACs</a><a class="item active" href="../../reading/ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../../reading/making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../../reading/watches/index.html">Watches That Beat Retail</a><a class="item" href="../../reading/wine/index.html">Wine as an Investment Asset</a><a class="item" href="../../reading/real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../../reading/ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item" href="../../whismur/">Tone Skill Builder</a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a></div><div class="nav-feed nf-private"><a class="item locked" href="../../private.html">unlock private posts</a></div></div></div>
 
 <header>
   <div class="container">
     <h1>Will the SpaceX IPO Beat the Market?</h1>
     <div class="kick">Market Research · The SpaceX IPO</div>
     <p class="subtitle">An on-the-record forecast for the SpaceX (SPCX) listing, and the evidence behind it: the factors that predict post-IPO returns and the record of US IPOs from 2023 through 2026.</p>
-    <span class="asof">Forecast frozen June 11, 2026 · evidence as of June 10–11 · scored and revised August 6, 2026</span>
+    <span class="asof">Forecast frozen June 11, 2026 · evidence as of June 10–11 · scored and revised August 6 · updated August 13, 2026</span>
   </div>
 </header>
 
@@ -259,6 +273,10 @@
   <a href="#revision">Update · 8 weeks in</a>
   <a class="sub" href="#checkpoints">Scored</a>
   <a class="sub" href="#revised">Revised forecast</a>
+  <a href="#rebound">Update · the lockup</a>
+  <a class="sub" href="#correction">A correction</a>
+  <a class="sub" href="#audit">What the audit found</a>
+  <a class="sub" href="#rev1scored">Revision 1, scored</a>
   <a href="#evidence">2 · What predicts returns</a>
   <a class="sub" href="#timing">When IPOs fall</a>
   <a class="sub" href="#record">The record 2023–26</a>
@@ -272,6 +290,11 @@
   <section id="update">
     <div class="eyebrow">Updates · scoring the frozen forecast</div>
     <ul class="caveats" style="color:var(--text); margin-top:0">
+      <li><strong>Aug 13 · The lockup came and went — <span class="neg">the revision was the mistake</span>.</strong> 911.5M insider shares
+      came free on August 6 and SPCX rose 6.1% that day, 15.8% the next, and 9.7% on August 12 after Musk told staff AI revenue would pass
+      everything else by September. From the August 5 low close it is <span class="pos">+35% in five sessions</span>, back above the offer
+      at $146.15 and now slightly <em>ahead</em> of the S&amp;P from the offer. Revision 1 was published the morning after the low close.
+      Scoring it, plus a correction to the August 6 text, is in <a class="sec" href="#rebound">the newest update</a>.</li>
       <li><strong>Aug 6 · Eight weeks — <span class="mixed">right shape, wrong clock</span>.</strong> SPCX peaked at a $201.80
       close on June 16 (inside the forecast band), then round-tripped: first close below the $135 offer on July 16, and
       $108.27 on August 5 after the first earnings report. Every checkpoint the forecast has reached is inside its band, but
@@ -279,7 +302,7 @@
       <a class="sec" href="#revision">the update section</a>.</li>
       <li><strong>Jun 12 · Day one — <span class="pos">hit</span>.</strong> Predicted: opens up 10–20%, near $157, closes
       above the offer. Actual: opened $150.00 (+11.1%), closed $160.98 (+19.2%) — both inside the band. The miss: a midday
-      spike to $176.49 (+31%) was more euphoric than called, briefly crossing the ~$175 bonus-unlock trigger
+      spike to $176.49 (+31%) was more euphoric than called, briefly crossing the ~$175 bonus-unlock level
       (<a class="sec" href="#step4">Step&nbsp;4</a>).</li>
     </ul>
   </section>
@@ -295,13 +318,14 @@
       Part 2 gives the evidence and the recent record behind it.
     </p>
     <p class="section-note" style="font-family:var(--sans); font-size:14px; color:var(--muted)">
-      <strong style="color:var(--text)">Written June 11 and left as written.</strong> Eight weeks on, SPCX is at $108.27, below the
-      offer and 46% off its June high close, and the answer above still stands from $135 — but the reason has changed, and from today's price
-      the odds are better. See <a class="sec" href="#revision">the August 6 update</a>.
+      <strong style="color:var(--text)">Written June 11 and left as written.</strong> Nine weeks on, after a 46% drawdown and a 35%
+      rebound through the first lockup expiry, SPCX closed at $146.15 on August 12 — above the offer, and marginally ahead of the S&amp;P 500
+      from it. "Probably not" is a three-year call and nine weeks decides nothing, but on the scoreboard today it is behind. See
+      <a class="sec" href="#revision">the August 6 update</a> and <a class="sec" href="#rebound">the August 13 one</a>.
     </p>
     <p class="section-note" style="margin-bottom:6px">The reasons, in brief:</p>
     <ul class="caveats" style="color:var(--text)">
-      <li><strong><a class="sec" href="#forecast">Valuation dominates.</a></strong> ~97x sales while unprofitable is far past the worst historical bucket. IPOs above 40x sales averaged −59% market-adjusted over three years. The businesses can't grow into $1.75T by 2029; upside requires the market to keep paying for belief, not revenue.</li>
+      <li><strong><a class="sec" href="#forecast">Valuation dominates.</a></strong> ~97x sales while unprofitable is far past the worst historical bucket. IPOs above 40x sales averaged −59% market-adjusted over three years <em>bought at the first close</em>.<span class="corr">Corrected Aug 13: the entry price was missing here. Measured from the offer, which is the price this bullet is about, the same bucket averaged −15% on 14 deals. The direction holds; the magnitude was overstated. See <a class="sec" href="#evidence">the factor table</a>.</span> The businesses can't grow into $1.75T by 2029; upside requires the market to keep paying for belief, not revenue.</li>
       <li><strong><a class="sec" href="#evidence">Scale, profitability, and valuation at listing predict returns.</a></strong> Founder control helps, but less. The framework's blind spot is the belief-asset re-rating (Arm +500%), which is exactly SPCX's bull case, so the upside percentiles are widened, not ignored.</li>
       <li><strong><a class="sec" href="#timing">Falling below the offer is the norm.</a></strong> 56% of IPOs are under their offer price three years out. The damage concentrates in months 7–24, after lockups clear and hype meets reported numbers.</li>
       <li><strong><a class="sec" href="#record">Entry price matters more than the company.</a></strong> Large IPOs bought at the offer beat the market (+13% over 3 years); buying the first-day close loses (median −25.7% at 3 years; 10 of 11 recent deals negative from their day-one close).</li>
@@ -309,6 +333,7 @@
     <nav class="toc" aria-label="Contents">
       <a href="#forecast">The SPCX forecast</a>
       <a href="#revision">Update · 8 weeks in</a>
+      <a href="#rebound">Update · the lockup</a>
       <a href="#evidence">What predicts IPO returns</a>
       <a href="#timing">When IPOs fall</a>
       <a href="#record">The record 2023–2026</a>
@@ -467,10 +492,15 @@
     <p class="section-note" style="margin-bottom:10px">
       The squeeze the forecast expected happened, harder and faster than called: SPCX closed at <strong style="color:var(--text)">$201.80
       on June 16</strong>, its third session, having touched $225.64 intraday that day — 67% above the offer at the high, 49% at the
-      close. It closed well clear of the $175.50 performance trigger on the way, meeting the condition for the bonus tranche. Then it
+      close. It closed well clear of the $175.50 performance level on the way.<span class="corr">Corrected Aug 13: this sentence
+      originally added "meeting the condition for the bonus tranche." It did not. The tranche needed five closes at or above $175.50
+      within the ten sessions <em>ending at the earnings date</em>, and SPCX spent that window between $108 and $135, so its 455.8M
+      shares stayed locked. See <a class="sec" href="#correction">the correction</a>.</span> Then it
       gave all of it back. It joined the Nasdaq-100 on July 7 into a falling
-      tape, aborted the Starship 13 launch on July 16 (roughly $100B of market value in a day), closed below the offer for the first
-      time that same session, and bottomed near $108 into the first earnings report. Q2 revenue beat by 13% and the stock rose 9.4% on
+      tape, aborted the Starship 13 launch on July 16, closed below the offer for the first
+      time that same session, and bottomed near $108 into the first earnings report.<span class="corr">Corrected Aug 13: this sentence
+      put "roughly $100B of market value in a day" on the abort. The abort session itself cost about $55B ($135.27 to $131.11); the
+      ~$94B day was the session after, July 17 ($131.11 to $123.99).</span> Q2 revenue beat by 13% and the stock rose 9.4% on
       the day — then fell 13.6% the next session when investors read the capex line.
     </p>
 
@@ -489,7 +519,7 @@
         <tr><td>Nasdaq-100 inclusion flows</td><td>Possible tailwind</td><td>Added July 7; no visible bid</td><td><span class="mixed">Immaterial</span></td></tr>
         <tr><td>Trades below $135 within 12 months · 60%</td><td>More likely than not, eventually</td><td>First close below on day 24</td><td><span class="pos">Hit</span>, on a far too generous window</td></tr>
         <tr><td>Months 3–6: bends down on supply</td><td>Sep–Dec 2026</td><td>Began mid-July, month 2</td><td><span class="mixed">Direction right, timing early</span></td></tr>
-        <tr><td>Supply schedule (Step 4)</td><td>First earnings ~Aug, 20% unlock, +10% above ~$175</td><td>Earnings Aug 4; 911.5M shares free Aug 6; trigger fired</td><td><span class="pos">Hit</span></td></tr>
+        <tr><td>Supply schedule (Step 4)</td><td>First earnings ~Aug, 20% unlock, +10% above ~$175</td><td>Earnings Aug 4; 911.5M shares (the 20%) free Aug 6; the +10% tranche did <em>not</em> trigger</td><td><span class="pos">Hit</span><span class="corr">Corrected Aug 13: this row first read "trigger fired," which was wrong — 911.5M is the base tranche alone. The dates and the 20% were called correctly, so the verdict stands.</span></td></tr>
         <tr><td>Above $135 at year-end 2026 · 65%</td><td>Open</td><td>$108.27, needs +25%</td><td><span class="mixed">Open, losing</span></td></tr>
         <tr><td>Beats the S&amp;P 500 from the offer over 3 yrs · 30%</td><td>Open</td><td>24 points behind at week 8</td><td><span class="mixed">Open</span></td></tr>
       </tbody>
@@ -565,16 +595,143 @@
   </section>
 
 
+  <section id="rebound">
+    <div class="eyebrow">Update · August 13, 2026</div>
+    <h2>The lockup that didn't bite</h2>
+    <p class="section-note">
+      Revision 1 went up on August 6, priced off the $108.27 close the day before, the morning 911.5M insider shares came free. That
+      close turned out to be the bottom. In the five sessions since, SPCX has gone up 35%, closed back above the $135 offer, and passed the S&amp;P 500 from
+      the offer price. The supply overhang that both the frozen forecast and its revision leaned on arrived exactly on schedule and the
+      market bought it.
+    </p>
+    <div class="bigstat"><div class="value up">+35.0%</div><div class="label">SPCX from the $108.27 low close on August 5 to $146.15 on August 12 — five sessions spanning a 911.5M-share insider unlock, the largest in this listing's schedule.</div></div>
+
+    <div class="chart-wrap" style="height:300px"><canvas id="chartRebound"></canvas></div>
+    <table>
+      <thead>
+        <tr><th>Session</th><th class="num">Close</th><th class="num">Move</th><th>What happened</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Mon Aug 3</td><td class="num">$114.53</td><td class="num">—</td><td>Drifting into earnings; the intraday low of $104.83 that day is still the all-time low</td></tr>
+        <tr><td>Tue Aug 4</td><td class="num">$125.33</td><td class="num pos">+9.4%</td><td>Q2: revenue $7.81B, up 92%, 13% above consensus; first full-year guidance</td></tr>
+        <tr><td>Wed Aug 5</td><td class="num">$108.27</td><td class="num neg">−13.6%</td><td>The capex line is read properly: $18.4B in the quarter, $15.8B of it AI</td></tr>
+        <tr><td>Thu Aug 6</td><td class="num">$114.92</td><td class="num pos">+6.1%</td><td>911.5M shares unlock; float goes from 4.9% to 11.8% of the company; 255M shares traded</td></tr>
+        <tr><td>Fri Aug 7</td><td class="num">$133.11</td><td class="num pos">+15.8%</td><td>Morgan Stanley calls the unlock an entry point and keeps a $300 target; Argus upgrades to Buy at $160</td></tr>
+        <tr><td>Mon Aug 10</td><td class="num">$138.74</td><td class="num pos">+4.2%</td><td>First close above the $135 offer since July 15</td></tr>
+        <tr><td>Tue Aug 11</td><td class="num">$133.29</td><td class="num neg">−3.9%</td><td>Back below the offer for a session</td></tr>
+        <tr><td>Wed Aug 12</td><td class="num">$146.15</td><td class="num pos">+9.7%</td><td>The market reads the all-hands recording SpaceX posted the evening before: AI revenue "will exceed all other SpaceX revenue probably in September, like next month"</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="correction">The correction</h3>
+    <p class="section-note" style="margin-bottom:10px">
+      <strong style="color:var(--text)">The August 6 update said the bonus tranche triggered. It didn't.</strong> The 455.8M-share
+      price-contingent block required five closes at or above $175.50 inside the ten sessions <em>ending at the earnings date</em>, not
+      at any point after listing. SPCX traded between $108 and $135 through that window, so the block stayed locked, and the 911.5M
+      shares that came free on August 6 were the base tranche on its own. The error was visible in the update's own numbers — 911.5M is
+      exactly the 20%, with no 10% on top — and it was not caught. Both places are corrected in place above, with the original wording
+      shown. The frozen Step 4 table is left as written, including its looser "if SPCX ≥ ~$175" phrasing, which is the sort of
+      approximation that made the mistake easy.
+    </p>
+    <div class="callout">
+      <strong>It cuts the other way, too.</strong> Those 455.8M shares are roughly half a base tranche of supply that revision 1 assumed
+      was already loose and is not. Getting a supply fact wrong in the direction of <em>too much</em> supply, in a forecast whose whole
+      bear case is supply, is the more expensive half of this mistake.
+    </div>
+
+    <h3 id="audit">Three more things the audit found</h3>
+    <p class="section-note" style="margin-bottom:10px">
+      Every statistic in Part 2 was re-checked against Ritter's source tables this week. The core numbers hold exactly — the 56.1% below
+      offer at three years, the −16.6% and −25.7% medians, the +38.5% mean, the profitability, scale, dual-class and VC splits, and the
+      month-by-month underperformance windows are all reproduced to the decimal. Three things did not survive.
+    </p>
+    <ul class="caveats" style="color:var(--text)">
+      <li><strong>The valuation penalty was quoted from the wrong entry price.</strong> The −59% for IPOs above 40x sales is measured
+      from the first close. From the offer — which is where Part 1's whole case is framed — the same bucket averaged −15%, on 14 deals.
+      The bear case survives; one of its biggest numbers was four times too big for the price it was applied to.</li>
+      <li><strong>The float evidence was missing, and it argues the other way.</strong> Large IPOs with a float of 10% or less have been
+      the <em>best</em> bucket for offer-price buyers, +25% market-adjusted over three years. Step 1 scored SPCX's ~4% float as a
+      negative. The reasoning there — expansion speed, not level — is still sound, but the frozen forecast never told the reader the
+      level itself has historically been a positive.</li>
+      <li><strong>A $100B market-value loss was attached to the wrong session.</strong> The Starship 13 abort cost about $55B on the
+      day; the ~$94B day was the one after.</li>
+    </ul>
+    <p class="section-note" style="margin-bottom:10px">
+      All three are corrected inline where they appear, with the original wording shown. None of them changes a frozen target or
+      probability, and none is quantified back into the forecast, because re-scoring your own call after the fact using errors you
+      found yourself is how a scorecard stops meaning anything.
+    </p>
+
+    <h3 id="rev1scored">Revision 1, scored at one week <span class="pill">frozen Aug 6 · from $108.27</span></h3>
+    <p class="section-note" style="margin-bottom:10px">
+      One week is not a verdict on calls that run to 2029. It is a verdict on the two that a week can already reach, and a fair look at
+      how the rest are travelling:
+    </p>
+    <table>
+      <thead>
+        <tr><th>Revision 1 call</th><th class="num">Set Aug 6</th><th>Where it stands Aug 12</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Year-end 2026 median $105 (band $65–$175)</td><td class="num">$105</td><td><span class="mixed">Inside the band</span>, 39% above the median with four months to run</td></tr>
+        <tr><td>Above $135 at year-end 2026</td><td class="num">25%</td><td><span class="neg">Already there.</span> A 25% probability on a threshold the stock cleared two sessions later was too low</td></tr>
+        <tr><td>Closes 2026 below the $160.98 day-1 close</td><td class="num">90%</td><td><span class="neg">Needs only +10% to break</span>, not the +49% it needed when written</td></tr>
+        <tr><td>Trades below $80 before Jun 2027</td><td class="num">40%</td><td><span class="mixed">Now a 45% fall away</span>; on the evidence of this week, fat</td></tr>
+        <tr><td>New all-time high (&gt;$225.64) before Jun 2027</td><td class="num">15%</td><td><span class="mixed">Open</span>, +54% away</td></tr>
+        <tr><td>Raises ≥$10B of equity or converts before Jun 2027</td><td class="num">65%</td><td><span class="mixed">Open</span>, and a 35% higher stock makes issuing it cheaper, not less likely</td></tr>
+        <tr><td>Beats the S&amp;P 500 from the $135 offer over 3 yrs</td><td class="num">25%</td><td><span class="mixed">Open</span>; SPCX +8.3% from the offer against +4.7% for SPY since June 11, so 3.6 points ahead</td></tr>
+        <tr><td>Beats the S&amp;P 500 from $108.27 over 3 yrs</td><td class="num">40%</td><td><span class="mixed">Open</span>, +35% against +0.4% in five sessions</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>The pattern in this miss is the opposite of the last one.</strong> The frozen June forecast had no clock: it put the right
+      events months late. Revision 1 overcorrected — it took eight weeks of price action, ran a line through it, and cut the year-end
+      median 28% at what turned out to be the low. A model with no clock is slow. A model whose clock is the last tick is worse, because
+      it is confident.
+    </div>
+
+    <h3 id="norev2">Why there is no revision 2</h3>
+    <p class="section-note" style="margin-bottom:10px">
+      Re-cutting the fan a week after the last one, because the price moved, is the exact error described above. So revision 1's numbers
+      stand and will be scored as written, including the two that already look wrong. For the reader's sake, and so this isn't a hedge:
+      <strong style="color:var(--text)">if I were re-cutting it today the year-end 2026 median would be near $130, not $105</strong>,
+      with "above $135 at year-end" closer to 45% than 25%. That is an opinion, not a scored forecast, and the difference is the point.
+      The next dated revision comes after Q3 earnings, or sooner if something structural happens rather than something merely large.
+    </p>
+    <p class="section-note" style="margin-bottom:10px">
+      Two things did genuinely change this week, and neither is the price. <strong style="color:var(--text)">The supply calendar is
+      lighter than modelled</strong> — 455.8M shares still locked, and the biggest single unlock in the schedule absorbed on a day the
+      stock rose. <strong style="color:var(--text)">And the AI segment now has a public number attached to it:</strong> Musk told staff
+      it passes everything else by September, and put SpaceX on a path to 10 GW of AI compute by the end of 2027, which he values at
+      $300–500B of annual revenue. Q2's AI line was $2.56B against $5.25B for connectivity and launch combined, so September is close
+      but not free. Whether any of that is worth $1.92T is the question the three-year call is actually about.
+    </p>
+    <p class="section-note" style="margin-bottom:10px">
+      <strong style="color:var(--text)">What still has to happen.</strong> Roughly 319M shares release around day 70 (August 21), with
+      further tranches near days 90, 105, 120 and 135; about 28% of the insider block, on the order of 1.3B shares, follows Q3 earnings
+      in late October or November; the day-180 backstop clears on December 8; Musk's 6.4B shares stay locked until June 12, 2027. At
+      $146.15 the market cap is about $1.92T, or roughly 51x an estimated $38B of 2026 revenue — richer than the ~37x that revision 1
+      called a materially weaker bear case, and the capex line that caused the August 5 drop has not moved.
+    </p>
+  </section>
+
+
   <section id="evidence">
     <div class="eyebrow">Part 2 · The evidence and the record</div>
     <h2>What predicts IPO returns</h2>
     <p class="section-note">
-      The average IPO <strong style="color:var(--text)">underperforms the market by about 3.6% per year for five years</strong> after
-      listing (Jay Ritter's dataset: 9,253 US IPOs, 1980–2024), and most of that damage sits in small listings. For a $75B deal,
+      The average IPO <strong style="color:var(--text)">underperforms other firms of the same size by about 3.6% per year for five
+      years</strong> after listing (Jay Ritter's dataset: 9,253 US IPOs, 1980–2024), and most of that damage sits in small listings. For a $75B deal,
       what matters is how the factors below separate winners from losers among large IPOs. They are the same factors scored against
       SPCX in Part 1, measured as 3-year <em>market-adjusted</em> returns, meaning the IPO's return minus the market's over the same
       window.
     </p>
+    <div class="callout">
+      <strong>Read the entry price with every number below.</strong> Ritter's factor tables are calculated from the
+      <em>first closing price</em>, which is what a public buyer pays, and every figure in the table that follows is on that basis.
+      The same tables measured from the <em>offer</em> are far kinder: large IPOs as a group are −3.2% market-adjusted over three years
+      from the first close and <span class="pos">+13.3%</span> from the offer. That gap is the single largest effect in this report, and
+      it is why Part 1's forecast keeps two answers — one from the $135 offer, one from the day-one close — rather than one.
+    </div>
 
     <h3>IPO-specific factors, ranked by evidence</h3>
     <div class="chart-wrap" style="height:230px"><canvas id="chartFactors"></canvas></div>
@@ -584,7 +741,7 @@
       </thead>
       <tbody>
         <tr><td>Scale (LTM sales ≥$1B vs &lt;$100M)</td><td><span class="pos">−2%</span> vs <span class="neg">−34%</span></td><td>Well-established; one of the largest effects</td></tr>
-        <tr><td>Valuation at listing (P/S &lt;5 vs &gt;40)</td><td><span class="pos">−1%</span> vs <span class="neg">−59%</span></td><td>Well-established</td></tr>
+        <tr><td>Valuation at listing (P/S &lt;5 vs &gt;40)</td><td><span class="pos">−1%</span> vs <span class="neg">−59%</span></td><td>Well-established from the first close, on 46 deals above 40x. <span class="corr">Added Aug 13: measured from the <em>offer</em>, with the ratio taken at the offer price, the same buckets are <span class="pos">+12%</span> and <span class="neg">−15%</span> — on only 14 deals. The −59% is the right number for a day-one buyer and too harsh for an offer-price buyer, and Part 1 leaned on it without saying which.</span></td></tr>
         <tr><td>Profitable vs unprofitable at IPO</td><td><span class="pos">−13%</span> vs <span class="neg">−31%</span></td><td>Well-established</td></tr>
         <tr><td>Dual-class (founder control) vs single</td><td><span class="pos">−7%</span> vs <span class="neg">−22%</span></td><td>Established; premium fades with age</td></tr>
         <tr><td>VC-backed vs not</td><td><span class="pos">−14%</span> vs <span class="neg">−25%</span></td><td>Established; reverses in bubbles (1999–2000)</td></tr>
@@ -592,7 +749,8 @@
         <tr><td>Company age at IPO</td><td>Strong monotone: younger = worse</td><td>Canonical (Ritter 1991)</td></tr>
         <tr><td>Hot-market timing</td><td>High-volume IPO years perform worst</td><td>Canonical (windows of opportunity)</td></tr>
         <tr><td>Lockup expiration (~180 days)</td><td>≈ −1 to −3% around the unlock</td><td>Established but modest</td></tr>
-        <tr><td>Entry price: offer vs first close</td><td>Large-sales IPOs bought <em>at the offer</em> beat the market (<span class="pos">+13%</span> over 3 yrs); day-one buyers fare far worse</td><td>Well-established</td></tr>
+        <tr><td>Public float at listing (≤10% vs &gt;40%)</td><td>From the offer: <span class="pos">+25%</span> vs <span class="neg">−4%</span>; from the first close, <span class="neg">−5%</span> vs <span class="neg">−13%</span></td><td>Established. <span class="corr">Added Aug 13: this row was missing, and it cuts against Part 1. A float of 10% or less has been the <em>best</em> bucket for offer-price buyers, not a drag. Step 1 scored SPCX's ~4% float negative — defensibly, because the case there is the speed of float <em>expansion</em>, which this table does not measure — but the level itself has historically been a positive and the frozen forecast never said so.</span></td></tr>
+        <tr><td>Entry price: offer vs first close</td><td>Large-sales IPOs bought <em>at the offer</em> beat the market (<span class="pos">+13%</span> over 3 yrs); day-one buyers lag it (<span class="neg">−3%</span>)</td><td>Well-established</td></tr>
       </tbody>
     </table>
 
@@ -703,6 +861,14 @@
       <a class="sec" href="#revised">the update</a> are added beside
       the frozen ones, never over them, and each revision is dated so the drift is visible. Both sets get scored.
     </p>
+    <p class="section-note">
+      <strong style="color:var(--text)">Standing at August 13, 2026:</strong> the first lockup expiry passed without the decline that
+      both sets of numbers were built around, and SPCX closed at $146.15 on August 12, back above the offer and 3.6 points ahead of the
+      S&amp;P 500 from it. Revision 1 is one week old and already wrong on its year-end threshold; it stands unaltered anyway, because a
+      forecast re-cut every time the price moves cannot be scored at all. One factual error in the August 6 text — that the price-contingent
+      unlock had triggered — is <a class="sec" href="#correction">corrected in place</a> with the original wording shown. No revision 2
+      until Q3 earnings.
+    </p>
   </section>
 
   <section id="methodology">
@@ -715,6 +881,8 @@
       <li>Cohort counts, raises, and year-end and large-deal averages are Renaissance Capital's (deals ≥$50M market cap, ex-SPACs); "listings" counts (stockanalysis.com) include SPACs and micro-caps, and the two should not be mixed. Ritter's 2023 cohort average (−30.9% over 3 years) uses his stricter operating-company set with returns through Dec 31, 2025; the market-adjusted shortfall partly reflects the S&amp;P rally over the same window.</li>
       <li>The scatter shows 482 US IPOs from 2023 through June 11, 2026 with a reported deal size and return on stockanalysis.com's year pages (Deal Size and Return From IPO Price columns), pulled June 12, 2026. 321 SPACs are excluded, identified by name ("Acquisition", "Merger", and similar) or by the $10.00 blank-check unit price combined with a sponsor-style name, with operating companies that price at $10.00 (such as Newsmax and U.S. GoldMining) kept; this matches the report's other statistics, which are ex-SPAC, since a SPAC at IPO trades at trust value and says nothing about operating-company listings. 67 listings lacking a return or deal size are omitted (these counts include SPACs, unlike Renaissance's); nine large deals with missing deal sizes (including ARM, Astera Labs, Reddit, CAVA, Klaviyo, Tempus, Kaspi.kz, Karman, and Metsera) are included with gross proceeds from contemporaneous reports. A further 27 listings that raised $30M or less yet showed returns of +150% to +4,221% are excluded as suspected manipulation: that profile matches the micro-cap pump-and-dump pattern regulators have repeatedly flagged in small IPOs, not genuine investable returns. Returns are June 12 quotes and can differ a few points from the article's June 10–11 snapshots. The $100M+ split uses the reported deal size directly. Returns above +500% (2 deals) are drawn at the +500% edge with true values in tooltips. SPCX, priced June 11 with no trading history, is excluded.</li>
       <li>The fall-frequency statistics (56.1% and 57.1% below offer at years 3 and 5) cover 1975–2021 IPOs, measured from the offer; from the first-day close the medians are worse (−25.7% and −32.0%).</li>
+      <li>Share counts are not consistent across the page and cannot be made so without altering frozen text. Step 2 backs out ~12.96B shares from the widely reported $1.75T valuation at the $135 offer; the market caps in the update sections use the ~13.2B shares outstanding that data providers report, which at $135 would be about $1.78T. The gap is under 2% and moves no conclusion, but it means per-share figures derived from a market cap on this page can differ by that much depending on which section they came from. Similarly, the $75B raise is the base deal of 555.6M shares at $135; with the over-allotment exercised, 638.9M shares, proceeds were about $86B, and contemporaneous reports use both numbers.</li>
+      <li>The factor table in Part 2 is calculated from the first closing price, as Ritter's tables are. Part 1 scored SPCX against those figures while framing its forecast from the $135 offer, where the same tables give materially different numbers — most sharply for valuation (−15% rather than −59% above 40x sales, on 14 deals rather than 46). Where that conflation changed a stated magnitude it is corrected inline with the original wording shown; the frozen targets and probabilities are unaltered, and the effect on them is not quantified here because doing so would amount to re-forecasting after the fact.</li>
       <li>The SpaceX section was written June 11, 2026, before the first trade, and is left unrevised as a test of the framework. Deal terms are from the S-1 and contemporaneous reports; the ~97x P/S is the $1.75T valuation over $18B of 2025 revenue. Gray-market prices (Hyperliquid) are thin and indicative only, and historical cohort averages may not describe a one-of-one mega-cap listing.</li>
       <li>Mega-IPO comparable returns are approximate (from the offer, split-adjusted, rounded to ~5%, ex-dividends) and are reference points for shape, not precise figures; the price-to-sales chart in Step 2 uses the multiples stated in the comparables table plus approximate listing multiples and 3-year returns, rounded, for about twenty other prominent large US listings, with pre-revenue Rivian drawn at the axis edge. The backtest signals are retrospective scorings and carry hindsight risk despite using only at-the-time observables.</li>
       <li>Day-one closes behind the pop-fades chart are from contemporaneous press reports; BitGo, SailPoint, and Venture Global were reported only as "settled near" levels, so their returns are imprecise by a few points. Some sizable 2026 deals (Madison Air, Fervo, INNIO, BX Digital Infrastructure) lack a verified day-one close and are excluded. "Since day-1 close" returns use the June 10–11 snapshots.</li>
@@ -722,6 +890,9 @@
       <li>The August 6, 2026 update uses closes through August 5 ($108.27). Only independently corroborated prices are plotted: the $135 offer, the $160.98 day-one close, the $201.80 high close and $225.64 intraday high (both June 16), the $131.11 first close below the offer (July 16), $108.37 (July 31), $125.33 (August 4, earnings day) and $108.27 (August 5). Intermediate daily closes were inconsistent across sources and are omitted rather than smoothed, so the x-axis of the round-trip chart is ordered by event, not evenly spaced in time. The market comparison uses SPY as the S&amp;P 500 proxy: $737.76 on June 11 to $769.79 on August 5, +4.3%.</li>
       <li>The ~37x revised sales multiple is the $1.43T market cap at the August 5 close over an estimated ~$38B of 2026 revenue, which is a third-party full-year estimate rather than company guidance; SpaceX guided for the first time with Q2 results and raised the number, but did not publish a figure this page could verify. Segment figures, capex, and the loss per share are from the Q2 2026 report of August 4. The 2026 capex estimate near $65B annualizes first-half spending of $28.5B plus guidance and is the author's arithmetic, not a company forecast.</li>
       <li>Revision 1's targets and probabilities are subjective calibrated estimates on the same basis as the frozen set. They are added beside the June 11 numbers, which are unaltered; both remain on the record and both will be scored. Later revisions will be dated and appended the same way.</li>
+      <li>The August 13, 2026 update uses closes through August 12. Unlike the June–August milestone chart, the unlock-week chart plots eight consecutive daily closes from stockanalysis.com's SPCX history (Aug 3 $114.53, Aug 4 $125.33, Aug 5 $108.27, Aug 6 $114.92, Aug 7 $133.11, Aug 10 $138.74, Aug 11 $133.29, Aug 12 $146.15); the daily percentage moves implied by those closes match the figures reported independently for August 5 (−13.6%), 6 (+6.1%), 7 (+15.8%) and 12 (+9.7%). The market comparison uses SPY, $737.76 on June 11 to $772.49 on August 12, +4.7%. The ~$1.92T market cap is the August 12 close over ~13.2B shares outstanding, and ~51x sales divides it by the same third-party ~$38B 2026 revenue estimate used above, not company guidance.</li>
+      <li>The correction to the August 6 update is sourced to the lockup terms as reported before the event: the 455.8M-share tranche required SPCX to hold $175.50, 30% above the offer, for five of the ten trading days through the earnings date, and was reported unmet on July 16 with the stock at $134.91. That 911.5M shares — the 20% base tranche exactly, with no 10% addition — came free on August 6 corroborates it. Original wording is preserved inline rather than deleted. Insider <em>selling</em> after the unlock is not disclosed in real time; nothing here claims to know how much stock actually changed hands, only the price and volume.</li>
+      <li>Remaining unlock dates and share counts are from contemporaneous reports of the prospectus schedule and differ by a day or two between sources (the day-70 tranche is variously given as August 12, 20 or 21); day 70 from the June 12 debut is August 21, and the counts are approximate. The ~28% Q3-earnings tranche depends on an earnings date SpaceX has not yet set.</li>
     </ul>
   </section>
 
@@ -753,6 +924,8 @@
       <li>Day-one closes: <a href="https://siliconangle.com/2025/06/04/circle-hikes-ipo-price-31-per-share-ahead-nyse-debut/">SiliconANGLE (Circle +168%)</a> · <a href="https://news.crunchbase.com/ai/coreweave-ipo-crwv-opening-day-trade/">Crunchbase (CoreWeave flat)</a> · <a href="https://www.cnbc.com/2025/08/13/crypto-exchange-bullish-more-than-doubles-in-nyse-debut-after-pricing-ipo-above-expected-range.html">CNBC (Bullish +83%)</a> · <a href="https://www.iposcoop.com/the-ipo-buzz-klarna-klar-prices-ipo-at-40-3-above-range/">IPOScoop (Klarna)</a> · <a href="https://www.cnbc.com/2026/05/14/cerebras-cbrs-stock-trade-nasdaq-ipo.html">CNBC (Cerebras +68%)</a> · <a href="https://www.cnbc.com/2026/06/04/quantinuum-qnt-stock-first-trade-ipo.html">CNBC (Quantinuum flat)</a> · <a href="https://fortune.com/2026/01/22/bitgo-shares-enjoy-modest-pop/">Fortune (BitGo)</a> · <a href="https://wolfstreet.com/2025/12/29/ipo-bloodletting-after-the-pop-in-2025-venture-global-coreweave-figma-klarna-bullish-circle-internet-naven-firefly-fermi/">Wolf Street · IPO bloodletting after the pop, 2025</a></li>
       <li><strong>August 6, 2026 update:</strong> <a href="https://www.cnbc.com/2026/06/12/spacex-ipo-spcx-live-updates.html">CNBC · SPCX closes at $161 on debut</a> · <a href="https://www.cnbc.com/2026/07/15/spacex-spcx-stock-ipo-price.html">CNBC · SPCX sinks below its $135 IPO price</a> · <a href="https://www.cnbc.com/2026/07/21/spacex-spcx-earnings-lock-up-expiration.html">CNBC · earnings date sets the first big unlock</a> · <a href="https://www.cnbc.com/2026/08/04/spacex-spcx-earnings-live-updates-q2-2026.html">CNBC · Q2 2026 earnings live updates</a></li>
       <li><a href="https://fortune.com/2026/08/04/spacex-revenue-surges-92-to-7-8-billion-blowing-past-wall-street-expectations-by-nearly-1-billion/">Fortune · revenue up 92% to $7.8B</a> · <a href="https://www.forbes.com/sites/petercohan/2026/08/05/spacex-stock-down-9-on-184-billion-capex-forecast/">Forbes · the $18.4B capex line</a> · <a href="https://www.techtimes.com/articles/323056/20260804/spacex-q2-beat-raises-full-year-guidance-first-time-116b-lock-looms.htm">TechTimes · first full-year guidance, $116B lockup ahead</a> · <a href="https://www.forbes.com/sites/jimosman/2026/08/04/nearly-1-billion-spacex-shares-unlock-august-6/">Forbes · 911.5M shares unlock August 6</a></li>
+      <li><strong>August 13, 2026 update:</strong> <a href="https://www.cnn.com/2026/08/06/tech/spacex-stock-elon-musk">CNN · SPCX rises 6% as 900M+ shares unlock</a> · <a href="https://finance.yahoo.com/markets/stocks/articles/spacex-shares-surge-15-stock-101547327.html">Yahoo Finance · shares surge 15.8% off the record low</a> · <a href="https://www.fool.com/investing/2026/08/12/spacex-stock-just-rallied-12-in-a-single-day-did-e/">Motley Fool · the rally through the lockup</a> · <a href="https://finance.yahoo.com/markets/stocks/articles/spcx-stock-climbs-past-140-172106382.html">Morgan Stanley keeps $300, calls the AI business undervalued</a> · <a href="https://finance.yahoo.com/markets/stocks/articles/spacex-spcx-stock-upgraded-buy-142859247.html">Argus upgrades SPCX to Buy at $160</a></li>
+      <li><a href="https://www.fool.com/investing/2026/08/12/elon-musk-says-ai-revenue-will-eclipse-the-rest-of-spacex-by-september-heres-what-investors-need-to-know/">Motley Fool · Musk says AI revenue eclipses the rest of SpaceX by September</a> · <a href="https://thenextweb.com/news/spacex-all-hands-musk-grok-trained-employees-ai-revenue">TNW · the all-hands, Grok trained on staff work</a> · <a href="https://www.investing.com/news/stock-market-news/spacex-ipo-lockup-expiry-123b-in-shares-set-to-unlock-in-early-august-2026-93CH-4796311">Investing.com · the lockup tranches and the unmet $175.50 condition</a> · <a href="https://www.fool.com/investing/2026/08/12/spacex-fleece-retail-investors-9-days-2nd-unlock/">Motley Fool · the day-70 tranche and what follows</a></li>
       <li><a href="https://www.fool.com/investing/2026/08/05/spacexs-lockup-expires-on-aug-6-heres-why-9115-mil/">Motley Fool · the August 6 lockup</a> · <a href="https://www.morningstar.com/stocks/why-spacexs-earnings-will-likely-be-followed-by-wave-stock-sales">Morningstar · why earnings precede the selling wave</a> · <a href="https://www.fxleaders.com/news/2026/07/23/why-is-spacex-spcx-stock-down-today-three-reasons-explained/">FXLeaders · the July decline</a> · <a href="https://stockanalysis.com/stocks/spcx/history/">stockanalysis.com · SPCX price history</a> · <a href="https://stockanalysis.com/etf/spy/history/">SPY price history</a></li>
     </ul>
   </section>
@@ -761,8 +934,8 @@
 
 <footer>
   <div class="container">
-    Compiled June 10–11, 2026 from publicly available IPO trackers and market reviews; scored and revised August 6, 2026.
-    Not investment advice.
+    Compiled June 10–11, 2026 from publicly available IPO trackers and market reviews; scored and revised August 6,
+    updated August 13, 2026. Not investment advice.
   </div>
 </footer>
 
@@ -1123,13 +1296,13 @@ new Chart(document.getElementById('chartForecast'), {
 new Chart(document.getElementById('chartPath'), {
   type: 'line',
   data: {
-    labels: ['Offer\nJun 11', 'Day-1 close\nJun 12', 'Peak close\nJun 16', '1st close < offer\nJul 16', 'Low close\nJul 31', 'Earnings\nAug 4', 'Aug 5'],
+    labels: ['Offer\nJun 11', 'Day-1 close\nJun 12', 'Peak close\nJun 16', '1st close < offer\nJul 16', 'Low close\nJul 31', 'Earnings\nAug 4', 'Aug 5', 'Unlock\nAug 6', 'Aug 12'],
     datasets: [
-      { label: 'SPCX close', data: [135, 160.98, 201.80, 131.11, 108.37, 125.33, 108.27],
+      { label: 'SPCX close', data: [135, 160.98, 201.80, 131.11, 108.37, 125.33, 108.27, 114.92, 146.15],
         borderColor: '#1c1b19', borderWidth: 2.5, pointRadius: 4, tension: 0.2 },
-      { label: '$175.50 bonus-unlock trigger', data: Array(7).fill(175.50),
+      { label: '$175.50 bonus-unlock level', data: Array(9).fill(175.50),
         borderColor: 'rgba(31, 111, 84, 0.65)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0 },
-      { label: '$135 offer', data: Array(7).fill(135),
+      { label: '$135 offer', data: Array(9).fill(135),
         borderColor: 'rgba(179, 56, 46, 0.7)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0 }
     ]
   },
@@ -1138,7 +1311,7 @@ new Chart(document.getElementById('chartPath'), {
     maintainAspectRatio: false,
     plugins: {
       legend: { labels: { color: axisColor, boxWidth: 22 } },
-      title: { display: true, text: 'SPCX: the round trip, June 12 to August 5, 2026', color: '#1c1b19', font: { size: 14, weight: '600' } },
+      title: { display: true, text: 'SPCX: the round trip and back, June 12 to August 12, 2026', color: '#1c1b19', font: { size: 14, weight: '600' } },
       tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': $' + ctx.raw.toFixed(2) } }
     },
     scales: {
@@ -1202,6 +1375,50 @@ new Chart(document.getElementById('chartRevised'), {
   }
 });
 
+// ---- August 13, 2026 update ----
+
+// Consecutive daily closes, so this one is evenly spaced in time, unlike the
+// milestone chart above. Annotations mark the two supply/news events.
+const REBOUND = [
+  { d: 'Aug 3', c: 114.53, note: 'Drifting into earnings' },
+  { d: 'Aug 4', c: 125.33, note: 'Q2: revenue +92%, first guidance' },
+  { d: 'Aug 5', c: 108.27, note: '$18.4B capex; low close' },
+  { d: 'Aug 6', c: 114.92, note: '911.5M shares unlock' },
+  { d: 'Aug 7', c: 133.11, note: 'Morgan Stanley $300; Argus to Buy' },
+  { d: 'Aug 10', c: 138.74, note: 'First close above the offer since Jul 15' },
+  { d: 'Aug 11', c: 133.29, note: 'Back below the offer' },
+  { d: 'Aug 12', c: 146.15, note: 'The all-hands: AI revenue tops everything by September' }
+];
+new Chart(document.getElementById('chartRebound'), {
+  type: 'line',
+  data: {
+    labels: REBOUND.map(r => r.d),
+    datasets: [
+      { label: 'SPCX close', data: REBOUND.map(r => r.c),
+        borderColor: '#27517d', borderWidth: 3, pointRadius: 5, pointHoverRadius: 7, tension: 0.2,
+        pointBackgroundColor: REBOUND.map(r => r.d === 'Aug 6' ? '#b3382e' : '#27517d') },
+      { label: '$135 offer', data: REBOUND.map(() => 135),
+        borderColor: 'rgba(179, 56, 46, 0.7)', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0 }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: axisColor, boxWidth: 22 } },
+      title: { display: true, text: 'The unlock week: SPCX daily closes, August 3 to 12, 2026 (red marker: the 911.5M-share unlock)', color: '#1c1b19', font: { size: 13.5, weight: '600' } },
+      tooltip: { callbacks: {
+        label: ctx => ctx.dataset.label + ': $' + ctx.raw.toFixed(2),
+        afterLabel: ctx => ctx.datasetIndex === 0 ? REBOUND[ctx.dataIndex].note : ''
+      } }
+    },
+    scales: {
+      x: { ticks: { color: axisColor }, grid: { display: false } },
+      y: { ticks: { color: axisColor, callback: v => '$' + v }, grid: { color: gridColor } }
+    }
+  }
+});
+
 new Chart(document.getElementById('chartPop'), {
   type: 'bar',
   data: {
@@ -1242,7 +1459,7 @@ new Chart(document.getElementById('chartFactors'), {
     maintainAspectRatio: false,
     plugins: {
       legend: { labels: { color: axisColor } },
-      title: { display: true, text: '3-year market-adjusted IPO returns by factor (Ritter, 1980–2024)', color: '#1c1b19', font: { size: 14, weight: '600' } },
+      title: { display: true, text: '3-year market-adjusted IPO returns by factor, from the first close (Ritter, 1980–2024)', color: '#1c1b19', font: { size: 13.5, weight: '600' } },
       tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw + '% vs market' } }
     },
     scales: {

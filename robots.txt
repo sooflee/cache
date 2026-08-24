@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /_mirror/
+Disallow: /_private/
+Disallow: /private/
+Disallow: /private.html
 
 Sitemap: https://cache.bwang.io/sitemap.xml

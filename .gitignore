@@ -1,1 +1,7 @@
 .DS_Store
+
+# Plaintext sources for the private feed, plus the PBKDF2 salt they are sealed
+# with. Only the encrypted output under private/ is ever committed. Back this
+# directory up somewhere outside the repo — it is not recoverable from the
+# published site.
+_private/

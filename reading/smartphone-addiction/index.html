@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html class="cache-narrow" lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4E4BE1S6R6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4E4BE1S6R6');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predicting Smartphone Addiction &mdash; cache</title>
+<meta name="description" content="A Kaggle tabular competition from empty directory to submission: what the data turned out to be, which choices mattered, and two places the first answer was wrong.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%23357BB3%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M16%204%2028%2010%2016%2016%204%2010Z%27/%3E%3Cpath%20d%3D%27M4%2016%2016%2022%2028%2016%27/%3E%3Cpath%20d%3D%27M4%2022%2016%2028%2028%2022%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fdfcfa;
+  --text: #1a1a1a;
+  --muted: #5a5a5a;
+  --accent: #23583f;
+  --accent-light: #eef4f0;
+  --border: #e5e0d8;
+  --code: #f3efe7;
+  --warn: #c9a227;
+  --warn-bg: #fff8e6;
+  --pos: #1b7a52;
+  --neg: #ad3560;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Source Serif Pro', 'Charter', Georgia, 'Times New Roman', serif;
+       margin: 0; color: var(--text); background: var(--bg);
+       line-height: 1.6; font-size: 17px; }
+.layout { display: grid;
+          grid-template-columns: 14em minmax(0, 920px);
+          gap: 2.5em;
+          max-width: 1280px;
+          margin: 2.5em auto;
+          padding: 0 1.2em; }
+nav.toc { position: sticky; top: 2em; align-self: start;
+          font-size: 0.86em; max-height: calc(100vh - 4em);
+          overflow-y: auto; padding-right: 0.5em;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+nav.toc h4 { margin: 0 0 0.6em 0; color: var(--accent);
+             font-size: 0.78em; text-transform: uppercase;
+             letter-spacing: 0.08em; font-weight: 600; }
+nav.toc ul { list-style: none; padding: 0; margin: 0; }
+nav.toc li { margin: 0.3em 0; }
+nav.toc a { color: #444; text-decoration: none;
+            border-left: 2px solid transparent; padding-left: 0.6em;
+            display: block; line-height: 1.35; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc a.active { color: var(--accent); font-weight: 600;
+                   border-left-color: var(--accent); }
+article { min-width: 0; }
+h1 { font-size: 2.4em; margin: 0 0 0.15em 0; line-height: 1.15;
+     border-bottom: 2px solid var(--text); padding-bottom: 0.3em;
+     font-weight: 700; }
+h2 { font-size: 1.55em; margin-top: 2.4em; color: var(--accent);
+     border-bottom: 1px solid var(--border); padding-bottom: 0.25em;
+     scroll-margin-top: 1em; font-weight: 600; }
+h3 { font-size: 1.2em; margin-top: 1.8em; color: var(--accent);
+     scroll-margin-top: 1em; font-weight: 600; }
+.kick { font-size: 0.78em; letter-spacing: 0.09em; text-transform: uppercase;
+        color: var(--muted); font-weight: 600; margin-top: 0.55em;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.subtitle { color: var(--muted); font-size: 1.12em; font-style: italic;
+            margin-top: 0.5em; margin-bottom: 0.8em; }
+.meta { color: var(--muted); font-size: 0.88em; margin-bottom: 2.2em;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+p { margin: 0.8em 0; }
+.takeaway { background: var(--accent-light); border-left: 4px solid var(--accent);
+            padding: 0.8em 1.1em; margin: 1em 0 1.4em 0;
+            border-radius: 0 4px 4px 0; font-size: 0.97em; }
+.takeaway b { color: var(--accent); }
+.summary { background: var(--accent-light); border: 1px solid var(--border);
+           border-left: 4px solid var(--accent);
+           padding: 1.2em 1.5em; margin: 1.8em 0;
+           border-radius: 0 4px 4px 0; }
+.summary h3 { margin-top: 0; color: var(--accent); }
+.caveat { background: var(--warn-bg); border-left: 4px solid var(--warn);
+          padding: 0.9em 1.2em; margin: 1.2em 0; font-size: 0.94em;
+          border-radius: 0 4px 4px 0; }
+.stat-block { display: flex; gap: 14px; margin: 1.5em 0; flex-wrap: wrap; }
+.stat { flex: 1; min-width: 144px; background: white; padding: 16px 18px;
+        border: 1px solid var(--border); border-radius: 4px; }
+.stat .label { font-size: 0.78em; color: var(--muted);
+               text-transform: uppercase; letter-spacing: 0.05em;
+               font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.stat .value { font-size: 1.85em; font-weight: 700; color: var(--accent);
+               line-height: 1.1; margin-top: 4px;
+               font-family: 'Source Serif Pro', Georgia, serif; }
+.stat .sub { font-size: 0.82em; color: var(--muted); margin-top: 2px;
+             font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+table { border-collapse: collapse; margin: 1.1em 0; width: 100%;
+        font-size: 0.92em; background: white;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+th, td { padding: 0.4em 0.85em; border-bottom: 1px solid var(--border);
+         text-align: right; }
+th { background: #f3efe7; font-weight: 600;
+     color: var(--text); font-size: 0.88em; }
+th:first-child, td:first-child { text-align: left; }
+tbody tr:hover { background: #f7f6f1; }
+/* Prose-heavy tables read badly under the numeric right-align default. */
+table.prose th, table.prose td { text-align: left; }
+table.prose td:first-child { white-space: nowrap; }
+.tablewrap { overflow-x: auto; }
+img { max-width: 100%; height: auto; display: block;
+      margin: 1.5em auto; border: 1px solid var(--border);
+      border-radius: 4px; background: white; }
+code { background: var(--code); padding: 2px 6px; border-radius: 3px;
+       font-size: 0.92em;
+       font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+.codefile { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+            font-size: 0.76em; color: var(--muted); margin: 1.5em 0 0.35em 0;
+            letter-spacing: 0.02em; }
+pre { background: #f8f6f1; border: 1px solid var(--border);
+      border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0;
+      padding: 0.85em 1.1em; margin: 0 0 1.2em 0; overflow-x: auto;
+      font-size: 0.84em; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: inherit;
+           color: #2b2b2b; white-space: pre; }
+ul, ol { margin: 0.6em 0; padding-left: 1.6em; }
+li { margin: 0.25em 0; }
+a { color: var(--accent); }
+.footnote { font-size: 0.85em; color: var(--muted); margin-top: 3em;
+            padding-top: 1em; border-top: 1px solid var(--border);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.tabs { display: flex; gap: 0; margin: 1.2em 0 0.6em 0;
+        border-bottom: 2px solid var(--border); flex-wrap: wrap;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.tab-btn { background: none; border: none; cursor: pointer;
+           padding: 0.6em 1.1em; font-size: 0.92em; color: var(--muted);
+           border-bottom: 2px solid transparent;
+           margin-bottom: -2px; font-weight: 500; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent);
+                  font-weight: 700; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+@media (max-width: 1000px) {
+  .layout { grid-template-columns: 1fr; }
+  nav.toc { display: none; }
+}
+</style>
+<link rel="stylesheet" type="text/css" href="../../assets/css/reading-theme.css">
+<meta property="og:title" content="Improving Kaggriculture Bot">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cache">
+<meta property="og:url" content="https://cache.bwang.io/reading/kaggriculture/index.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Improving Kaggriculture Bot &mdash; cache">
+
+<style>
+figure { margin: 1.8em 0; }
+figure svg { display: block; max-width: 100%; height: auto;
+             background: #fdfcfa; }
+figcaption { font-size: 0.85em; color: var(--muted); margin-top: 0.5em;
+             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+             line-height: 1.45; }
+pre { background: var(--code); padding: 0.9em 1.1em; border-radius: 4px;
+      overflow-x: auto; font-size: 0.86em; line-height: 1.5; margin: 0.4em 0 1.2em 0; }
+ol { padding-left: 1.3em; }
+ol > li { margin: 0.55em 0; }
+</style>
+</head>
+<body>
+<style>@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:400;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');}@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:600;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');}@keyframes cacheFadeIn{from{opacity:0;}to{opacity:1;}}body{animation:cacheFadeIn .4s ease both;}</style><style>
+@view-transition{navigation:auto;}
+.nav-float{position:fixed;top:22px;left:22px;z-index:2147483647;pointer-events:none;
+	font:400 14px/1.45 'Josefin Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.nav-min-cb{position:absolute;width:0;height:0;opacity:0;pointer-events:none;}
+.nav-card{width:230px;max-height:calc(100vh - 44px);overflow-y:auto;
+	background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.16);
+	border-radius:13px;padding:14px 0 16px;pointer-events:auto;transform-origin:top left;
+	transition:opacity .24s ease,transform .24s ease;}
+.nav-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;}
+.nav-home{display:inline-flex;align-items:center;color:#9a9a9a;text-decoration:none;
+	padding:2px;transition:color .15s;}
+.nav-home:hover{color:#333;}
+.nav-mini{cursor:pointer;color:#c4c4c4;font-size:21px;line-height:.5;padding:0 3px 6px;
+	user-select:none;transition:color .15s;}
+.nav-mini:hover{color:#333;}
+.nav-restore{position:absolute;top:0;left:0;display:inline-flex;align-items:center;gap:8px;
+	cursor:pointer;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(14px) saturate(1.5);
+	backdrop-filter:blur(14px) saturate(1.5);border:1px solid rgba(140,140,140,.2);
+	color:#555;border-radius:11px;padding:8px 14px;font-size:13px;user-select:none;
+	opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.nav-restore::before{content:"";width:15px;height:11px;flex:none;color:#888;
+	background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left center/100% 1.5px no-repeat,
+		linear-gradient(currentColor,currentColor) left bottom/100% 1.5px no-repeat;}
+.nav-restore:hover{color:#111;}
+.nav-min-cb:checked ~ .nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+.nav-min-cb:checked ~ .nav-restore{opacity:1;pointer-events:auto;}
+.nav-card a.item{display:block;padding:7px 20px;color:#333;text-decoration:none;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-card a.item:hover{background:#f6f6f6;color:#111;}
+.nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-radio{position:absolute;opacity:0;pointer-events:none;}
+.nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
+.nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
+	padding:0 0 5px;border-bottom:2px solid transparent;user-select:none;}
+.nav-card #nav-cache:checked ~ .nav-toggle label[for=nav-cache],
+.nav-card #nav-reading:checked ~ .nav-toggle label[for=nav-reading],
+.nav-card #nav-standalone:checked ~ .nav-toggle label[for=nav-standalone],
+.nav-card #nav-private:checked ~ .nav-toggle label[for=nav-private]{
+	color:#111;border-bottom-color:#357BB3;}
+.nav-feed{display:none;}
+.nav-card #nav-cache:checked ~ .nf-cache{display:block;}
+.nav-card #nav-reading:checked ~ .nf-reading{display:block;}
+.nav-card #nav-standalone:checked ~ .nf-standalone{display:block;}
+.nav-card #nav-private:checked ~ .nf-private{display:block;}
+/* The private feed lists nothing until the browser has decrypted it, so the
+   tray entry is a padlocked link to the locked index rather than titles. */
+.nav-card a.item.locked{color:#8a8a8a;font-style:italic;}
+.nav-card a.item.locked::before{content:"\1F512\FE0E";font-style:normal;margin-right:6px;opacity:.55;}
+/* The panel is a left rail beside the centered column. Until the viewport is
+   wide enough for it to clear that column (same breakpoint as the article
+   outline), start it minimized: the pill shows by default and tapping it
+   expands the list. Otherwise the card slides out over the post text. */
+@media (max-width:1330px){
+	.nav-card{opacity:0;transform:scale(.96) translateY(-6px);pointer-events:none;}
+	.nav-restore{opacity:1;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-card{opacity:1;transform:none;pointer-events:auto;}
+	.nav-min-cb:checked ~ .nav-restore{opacity:0;pointer-events:none;}
+}
+@media (max-width:700px){
+	.nav-card{width:min(230px,calc(100vw - 36px));}
+	/* Phones have no side gutter for the pill to live in, so the fixed
+	   "posts" control landed on top of the first line of every headline.
+	   Tuck it into the corner and reserve the strip it occupies. The
+	   :has() guard keeps the reserved space off pages with no tray (the
+	   homepage, standalone apps); doubling it out-specifies the theme's
+	   own !important body padding. */
+	.nav-float{top:12px;left:12px;}
+	html body:has(.nav-float):has(.nav-float){padding-top:56px!important;}
+	/* Plotly's zoom/pan/export bar is absolutely positioned past the right
+	   edge of a phone-width plot and was the one thing on the whole site
+	   forcing a horizontal scroll. It is a mouse affordance anyway. */
+	.js-plotly-plot .modebar{display:none!important;}
+	/* Grid and flex items default to min-width:auto, so a tile wider than its
+	   track refuses to shrink and pushes the page sideways instead. Let the
+	   tile rows shrink, and drop the supplier grid to one column. */
+	.stats,.suppliers-grid,.headrow,.flow{min-width:0;}
+	.stats>*,.suppliers-grid>*,.headrow>*,.flow>*{min-width:0;}
+	.suppliers-grid{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion: reduce){
+	.nav-card,.nav-restore{transition:none;}
+}
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><input type="radio" name="nav-feed" id="nav-private" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label><label for="nav-private">private</label></div><div class="nav-feed nf-cache"><a class="item" href="../../cache/token-playbook/index.html">Token Playbook</a><a class="item" href="../../cache/some-projects/index.html">Some Projects</a><a class="item" href="../../cache/practical-poker/index.html">Practical Poker</a><a class="item" href="../../cache/ecom-experiments/index.html">Ecom Experiments</a><a class="item" href="../../cache/why-crypto/index.html">Why Crypto</a><a class="item" href="../../cache/growing-peppers/index.html">Growing Peppers</a><a class="item" href="../../cache/book-reviews/index.html">Book Reviews</a><a class="item" href="../../cache/wasted-time/index.html">Dumb Poker</a><a class="item" href="../../cache/trading-automation/index.html">Trading Automation</a><a class="item" href="../../cache/api-in-rust/index.html">API in Rust</a><a class="item" href="../../cache/cicd-on-gcp/index.html">CI/CD on GCP + SQL</a><a class="item" href="../../cache/nomad-and-waypoint/index.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item active" href="../../reading/smartphone-addiction/index.html">Predicting Smartphone Addiction</a><a class="item" href="../../reading/kaggriculture/index.html">Improving Kaggriculture Bot</a><a class="item" href="../../reading/iran-war/index.html">The Iran War</a><a class="item" href="../../reading/kimi-vs-claude/index.html">Claude vs Kimi</a><a class="item" href="../../reading/klefki/index.html">Penetration Testing with Claude Code</a><a class="item" href="../../reading/world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../../reading/poker-pros/index.html">High Roller Ledger</a><a class="item" href="../../reading/spacs/index.html">Understanding SPACs</a><a class="item" href="../../reading/ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../../reading/making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../../reading/watches/index.html">Watches That Beat Retail</a><a class="item" href="../../reading/wine/index.html">Wine as an Investment Asset</a><a class="item" href="../../reading/real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../../reading/ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item" href="../../whismur/">Tone Skill Builder</a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a></div><div class="nav-feed nf-private"><a class="item locked" href="../../private.html">unlock private posts</a></div></div></div>
+<div class="layout">
+<nav class="toc outline"><h4>Contents</h4><ul>
+<li><a href="#tldr">Key points</a></li>
+<li><a href="#game">What the competition asks</a></li>
+<li><a href="#access">Getting the data out</a></li>
+<li><a href="#data">What the data looks like</a></li>
+<li><a href="#missing">The missingness problem</a></li>
+<li><a href="#rule">Is there a rule to steal?</a></li>
+<li><a href="#source">Finding the original</a></li>
+<li><a href="#features">The suppression effect</a></li>
+<li><a href="#models">Why more than one model</a></li>
+<li><a href="#blend">The blend that made things worse</a></li>
+<li><a href="#falsealarm">A false alarm</a></li>
+<li><a href="#stands">Where it stands</a></li>
+<li><a href="#next">What I'd do next</a></li>
+<li><a href="#limits">Limitations</a></li>
+</ul></nav>
+<article>
+<header>
+<h1>Predicting Smartphone Addiction</h1>
+<div class="kick">Kaggle Playground &middot; S6E8</div>
+<p class="subtitle">Notes from an empty directory to a working submission &mdash;
+what the data turned out to be, which choices mattered, and the two places where
+my first answer was wrong.</p>
+<p class="meta">August 2026 &nbsp;·&nbsp; 691,369 training rows &nbsp;·&nbsp;
+296,302 test rows &nbsp;·&nbsp; 5-fold stratified CV &nbsp;·&nbsp; every figure
+recomputed from the competition files, none copied from the leaderboard.</p>
+</header>
+
+<section id="tldr">
+<div class="summary">
+<h3>Key points</h3>
+<ul>
+<li><b>The best model scores 0.96646 on the public leaderboard</b> &mdash; a
+    weighted blend of three gradient-boosting libraries. XGBoost alone scores
+    0.96645, so essentially all of the result is one well-fed tree model rather
+    than anything clever.</li>
+<li><b>Cross-validation ran 0.0014 <em>below</em> the leaderboard</b>, consistently
+    across both submissions. Local CV was conservative, not optimistic &mdash;
+    which makes it trustworthy for ranking even though its absolute level is off.</li>
+<li><b>The interesting variable is missingness, not any feature.</b> Every column
+    is 4&ndash;20% missing and only <b>44.3% of rows are complete</b>. The choice
+    that follows is to leave the holes alone and let the trees branch on them,
+    rather than impute and pretend.</li>
+<li><b>Three of the twelve features carry nearly all the signal</b>
+    (screen-time columns, AUC 0.86&ndash;0.89 each). The three categorical
+    columns carry none &mdash; the positive rate is 0.70&ndash;0.72 in every
+    level, including the missing one.</li>
+<li><b>There is no hidden rule to reverse-engineer.</b> A probe found the label
+    ramps smoothly from 6.6% to 100% across model score. Synthetic playground
+    data sometimes hides a clean threshold; this one doesn't, so the effort
+    belongs in modelling rather than in leak-hunting.</li>
+<li><b>The obvious way to blend models made the score worse.</b> Equal-weight
+    rank averaging turned a 0.9482 model into a 0.9429 blend. Greedy weight
+    selection fixed it &mdash; and then vindicated itself by assigning the
+    weakest model a weight of exactly zero, which is the one thing an average
+    cannot do. The blend still turned out to be worth nothing: its margin over
+    its best member was +0.00022 locally and +0.00001 on the leaderboard.</li>
+<li><b>One bug I "fixed" was never a bug.</b> A wall of numerical warnings from
+    the linear model turned out to be a numpy-on-macOS artefact, reproducible on
+    provably finite inputs. My first diagnosis was confident and wrong.</li>
+</ul>
+</div>
+</section>
+
+<section id="game">
+<h2>What the competition asks</h2>
+<p>Kaggle's Playground Series runs a fresh tabular problem every month. Season 6,
+Episode 8 gives you twelve columns describing someone's phone habits &mdash;
+hours of screen time, hours on social media, notifications per day, age, a couple
+of survey answers &mdash; and asks for one binary label, <code>addicted_label</code>.</p>
+
+<div class="stat-block">
+<div class="stat"><div class="label">Training rows</div><div class="value">691,369</div><div class="sub">296,302 in test</div></div>
+<div class="stat"><div class="label">Features</div><div class="value">12</div><div class="sub">9 numeric, 3 categorical</div></div>
+<div class="stat"><div class="label">Positive rate</div><div class="value">70.9%</div><div class="sub">mildly imbalanced</div></div>
+<div class="stat"><div class="label">Metric</div><div class="value">ROC AUC</div><div class="sub">10 submissions/day</div></div>
+</div>
+
+<p>The metric shapes everything downstream. ROC AUC only reads the <em>ordering</em>
+of predictions, not their absolute values. A model that says 0.9 for every
+positive and 0.1 for every negative scores exactly the same as one that says 0.51
+and 0.49. This means calibration is irrelevant, thresholds are irrelevant, and
+the class imbalance mostly takes care of itself &mdash; there is no need to
+reweight classes or tune a cutoff. It also determines how models should be
+combined, which turns out to be where the interesting mistake lives.</p>
+
+<div class="takeaway"><b>For a newcomer:</b> the Playground data is
+<em>synthetic</em>. Kaggle trains a generative model on a small real dataset and
+samples a large one from it. That is why there are 691k rows of a survey nobody
+ran, and it is why looking for the original dataset (§7) is a normal move rather
+than cheating.</div>
+</section>
+
+<section id="access">
+<h2>Getting the data out</h2>
+<p>The first obstacle had nothing to do with machine learning. The standard
+<code>kaggle</code> CLI authenticates from a <code>~/.kaggle/kaggle.json</code>
+holding a username and an API key. What was actually on this machine was a newer
+<code>KGAT_…</code> access token, which the CLI does not read &mdash; it fails
+with <code>Could not find kaggle.json</code> regardless.</p>
+<p>Rather than go hunting for a second credential, I tested the token against the
+REST API directly under four different auth schemes to see whether any of them
+worked:</p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Scheme</th><th>HTTP</th></tr></thead>
+<tbody>
+<tr><td><code>Authorization: Bearer &lt;token&gt;</code></td><td>200</td></tr>
+<tr><td><code>X-Kaggle-Authorization: Bearer &lt;token&gt;</code></td><td>401</td></tr>
+<tr><td>HTTP Basic, token as password</td><td>401</td></tr>
+<tr><td>No auth</td><td>401</td></tr>
+</tbody>
+</table>
+</div>
+<p>Bearer works. So the download step is nine lines of <code>curl</code> against
+<code>/api/v1/competitions/data/download/&lt;comp&gt;/&lt;file&gt;</code> rather
+than the CLI, and the same call also returns the competition metadata that tells
+you the metric is ROC AUC and the deadline is 31 August.</p>
+<p>One gate is not solvable from a terminal: until you accept the competition
+rules in a browser, every download returns</p>
+<pre><code>{"code":403,"message":"You must accept this competition's
+ rules before you'll be able to download files."}</code></pre>
+<p>The API exposes no endpoint for accepting rules, which is deliberate &mdash;
+it is a legal agreement. Worth knowing before you spend twenty minutes assuming
+your token is broken.</p>
+</section>
+
+<section id="data">
+<h2>What the data looks like</h2>
+<p>Nine numeric columns, three categorical. Train and test are drawn from the
+same distribution to an almost boring degree &mdash; every numeric mean matches
+between the two within 0.11%, so there is no drift to correct and no need for
+adversarial validation.</p>
+
+<p>Measuring each feature on its own, by the same metric the competition uses,
+sorts them immediately:</p>
+
+<figure>
+<svg viewBox="0 0 760 330" width="100%" height="330" role="img" aria-labelledby="auc-t" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
+<title id="auc-t">ROC AUC of the feature used alone (0.50 = coin flip)</title>
+<line x1="267.8" y1="22" x2="267.8" y2="296" stroke="#e5e0d8" stroke-width="1"/>
+<text x="267.8" y="16" font-size="11" fill="#5a5a5a" text-anchor="middle">0.500</text>
+<text x="202" y="45" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">daily_screen_time_hours</text>
+<rect x="267.8" y="34.0" width="419.5" height="13" rx="3" fill="#23583f"><title>daily_screen_time_hours: 0.890</title></rect>
+<text x="696.2" y="45" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.890</text>
+<text x="202" y="75" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">weekend_screen_time</text>
+<rect x="267.8" y="64.0" width="409.8" height="13" rx="3" fill="#23583f"><title>weekend_screen_time: 0.881</title></rect>
+<text x="686.6" y="75" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.881</text>
+<text x="202" y="105" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">social_media_hours</text>
+<rect x="267.8" y="94.0" width="385.0" height="13" rx="3" fill="#23583f"><title>social_media_hours: 0.858</title></rect>
+<text x="661.8" y="105" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.858</text>
+<text x="202" y="135" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">work_study_hours</text>
+<rect x="267.8" y="124.0" width="166.7" height="13" rx="3" fill="#23583f"><title>work_study_hours: 0.655</title></rect>
+<text x="443.5" y="135" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.655</text>
+<text x="202" y="165" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">gaming_hours</text>
+<rect x="267.8" y="154.0" width="131.2" height="13" rx="3" fill="#23583f"><title>gaming_hours: 0.622</title></rect>
+<text x="408.0" y="165" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.622</text>
+<text x="202" y="195" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">app_opens_per_day</text>
+<rect x="267.8" y="184.0" width="44.1" height="13" rx="3" fill="#23583f"><title>app_opens_per_day: 0.541</title></rect>
+<text x="320.9" y="195" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.541</text>
+<text x="202" y="225" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">sleep_hours</text>
+<rect x="267.8" y="214.0" width="29.0" height="13" rx="3" fill="#23583f"><title>sleep_hours: 0.527</title></rect>
+<text x="305.8" y="225" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.527</text>
+<text x="202" y="255" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">age</text>
+<rect x="267.8" y="244.0" width="2.2" height="13" rx="3" fill="#23583f"><title>age: 0.502</title></rect>
+<text x="278.9" y="255" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.502</text>
+<text x="202" y="285" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">notifications_per_day</text>
+<rect x="259.2" y="274.0" width="8.6" height="13" rx="3" fill="#23583f"><title>notifications_per_day: 0.492</title></rect>
+<text x="276.8" y="285" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">0.492</text>
+<text x="214" y="324" font-size="11.5" fill="#5a5a5a">ROC AUC of the feature used alone (0.50 = coin flip)</text>
+</svg>
+<figcaption>ROC AUC of each numeric feature used as the sole predictor,
+computed on the rows where that feature is present. 0.50 is a coin flip;
+<code>notifications_per_day</code> lands just below it.</figcaption>
+</figure>
+
+<p>Three screen-time columns score 0.86&ndash;0.89 alone. Two more are weakly
+useful. The bottom four are, individually, noise: <code>age</code> at 0.502 and
+<code>notifications_per_day</code> at 0.492 are coin flips.</p>
+
+<p>The categorical columns are worse than weak &mdash; they are flat:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Column</th><th>Level</th><th>Rows</th><th>Positive rate</th></tr></thead>
+<tbody>
+<tr><td>gender</td><td>Male</td><td>223,662</td><td>0.7232</td></tr>
+<tr><td></td><td>Female</td><td>221,595</td><td>0.7038</td></tr>
+<tr><td></td><td>Other</td><td>217,078</td><td>0.7010</td></tr>
+<tr><td>stress_level</td><td>High</td><td>220,873</td><td>0.7114</td></tr>
+<tr><td></td><td>Low</td><td>207,783</td><td>0.7112</td></tr>
+<tr><td></td><td>Medium</td><td>207,565</td><td>0.7057</td></tr>
+<tr><td>academic_work_impact</td><td>Yes</td><td>330,566</td><td>0.7079</td></tr>
+<tr><td></td><td>No</td><td>316,579</td><td>0.7110</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Against a base rate of 70.9%, nothing here moves. <code>stress_level</code>
+being identical across High and Low is a good reminder that this data is
+generated, not observed &mdash; in a real survey, self-reported stress would
+almost certainly track phone use. I kept the columns anyway, since a GBDT will
+simply decline to split on them, but I stopped expecting anything from them.</p>
+</section>
+
+<section id="missing">
+<h2>The missingness problem</h2>
+<p>This is the part of the dataset that actually requires a decision. Every
+column has holes, and they are large:</p>
+
+<figure>
+<svg viewBox="0 0 760 420" width="100%" height="420" role="img" aria-labelledby="miss-t" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
+<title id="miss-t">share of training rows missing this field</title>
+<line x1="214.0" y1="22" x2="214.0" y2="386" stroke="#e5e0d8" stroke-width="1"/>
+<text x="214.0" y="16" font-size="11" fill="#5a5a5a" text-anchor="middle">0</text>
+<text x="202" y="45" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">social_media_hours</text>
+<rect x="214.0" y="34.0" width="469.0" height="13" rx="3" fill="#23583f"><title>social_media_hours: 19.4%</title></rect>
+<text x="692.0" y="45" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">19.4%</text>
+<text x="202" y="75" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">gaming_hours</text>
+<rect x="214.0" y="64.0" width="443.8" height="13" rx="3" fill="#23583f"><title>gaming_hours: 18.3%</title></rect>
+<text x="666.8" y="75" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">18.3%</text>
+<text x="202" y="105" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">weekend_screen_time</text>
+<rect x="214.0" y="94.0" width="392.3" height="13" rx="3" fill="#23583f"><title>weekend_screen_time: 16.2%</title></rect>
+<text x="615.3" y="105" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">16.2%</text>
+<text x="202" y="135" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">daily_screen_time_hours</text>
+<rect x="214.0" y="124.0" width="335.4" height="13" rx="3" fill="#23583f"><title>daily_screen_time_hours: 13.9%</title></rect>
+<text x="558.4" y="135" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">13.9%</text>
+<text x="202" y="165" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">app_opens_per_day</text>
+<rect x="214.0" y="154.0" width="282.4" height="13" rx="3" fill="#23583f"><title>app_opens_per_day: 11.7%</title></rect>
+<text x="505.4" y="165" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">11.7%</text>
+<text x="202" y="195" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">notifications_per_day</text>
+<rect x="214.0" y="184.0" width="236.7" height="13" rx="3" fill="#23583f"><title>notifications_per_day: 9.8%</title></rect>
+<text x="459.7" y="195" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">9.8%</text>
+<text x="202" y="225" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">stress_level</text>
+<rect x="214.0" y="214.0" width="193.1" height="13" rx="3" fill="#23583f"><title>stress_level: 8.0%</title></rect>
+<text x="416.1" y="225" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">8.0%</text>
+<text x="202" y="255" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">work_study_hours</text>
+<rect x="214.0" y="244.0" width="180.3" height="13" rx="3" fill="#23583f"><title>work_study_hours: 7.5%</title></rect>
+<text x="403.3" y="255" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">7.5%</text>
+<text x="202" y="285" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">sleep_hours</text>
+<rect x="214.0" y="274.0" width="155.6" height="13" rx="3" fill="#23583f"><title>sleep_hours: 6.4%</title></rect>
+<text x="378.6" y="285" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">6.4%</text>
+<text x="202" y="315" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">academic_work_impact</text>
+<rect x="214.0" y="304.0" width="154.9" height="13" rx="3" fill="#23583f"><title>academic_work_impact: 6.4%</title></rect>
+<text x="377.9" y="315" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">6.4%</text>
+<text x="202" y="345" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">gender</text>
+<rect x="214.0" y="334.0" width="101.6" height="13" rx="3" fill="#23583f"><title>gender: 4.2%</title></rect>
+<text x="324.6" y="345" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">4.2%</text>
+<text x="202" y="375" font-size="12.5" fill="#1a1a1a" text-anchor="end" font-family="ui-monospace,SF Mono,Menlo,monospace">age</text>
+<rect x="214.0" y="364.0" width="101.2" height="13" rx="3" fill="#23583f"><title>age: 4.2%</title></rect>
+<text x="324.2" y="375" font-size="12" fill="#5a5a5a" font-variant-numeric="tabular-nums">4.2%</text>
+<text x="214" y="414" font-size="11.5" fill="#5a5a5a">share of training rows missing this field</text>
+</svg>
+<figcaption>Share of training rows where each field is absent. Test-set rates
+are within a couple of points of these throughout.</figcaption>
+</figure>
+
+<p>Individually these look survivable. Together they are not: because the holes
+are spread across columns, <b>only 44.3% of rows have every field present</b>. Any
+approach that needs complete rows throws away more than half the data.</p>
+
+<p>There are three honest options, and the choice matters more than any
+hyperparameter:</p>
+<ol>
+<li><b>Drop incomplete rows.</b> Discards 55.7% of 691k rows. Not seriously on
+    the table, but worth naming to see how bad the alternative has to be before
+    it wins.</li>
+<li><b>Impute.</b> Fill the holes with medians or a model, then train on a
+    complete matrix. This invents data, and if a value is missing <em>because</em>
+    of what it would have been, imputation actively erases the signal.</li>
+<li><b>Leave the holes as holes.</b> LightGBM, XGBoost and CatBoost all handle
+    NaN natively: at each split, missing rows are sent down whichever branch
+    reduces the loss more. The model learns what a hole is worth.</li>
+</ol>
+
+<p>I went with the third, plus an explicit hedge: a binary indicator for every
+column that has any missing values, and a per-row count of how many fields are
+absent. If missingness is random these cost almost nothing, since a tree just
+never splits on them. If it isn't random, they hand the model the pattern
+directly instead of hoping it reconstructs it. That is 37 features from an
+original 12.</p>
+
+<div class="takeaway"><b>Why not just impute?</b> Imputation is a claim that the
+missing value was unremarkable. With 19% of <code>social_media_hours</code>
+gone in a dataset <em>about</em> social media use, that claim deserves evidence,
+and the cheap way to avoid needing evidence is to let the model decide.</div>
+</section>
+
+<section id="rule">
+<h2>Is there a rule to steal?</h2>
+<p>Because Playground data is generated, it is always worth asking whether the
+label is a deterministic function of the features. If it is, the competition
+stops being a modelling problem and becomes a puzzle &mdash; find the rule,
+score 1.00, go home. This is common enough that checking first is just good
+hygiene.</p>
+
+<p>The test: fit a plain logistic regression on the 306,175 complete rows, then
+look at how the true positive rate behaves across the model's own score. A hard
+threshold produces a step function &mdash; rates pinned at 0 and 1 with a cliff
+between. A probabilistic label produces a ramp.</p>
+
+<figure>
+<svg viewBox="0 0 760 300" width="100%" height="300" role="img" aria-labelledby="ramp-t" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
+<title id="ramp-t">Positive rate by model-score percentile</title>
+<line x1="54" y1="258.0" x2="742" y2="258.0" stroke="#e5e0d8" stroke-width="1"/>
+<text x="44" y="262.0" font-size="11" fill="#5a5a5a" text-anchor="end" font-variant-numeric="tabular-nums">0%</text>
+<line x1="54" y1="199.0" x2="742" y2="199.0" stroke="#e5e0d8" stroke-width="1"/>
+<text x="44" y="203.0" font-size="11" fill="#5a5a5a" text-anchor="end" font-variant-numeric="tabular-nums">25%</text>
+<line x1="54" y1="140.0" x2="742" y2="140.0" stroke="#e5e0d8" stroke-width="1"/>
+<text x="44" y="144.0" font-size="11" fill="#5a5a5a" text-anchor="end" font-variant-numeric="tabular-nums">50%</text>
+<line x1="54" y1="81.0" x2="742" y2="81.0" stroke="#e5e0d8" stroke-width="1"/>
+<text x="44" y="85.0" font-size="11" fill="#5a5a5a" text-anchor="end" font-variant-numeric="tabular-nums">75%</text>
+<line x1="54" y1="22.0" x2="742" y2="22.0" stroke="#e5e0d8" stroke-width="1"/>
+<text x="44" y="26.0" font-size="11" fill="#5a5a5a" text-anchor="end" font-variant-numeric="tabular-nums">100%</text>
+<line x1="54" y1="90.7" x2="742" y2="90.7" stroke="#5a5a5a" stroke-width="1" opacity="0.5"/>
+<text x="742" y="83.7" font-size="11" fill="#5a5a5a" text-anchor="end">base rate 70.9%</text>
+<polyline points="54.0,242.4 68.0,234.9 82.1,229.7 96.1,224.7 110.2,218.1 124.2,214.1 138.2,209.6 152.3,202.3 166.3,196.6 180.4,189.6 194.4,182.5 208.4,177.5 222.5,167.1 236.5,156.0 250.6,149.0 264.6,138.1 278.7,125.8 292.7,112.9 306.7,103.4 320.8,90.0 334.8,81.0 348.9,72.7 362.9,63.3 376.9,55.5 391.0,50.1 405.0,43.9 419.1,39.9 433.1,37.1 447.1,34.5 461.2,31.0 475.2,30.7 489.3,27.7 503.3,26.2 517.3,25.1 531.4,24.4 545.4,24.8 559.5,23.7 573.5,23.2 587.6,22.7 601.6,22.5 615.6,22.5 629.7,22.5 643.7,22.2 657.8,22.2 671.8,22.0 685.8,22.0 699.9,22.0 713.9,22.0 728.0,22.0 742.0,22.0" fill="none" stroke="#23583f" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="54.0" cy="242.4" r="4" fill="#23583f" stroke="#fdfcfa" stroke-width="2"><title>percentile 2%: 6.6% positive</title></circle>
+<circle cx="742.0" cy="22.0" r="4" fill="#23583f" stroke="#fdfcfa" stroke-width="2"><title>percentile 100%: 100.0% positive</title></circle>
+<text x="64.0" y="246.4" font-size="11.5" fill="#5a5a5a">6.6%</text>
+<text x="742.0" y="10.0" font-size="11.5" fill="#5a5a5a" text-anchor="end">100%</text>
+<line x1="54" y1="258.0" x2="742" y2="258.0" stroke="#5a5a5a" stroke-width="1"/>
+<text x="54" y="286" font-size="11.5" fill="#5a5a5a">lowest-scoring 2%</text>
+<text x="742" y="286" font-size="11.5" fill="#5a5a5a" text-anchor="end">highest-scoring 2%</text>
+<text x="398" y="286" font-size="11.5" fill="#5a5a5a" text-anchor="middle">model-score percentile, complete cases</text>
+</svg>
+<figcaption>Observed positive rate within each 2% band of logistic-regression
+score, complete cases only. Smooth from 6.6% to 100%, with no cliff anywhere.</figcaption>
+</figure>
+
+<p>It's a ramp. The label is genuinely probabilistic, there is a noise ceiling
+above every model, and no amount of cleverness reaches 1.00. That is a useful
+negative result: it says the remaining work is ordinary modelling, and time spent
+hunting for a magic threshold is time wasted.</p>
+
+<p>The same probe returned something more useful, though. That logistic
+regression &mdash; nine raw features, no interactions, no tuning &mdash; scores
+<b>0.928 in-sample</b>. The relationship is close to smooth and monotone. Hold
+that thought; it comes back in §9.</p>
+</section>
+
+<section id="source">
+<h2>Finding the original</h2>
+<p>Since the synthetic data was generated from something, the something is
+usually still on Kaggle. Searching the datasets API for "smartphone addiction"
+returned several files at a suspiciously identical 0.18 MB. One of them matched
+exactly:</p>
+
+<div class="tablewrap">
+<table class="prose">
+<thead><tr><th></th><th>Competition</th><th>Original</th></tr></thead>
+<tbody>
+<tr><td>Rows</td><td>691,369</td><td>7,500</td></tr>
+<tr><td>Feature columns</td><td>12</td><td>12, identical names</td></tr>
+<tr><td>Positive rate</td><td>0.7094</td><td>0.7077</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>It carries one extra column the competition doesn't ship,
+<code>addiction_level</code>, and cross-tabulating it against the label is
+unambiguous:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>addiction_level</th><th>label = 0</th><th>label = 1</th></tr></thead>
+<tbody>
+<tr><td>Mild</td><td>1,373</td><td>0</td></tr>
+<tr><td>Moderate</td><td>0</td><td>2,874</td></tr>
+<tr><td>Severe</td><td>0</td><td>2,434</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>So <code>addicted_label</code> is exactly <code>addiction_level != "Mild"</code>
+&mdash; a binary cut through a latent three-level severity. That explains the
+smooth ramp in §6: the underlying quantity is ordinal and the label throws away
+its resolution, so cases near the Mild/Moderate boundary are inherently
+ambiguous.</p>
+
+<p>Knowing this is more satisfying than useful. The severity column has no
+counterpart in the test set, so it cannot become a feature. What remains is
+7,500 extra genuine rows, available behind a <code>--extra</code> flag that
+appends them to every training fold but never scores them, so out-of-fold numbers
+stay comparable to runs without them. Against 691k rows they are about 1% more
+data and I expect them to do almost nothing &mdash; but the plumbing is there to
+measure it rather than guess.</p>
+</section>
+
+<section id="features">
+<h2>The suppression effect</h2>
+<p>The most interesting structure in this dataset is not visible in any single
+correlation. Compare how two features look alone versus how they look once
+screen time is accounted for:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Feature</th><th>Correlation with label</th><th>Logistic coefficient</th></tr></thead>
+<tbody>
+<tr><td>social_media_hours</td><td>+0.532</td><td>+1.276</td></tr>
+<tr><td>weekend_screen_time</td><td>+0.590</td><td>+1.133</td></tr>
+<tr><td>daily_screen_time_hours</td><td>+0.611</td><td>+1.127</td></tr>
+<tr><td>work_study_hours</td><td>+0.251</td><td><b>&minus;0.363</b></td></tr>
+<tr><td>gaming_hours</td><td>+0.205</td><td><b>&minus;0.311</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Gaming and work/study hours correlate <em>positively</em> with addiction on
+their own, and <em>negatively</em> once the model can see total screen time. Both
+signs are real and they are not in conflict. These columns are components of a
+single time budget: people with more gaming hours have more screen time overall,
+which is why the raw correlation is positive. But hold total screen time fixed,
+and an hour spent gaming or working is an hour <em>not</em> spent on whatever
+actually drives the label. Conditioned on the total, they become protective.</p>
+
+<p>This is why the engineered features are mostly differences and ratios within
+that budget:</p>
+
+<div class="codefile">src/train.py &mdash; engineer()</div>
+<pre><code>parts_sum     = social_media + gaming + work_study
+unaccounted   = daily_screen_time - parts_sum
+parts_ratio   = parts_sum / daily_screen_time
+leisure_ratio = (social_media + gaming) / daily_screen_time
+weekend_gap   = weekend_screen_time - daily_screen_time
+mins_per_open = daily_screen_time * 60 / app_opens_per_day
+notif_per_open = notifications_per_day / app_opens_per_day</code></pre>
+
+<p>A gradient-boosted tree splits on one feature at a time, at an axis-aligned
+threshold. It can represent "screen time &gt; 8 AND gaming &lt; 1", but it cannot
+represent "gaming ÷ screen time &lt; 0.15" without an enormous staircase of
+splits approximating the boundary. Handing it the ratio directly converts an
+expensive approximation into one cheap split.</p>
+
+<p>The trained model does reach for them: <code>notif_per_open</code>,
+<code>parts_ratio</code> and <code>mins_per_open</code> all land in the top
+fifteen features by split count, and <code>notifications_per_day</code> &mdash;
+a coin flip on its own &mdash; becomes the single most-split feature in the model
+once it can be combined with app opens.</p>
+
+<div class="caveat"><b>Read that carefully.</b> Split count is a weak importance
+measure: continuous, high-cardinality features accumulate splits simply because
+there are more places to cut them. It says these features get <em>used</em>, not
+that they are worth a given amount of AUC. The honest test is an ablation
+(<code>--no-fe</code>), which is on the list in §13 and has not been run yet.</div>
+</section>
+
+<section id="models">
+<h2>Why more than one model</h2>
+<p>LightGBM is the default choice here and needs little defending: gradient
+boosting on trees is the strongest general method for tabular data of this size,
+it consumes NaN natively, and it handles categorical columns without one-hot
+expansion. It trains a fold of 553k rows in about 70 seconds on a laptop.</p>
+
+<p>XGBoost and CatBoost are in the pipeline for the ordinary reason &mdash; they
+are the same family with different split-finding and regularisation, so their
+mistakes are correlated but not identical, and averaging trims variance.</p>
+
+<p>The fourth model is the one worth explaining. It is a logistic regression on
+spline-expanded features, and it exists because of the probe result in §6: a raw
+linear model already reached 0.928, so the true relationship is close to smooth
+and monotone. That is precisely the shape a decision tree is <em>bad</em> at.
+Trees approximate a smooth slope with a staircase, and every step is a small
+error. A spline basis plus a linear model fits the smooth part exactly.</p>
+
+<p>The point of adding it is not that it is strong. It is that it is
+<em>wrong differently</em>. A blend of models that make the same mistakes gains
+nothing; a blend of models that make different mistakes gains a lot.</p>
+
+<p>That argument is reasonable and, as §12 shows, it was wrong &mdash; the
+finished blend gives this model zero weight. It is kept in the pipeline anyway,
+because the cost is ten seconds a fold and the §6 probe it came from is still
+the fastest way to learn what shape a dataset has.</p>
+</section>
+
+<section id="blend">
+<h2>The blend that made things worse</h2>
+<p>The first version of the blending code did the obvious thing: convert each
+model's predictions to ranks, average them with equal weight, done. Rank
+averaging is a sound instinct for AUC &mdash; the metric only cares about
+ordering, so averaging ranks avoids letting a badly-calibrated model dominate
+just because its probabilities are more extreme.</p>
+
+<p>Run on a 5% subsample, it produced this:</p>
+
+<div class="stat-block">
+<div class="stat"><div class="label">LightGBM alone</div><div class="value">0.9482</div><div class="sub">out-of-fold</div></div>
+<div class="stat"><div class="label">Logistic alone</div><div class="value">0.9286</div><div class="sub">out-of-fold</div></div>
+<div class="stat"><div class="label">Equal-weight blend</div><div class="value">0.9429</div><div class="sub">worse than LightGBM</div></div>
+</div>
+
+<p>The blend was <b>0.0053 worse than simply using LightGBM</b>. In hindsight this
+is arithmetic, not misfortune. Equal weights are only the right answer when the
+members are about equally good. Give a 0.9482 model and a 0.9286 model half the
+vote each and the result lands between them; the weaker model does not
+contribute enough independent information to pay for the 50% of the ordering it
+just took over.</p>
+
+<p>The fix is to let the data set the weights. I replaced the average with
+<b>Caruana greedy ensemble selection</b>: start from nothing, and repeatedly add
+whichever model most improves out-of-fold AUC, with replacement. A model that
+helps gets picked repeatedly and ends up with a large weight; a model that helps
+slightly gets picked once; a model that helps not at all never gets picked.</p>
+
+<div class="codefile">src/train.py &mdash; select_blend()</div>
+<pre><code>for _ in range(rounds):
+    pick the model m maximising AUC of (running_mean * n + rank[m]) / (n+1)
+    if adding it doesn't improve OOF AUC: stop
+    fold it into the running mean</code></pre>
+
+<p>The property that matters is the stopping rule. If no addition improves the
+score, the loop breaks immediately and returns the single best model. <b>The
+method is allowed to decline to blend.</b> An equal-weight average has no way to
+express "actually, just use LightGBM", which is exactly the answer it needed to
+give here.</p>
+
+<div class="takeaway"><b>The general lesson:</b> ensembling is not free. It is
+a bet that the members' errors are independent enough to cancel. Verify the bet
+on out-of-fold data before shipping it, because a blend that looks sophisticated
+can quietly cost you half a point of AUC.</div>
+</section>
+
+<section id="falsealarm">
+<h2>A false alarm</h2>
+<p>Worth recording because the reasoning failed in a way that looked like
+success.</p>
+
+<p>The logistic model emitted a wall of warnings on every fit:</p>
+<pre><code>RuntimeWarning: divide by zero encountered in matmul
+RuntimeWarning: overflow encountered in matmul
+RuntimeWarning: invalid value encountered in matmul</code></pre>
+
+<p>My first diagnosis: the pipeline spline-expands every numeric column,
+including the binary missingness indicators added in §5. Splines over a
+column that only takes values 0 and 1 produce basis functions that are constant,
+which have zero variance, which <code>StandardScaler</code> then divides by.
+This is a genuinely plausible story, it fits the symptom, and the fix &mdash;
+route binary columns around the spline step &mdash; is a real improvement.</p>
+
+<p>It also did not change anything. The warnings continued unchanged.</p>
+
+<p>So I stopped theorising and instrumented the pipeline, checking for
+non-finite values at each stage:</p>
+
+<div class="tablewrap">
+<table class="prose">
+<thead><tr><th>Stage</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Engineered features</td><td>0 infinities in any column</td></tr>
+<tr><td>After median imputation + splines</td><td>0 inf, 0 NaN, 238 columns</td></tr>
+<tr><td>Zero-variance spline columns</td><td>24 (handled correctly by the scaler)</td></tr>
+<tr><td>After scaling</td><td>0 inf, 0 NaN, max absolute value 105.3</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Clean at every stage. So the input to the matrix multiply was finite and the
+output was finite, yet numpy insisted something had divided by zero. The
+decisive test is three lines &mdash; multiply a matrix of random normals by a
+random vector, assert both are finite, and see whether the warning fires:</p>
+
+<div class="codefile">verification</div>
+<pre><code>numpy 2.0.2, BLAS: accelerate
+result finite: True
+warnings raised on provably-finite inputs:
+  ['divide by zero encountered in matmul',
+   'overflow encountered in matmul',
+   'invalid value encountered in matmul']</code></pre>
+
+<p>The warnings are spurious, and they are a known defect rather than anything to
+do with this project. numpy builds on macOS dispatch matrix multiplication to
+Apple's Accelerate framework, and Accelerate raises floating-point status flags
+on operations whose results are perfectly finite; numpy faithfully reports the
+flags it finds. It is tracked upstream as numpy issues
+<a href="https://github.com/numpy/numpy/issues/28687">#28687</a> and
+<a href="https://github.com/numpy/numpy/issues/28790">#28790</a>, where it
+reproduces on identity matrices from 15&times;15 upward while 14&times;14 stays
+silent &mdash; a size threshold that points at a vectorised code path rather than
+at any property of the data. Apple is reported to be aware of it. Nothing was
+ever wrong with the data or the model.</p>
+
+<p>Silencing them took three attempts, and each one failed in a way worth
+knowing about. The obvious move is a warnings filter matched to the message:</p>
+
+<div class="codefile">attempt 1</div>
+<pre><code>warnings.filterwarnings("ignore", message=".*encountered in matmul",
+                        category=RuntimeWarning)</code></pre>
+
+<p>That works in isolation and does nothing here, because scikit-learn calls
+<code>warnings.simplefilter("always")</code> inside its own fitting code, which
+overrides the filter. The second attempt swaps to numpy's own floating-point
+error control, <code>np.errstate</code>, which is immune to whatever the warnings
+module is doing &mdash; and that also didn't work, for a reason that took a
+proper experiment to find:</p>
+
+<div class="tablewrap">
+<table class="prose">
+<thead><tr><th>Configuration</th><th>Warnings on stderr</th></tr></thead>
+<tbody>
+<tr><td><code>np.errstate</code>, default <code>n_jobs</code></td><td>0</td></tr>
+<tr><td><code>np.errstate</code>, <code>n_jobs=-1</code></td><td>6</td></tr>
+<tr><td>no <code>np.errstate</code></td><td>6</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>The culprit was <code>n_jobs=-1</code> on the logistic regression, which I had
+added reflexively. It pushes the fit into joblib workers, and numpy's
+floating-point state is context-local &mdash; it does not follow the work across
+that boundary, so the <code>errstate</code> wrapping the call applies to nothing
+that matters. The parameter was pointless anyway: <code>n_jobs</code> only
+affects multiclass one-vs-rest fitting, and this problem is binary. Removing it
+and keeping <code>np.errstate</code>, scoped to just this fit, gives a clean run
+with an identical AUC of 0.92803.</p>
+
+<div class="caveat"><b>What went wrong in my head:</b> the first hypothesis
+explained the symptom, so I fixed it and moved on without checking whether the
+symptom went away. It hadn't &mdash; and neither did the two fixes after it,
+each of which I also believed before testing. A plausible mechanism is not
+evidence. Every one of these was settled in under a minute by an experiment that
+was cheaper than the fix it replaced.</div>
+</section>
+
+<section id="stands">
+<h2>Where it stands</h2>
+<p>The baseline, cross-validated on the full 691k rows:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Fold</th><th>AUC</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>0.96361</td></tr>
+<tr><td>2</td><td>0.96440</td></tr>
+<tr><td>3</td><td>0.96458</td></tr>
+<tr><td>4</td><td>0.96537</td></tr>
+<tr><td>5</td><td>0.96422</td></tr>
+<tr><td><b>Out-of-fold</b></td><td><b>0.96443</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<p>The fold spread is 0.0018, which is tight enough that improvements smaller
+than about 0.0005 should not be believed from a single 5-fold run.</p>
+
+<p>Running all four models and letting the greedy selector weight them:</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Model</th><th>OOF AUC</th><th>Blend weight</th><th>Time / fold</th></tr></thead>
+<tbody>
+<tr><td>XGBoost</td><td><b>0.96492</b></td><td>0.60</td><td>71s</td></tr>
+<tr><td>LightGBM</td><td>0.96443</td><td>0.20</td><td>71s</td></tr>
+<tr><td>CatBoost</td><td>0.96407</td><td>0.20</td><td>320s</td></tr>
+<tr><td>Logistic + splines</td><td>0.93221</td><td><b>0.00</b></td><td>10s</td></tr>
+<tr><td><b>Greedy blend</b></td><td><b>0.96514</b></td><td></td><td></td></tr>
+</tbody>
+</table>
+</div>
+
+<p>The three tree models land within 0.0009 of each other, with XGBoost narrowly
+ahead &mdash; and CatBoost taking four and a half times as long as either
+competitor to finish last of the three.</p>
+
+<p>The result worth pointing at is the last weight in that column. <b>The
+logistic model was given zero weight.</b> The selector evaluated it, found it
+made every candidate blend worse, and never picked it &mdash; which is precisely
+the behaviour the equal-weight average could not express, and precisely the case
+that cost 0.0053 back in §10. The argument from §9 that it would bring useful
+diversity turned out to be wrong: at 0.932 it is simply too far behind, and
+whatever the smooth-function story gave it, the trees had already captured.</p>
+
+<div class="caveat"><b>Don't over-read the blend's margin.</b> At +0.00022 over
+XGBoost alone, the improvement is well inside the fold-to-fold spread of 0.0018,
+and the weights were chosen on the same out-of-fold predictions the blend is then
+scored against &mdash; which biases that number upward. The defensible claim is
+that the blend is <em>not worse</em> than the best single model, and that the
+selection procedure is now safe to add weak members to. Anyone wanting to trust
+the +0.0002 should re-derive the weights on a nested split.</div>
+
+<h3>What the leaderboard said</h3>
+
+<p>Both files were then submitted &mdash; the blend, and XGBoost alone as a
+control on whether the blend's margin was real.</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>submission</th><th>OOF AUC</th><th>public LB</th><th>LB &minus; OOF</th></tr></thead>
+<tbody>
+<tr><td>greedy blend</td><td>0.96514</td><td><b>0.96646</b></td><td>+0.00132</td></tr>
+<tr><td>XGBoost only</td><td>0.96492</td><td><b>0.96645</b></td><td>+0.00153</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><b>The local estimates were conservative, not optimistic.</b> Both score about
+0.0014 higher on the leaderboard than out of fold, and the two gaps agree to
+within 0.0002. That consistency is the good outcome: cross-validation here cannot
+be read as an absolute performance estimate, but it ranks candidates faithfully,
+which is the only thing it was used for.</p>
+
+<p>The gap is not a validation flaw. Each test prediction averages the five
+fold-models, while each out-of-fold prediction comes from exactly one &mdash; so
+the submitted file is a five-model bag and the OOF score is not. The leaderboard
+is measuring a slightly stronger object than the cross-validation is.</p>
+
+<p><b>And the blend's advantage evaporated.</b> It beat XGBoost alone by +0.00022
+out of fold and by <b>+0.00001</b> on held-out data. The caveat in the box above
+turned out to be the whole story: the weights were chosen to maximise OOF AUC, so
+almost all of that margin was selection optimism. On the leaderboard the blend
+and its dominant member are indistinguishable, and the two extra tree models cost
+6.5 minutes per fold to achieve that.</p>
+</section>
+
+<section id="next">
+<h2>What I'd do next</h2>
+<p>Roughly in order of expected return per hour:</p>
+<ol>
+<li><b>Move to 10-fold.</b> The clearest remaining gain. A control run showed
+    that cutting the training set by 12% costs 0.00035 AUC, so the model is still
+    data-limited at 691k rows and 90% training folds should beat 80% ones by
+    roughly +0.0002 &mdash; more than the entire three-model blend delivered.</li>
+<li><b>Drop the three categorical columns.</b> Permutation importance measured
+    them at 0.00000&ndash;0.00003. Free speedup, no measurable cost.</li>
+<li><b>Tune hyperparameters.</b> The current values are hand-picked defaults,
+    never searched. On a dataset this size that is usually worth a few
+    ten-thousandths, occasionally more.</li>
+<li><b>Multi-seed bagging.</b> Repeat the CV with several seeds and average.
+    Reliable, dull, and roughly the size of the fold noise.</li>
+<li><b>Test <code>--extra</code>.</b> 7,500 real rows against 691k synthetic
+    ones. Probably nothing, but it is one command.</li>
+<li><b>A neural net.</b> An MLP would bring genuinely different inductive bias
+    to the blend &mdash; and now that the blend can weight members properly, a
+    mediocre one can be added without risk of dragging the score down.</li>
+</ol>
+</section>
+
+<section id="limits">
+<h2>Limitations</h2>
+<ul>
+<li><b>Only the public leaderboard is known.</b> That is scored on a subset of
+    the test set; the private split that decides the competition is still
+    unseen. The validation itself checks out &mdash; a separate leakage sweep
+    found `id` worthless as a predictor (AUC 0.5007), no duplicate rows, and
+    only two exact train/test matches.</li>
+<li><b>Single seed, single fold scheme.</b> One 5-fold split at seed 42. This
+    limits <em>unpaired</em> comparisons, where the 0.0018 fold spread sets the
+    noise floor. Comparisons on identical folds resolve far smaller effects: the
+    feature-engineering ablation measured +0.00057 with a paired standard
+    deviation of 0.00008.</li>
+<li><b>The equal-weight blend failure was measured on a 5% subsample</b>, not the
+    full dataset. The direction of the effect is what mattered, and greedy
+    selection is not worse than equal weights in any case, but the exact
+    magnitude at full scale is unmeasured.</li>
+<li><b>The blend weights are fitted on the same out-of-fold predictions the
+    blend is scored against.</b> That makes 0.96514 optimistic by an unknown but
+    probably small amount. Properly, weight selection belongs inside a nested
+    split; at four members and a +0.0002 margin it was not worth the extra
+    complexity, but the number should be read with that in mind.</li>
+<li><b>The blend's value is now measured at approximately zero.</b> It is kept
+    because greedy selection cannot do worse than its best member by
+    construction, but on this problem the two extra tree models buy +0.00001.</li>
+<li><b>Hyperparameters are guesses.</b> Reasonable ones, but no search was run.</li>
+<li><b>The environment is Python 3.9</b>, inherited from the system interpreter.
+    Everything installs and runs, but it is two years past its useful life and a
+    3.11+ rebuild would be faster.</li>
+<li><b>Everything here describes synthetic data.</b> The suppression effect in §8
+    is a property of Kaggle's generative model, which was itself fit to a
+    7,500-row survey of unknown provenance. None of it is a finding about actual
+    smartphone use, and it should not be read as one.</li>
+</ul>
+
+<p class="footnote">Figures computed from <code>train.csv</code> and
+<code>test.csv</code> as distributed for playground-series-s6e8, plus
+<code>Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv</code>
+(<code>jayjoshi37/smartphone-usage-and-addiction-prediction</code>) for §7. Code
+in <code>src/</code>: <code>eda.py</code> for §4&ndash;5, <code>probe.py</code>
+for §6, <code>train.py</code> for §8&ndash;11.</p>
+</section>
+</article>
+</div>
+</article>
+</div>
+
+<script>
+const sections = document.querySelectorAll('article section[id]');
+const links = document.querySelectorAll('nav.toc a');
+const linkMap = {};
+links.forEach(l => { linkMap[l.getAttribute('href').slice(1)] = l; });
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const link = linkMap[e.target.id];
+      if (link) {
+        links.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    }
+  });
+}, { rootMargin: '-30% 0px -65% 0px' });
+sections.forEach(s => observer.observe(s));
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const wrap = btn.closest('section');
+    wrap.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    wrap.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    wrap.querySelector('#tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
+
+<a href="#top" class="to-top" aria-label="Back to top" title="Back to top">↑</a>
+<style>
+.to-top{position:fixed;bottom:22px;right:22px;z-index:2147483646;width:40px;height:40px;
+	display:flex;align-items:center;justify-content:center;border-radius:50%;
+	background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+	border:1px solid rgba(140,140,140,.28);color:#555;font-size:19px;line-height:1;text-decoration:none;
+	opacity:0;pointer-events:none;transition:opacity .25s ease;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.to-top.show{opacity:1;pointer-events:auto;}
+.to-top:hover{color:#111;border-color:rgba(140,140,140,.5);}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none;}html{scroll-behavior:auto;}}
+</style>
+<script>(function(){var b=document.querySelector('.to-top');if(!b)return;
+function f(){b.classList.toggle('show',window.scrollY>500);}
+window.addEventListener('scroll',f,{passive:true});f();
+b.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});})();</script>
+</body>
+</html>

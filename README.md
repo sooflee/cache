@@ -7,6 +7,9 @@ maintained; every post is preserved here read-only.
 Each page carries a banner noting the blog is archived. The homepage
 (`index.html`) lists all 12 posts in reverse-chronological order.
 
+> The Write.as blog is the archived part. The reading articles, the standalone
+> apps and the private feed are still added to.
+
 ## Deploy
 
 Pure static HTML — host the directory anywhere (Netlify, GitHub Pages, Cloudflare
@@ -25,24 +28,74 @@ python3 -m http.server
 ## Layout
 
 ```
-index.html             homepage — unified list of all posts (cache + reading)
-<slug>.html            one cache post per file (12 total)
+index.html             cache feed (the homepage)
+reading.html           reading feed
+standalone.html        standalone-apps feed
+private.html           private feed — passphrase-gated, see below
+cache/<slug>/          one blog post per directory (12 total)
 reading/<slug>/        mirrored reading articles (keep their own styling)
+private/<slug>/        private posts, encrypted at build time
+<slug>.html            redirect stubs for the pre-move post URLs
 assets/css/inside.css  styling — adaptation of the Typora "Inside" theme
 assets/fonts/inside/   Josefin Sans + Cascadia Code (self-hosted)
 assets/img/            post images (localized from i.snap.as)
 _mirror/               committed source snapshots (Write.as + GitHub Pages)
-build.py               regenerates the pages from the mirrored sources in _mirror/
+_private/              plaintext private posts — git-ignored, never published
+build.py               regenerates every page from _mirror/ and _private/
+tools/aesgcm.py        pure-Python AES-256-GCM used by the private build
+tools/markdown.py      pure-Python Markdown -> HTML for the private posts
 ```
+
+Both modules under `tools/` are vendored rather than installed — this repo has no
+dependencies and no virtualenv. Each has a self-test: run the file directly.
+
+Everything outside `_mirror/`, `_private/` and `assets/` is generated — run
+`build.py` rather than editing it. The one exception is the natively-authored
+reading articles (those with no mirror source), where the built file *is* the
+source and only the navigation tray is refreshed in place.
+
+Blog posts used to live at the repo root as bare `<slug>.html`. They moved into
+`cache/<slug>/` to match `reading/` and `private/`, and the old paths are now
+redirect stubs (`rel=canonical` + meta refresh + `noindex`) so existing links
+and bookmarks keep working. Once those have aged out, set
+`REDIRECT_OLD_POST_URLS = False` in `build.py` and delete the stubs.
 
 ## Posts & navigation
 
-The homepage has a **cache / reading / standalone toggle** (pure CSS, no JS) that
-switches the list between the 12 cache posts (dated), the 9 reading articles, and
-the standalone apps; it defaults to cache. Every article page carries a **left
-tray**: a pull-tab on the left edge that slides open to the same three-way toggle
-(defaulting to the feed of the article you're on) with the current post
-highlighted.
+Four feeds — **cache / reading / standalone / private** — each its own page, so
+the URL always names the tab you're looking at and every view is linkable. Every
+article page also carries a **left tray**: a pull-tab on the left edge that
+slides open to the same four-way toggle (pure CSS, no JS), defaulting to the feed
+of the article you're on, with the current post highlighted.
+
+## Private posts
+
+The `private` tab holds posts encrypted at build time and decrypted in the
+reader's browser. Write them as Markdown in `_private/<slug>.md` with `---`
+front matter (see `_private/README.md`); `build.py` renders each one, seals it
+with AES-256-GCM under a key derived from a passphrase, and publishes nothing
+but ciphertext. `_private/` is git-ignored, so the plaintext never leaves the
+working copy.
+
+```sh
+CACHE_PRIVATE_PASSPHRASE='…' python3 build.py   # or run it and be prompted
+```
+
+Unlocking once per session unlocks the whole feed (the derived key is held in
+`sessionStorage`). It needs a secure context, so it works over https and on
+localhost but not from a `file://` preview. Titles, dates and slugs are inside
+the encrypted blob, so the tray shows only a padlocked link to the locked index;
+private URLs are absent from `sitemap.xml` and `feed.xml`, disallowed in
+`robots.txt`, marked `noindex`, and carry no analytics tag.
+
+**The passphrase is the entire security boundary and is stored nowhere.** Lose it
+and the posts are unrecoverable. What stays public regardless: that the feed
+exists, how many posts it has, and roughly how long each one is. See
+`_private/README.md` for the authoring format.
+
+If `_private/` exists but no passphrase is available, the private build is
+skipped and the previously built pages are left untouched, so a build on a
+machine without the sources can't silently empty the feed.
 
 ## Reading articles
 
