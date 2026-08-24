@@ -6,7 +6,7 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-4E4BE1S6R6');
-</script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Claude vs. Kimi K3 &mdash; cache</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%237b4fa5%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20x%3D%274%27%20y%3D%274%27%20width%3D%2715%27%20height%3D%2715%27%20rx%3D%273%27/%3E%3Crect%20x%3D%2713%27%20y%3D%2713%27%20width%3D%2715%27%20height%3D%2715%27%20rx%3D%273%27/%3E%3C/svg%3E"><style>
+</script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Open Weights vs. Closed Models &mdash; cache</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%20fill%3D%27none%27%20stroke%3D%27%237b4fa5%27%20stroke-width%3D%272.5%27%20stroke-linejoin%3D%27round%27%3E%3Crect%20x%3D%274%27%20y%3D%274%27%20width%3D%2715%27%20height%3D%2715%27%20rx%3D%273%27/%3E%3Crect%20x%3D%2713%27%20y%3D%2713%27%20width%3D%2715%27%20height%3D%2715%27%20rx%3D%273%27/%3E%3C/svg%3E"><style>
 :root{--bg:#fbfaf7;--ink:#1c1b19;--mut:#6f6a62;--ac:#7b4fa5;--acbg:#f2ecf8;
 --line:#e6e1d8;--tile:#f5f2ec;--warn:#b4453a;--warnbg:#fbeeec;--ok:#2f8f5b;--term:#1b2733;
 --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
@@ -189,15 +189,15 @@ figcaption.mut{margin-top:8px}
 padding:7px 11px;font:12.5px/1.45 var(--sans);color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.09);
 z-index:2147483000;display:none;max-width:250px}
 </style>
-<meta name="description" content="Kimi K3 beats Claude on some coding benchmarks at nearly half of Opus pricing — and it's open-weight. A working comparison of capability, cost, and the three environment variables between you and switching, plus the case for staying.">
-<meta property="og:description" content="Kimi K3 beats Claude on some coding benchmarks at nearly half of Opus pricing — and it's open-weight. A working comparison of capability, cost, and the three environment variables between you and switching, plus the case for staying.">
-<meta name="twitter:description" content="Kimi K3 beats Claude on some coding benchmarks at nearly half of Opus pricing — and it's open-weight. A working comparison of capability, cost, and the three environment variables between you and switching, plus the case for staying.">
-<meta property="og:title" content="Claude vs. Kimi K3: Should You Switch?">
+<meta name="description" content="Open-weight models now land within about four months of the closed frontier at a fifth to a fiftieth of the price. A working comparison of the two camps &mdash; Kimi K3, DeepSeek V4, GLM-5.2 and MiniMax M3 against Claude, GPT-5.6 and Gemini &mdash; on capability, cost, licensing and the switching path.">
+<meta property="og:description" content="Open-weight models now land within about four months of the closed frontier at a fifth to a fiftieth of the price. A working comparison of the two camps &mdash; Kimi K3, DeepSeek V4, GLM-5.2 and MiniMax M3 against Claude, GPT-5.6 and Gemini &mdash; on capability, cost, licensing and the switching path.">
+<meta name="twitter:description" content="Open-weight models now land within about four months of the closed frontier at a fifth to a fiftieth of the price. A working comparison of the two camps &mdash; Kimi K3, DeepSeek V4, GLM-5.2 and MiniMax M3 against Claude, GPT-5.6 and Gemini &mdash; on capability, cost, licensing and the switching path.">
+<meta property="og:title" content="Open Weights vs. Closed Models: Should You Switch?">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="cache">
 <meta property="og:url" content="https://cache.bwang.io/reading/kimi-vs-claude/index.html">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Claude vs. Kimi K3 &mdash; cache">
+<meta name="twitter:title" content="Open Weights vs. Closed Models &mdash; cache">
 </head><body>
 <style>@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:400;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-regular.woff2') format('woff2');}@font-face{font-family:'Josefin Sans';font-style:normal;font-weight:600;src:url('../../assets/fonts/inside/josefin-sans-v15-latin-600.woff2') format('woff2');}@keyframes cacheFadeIn{from{opacity:0;}to{opacity:1;}}body{animation:cacheFadeIn .4s ease both;}</style><style>
 @view-transition{navigation:auto;}
@@ -284,24 +284,25 @@ z-index:2147483000;display:none;max-width:250px}
 @media (prefers-reduced-motion: reduce){
 	.nav-card,.nav-restore{transition:none;}
 }
-</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><input type="radio" name="nav-feed" id="nav-private" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label><label for="nav-private">private</label></div><div class="nav-feed nf-cache"><a class="item" href="../../cache/token-playbook/index.html">Token Playbook</a><a class="item" href="../../cache/some-projects/index.html">Some Projects</a><a class="item" href="../../cache/practical-poker/index.html">Practical Poker</a><a class="item" href="../../cache/ecom-experiments/index.html">Ecom Experiments</a><a class="item" href="../../cache/why-crypto/index.html">Why Crypto</a><a class="item" href="../../cache/growing-peppers/index.html">Growing Peppers</a><a class="item" href="../../cache/book-reviews/index.html">Book Reviews</a><a class="item" href="../../cache/wasted-time/index.html">Dumb Poker</a><a class="item" href="../../cache/trading-automation/index.html">Trading Automation</a><a class="item" href="../../cache/api-in-rust/index.html">API in Rust</a><a class="item" href="../../cache/cicd-on-gcp/index.html">CI/CD on GCP + SQL</a><a class="item" href="../../cache/nomad-and-waypoint/index.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../../reading/smartphone-addiction/index.html">Predicting Smartphone Addiction</a><a class="item" href="../../reading/kaggriculture/index.html">Improving Kaggriculture Bot</a><a class="item" href="../../reading/iran-war/index.html">The Iran War</a><a class="item active" href="../../reading/kimi-vs-claude/index.html">Claude vs Kimi</a><a class="item" href="../../reading/klefki/index.html">Penetration Testing with Claude Code</a><a class="item" href="../../reading/world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../../reading/poker-pros/index.html">High Roller Ledger</a><a class="item" href="../../reading/spacs/index.html">Understanding SPACs</a><a class="item" href="../../reading/ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../../reading/making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../../reading/watches/index.html">Watches That Beat Retail</a><a class="item" href="../../reading/wine/index.html">Wine as an Investment Asset</a><a class="item" href="../../reading/real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../../reading/ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item" href="../../whismur/">Tone Skill Builder</a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a></div><div class="nav-feed nf-private"><a class="item locked" href="../../private.html">unlock private posts</a></div></div></div>
+</style><div class="nav-float"><input type="checkbox" id="nav-min" class="nav-min-cb" aria-label="Minimize post list"><label class="nav-restore" for="nav-min" title="Show posts">posts</label><div class="nav-card"><div class="nav-head"><a class="nav-home" href="../../index.html" title="Home" aria-label="Home"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></a><label class="nav-mini" for="nav-min" title="Minimize" aria-label="Minimize">–</label></div><input type="radio" name="nav-feed" id="nav-cache" class="nav-radio"><input type="radio" name="nav-feed" id="nav-reading" class="nav-radio" checked><input type="radio" name="nav-feed" id="nav-standalone" class="nav-radio"><input type="radio" name="nav-feed" id="nav-private" class="nav-radio"><div class="nav-toggle"><label for="nav-cache">cache</label><label for="nav-reading">reading</label><label for="nav-standalone">standalone</label><label for="nav-private">private</label></div><div class="nav-feed nf-cache"><a class="item" href="../../cache/token-playbook/index.html">Token Playbook</a><a class="item" href="../../cache/some-projects/index.html">Some Projects</a><a class="item" href="../../cache/practical-poker/index.html">Practical Poker</a><a class="item" href="../../cache/ecom-experiments/index.html">Ecom Experiments</a><a class="item" href="../../cache/why-crypto/index.html">Why Crypto</a><a class="item" href="../../cache/growing-peppers/index.html">Growing Peppers</a><a class="item" href="../../cache/book-reviews/index.html">Book Reviews</a><a class="item" href="../../cache/wasted-time/index.html">Dumb Poker</a><a class="item" href="../../cache/trading-automation/index.html">Trading Automation</a><a class="item" href="../../cache/api-in-rust/index.html">API in Rust</a><a class="item" href="../../cache/cicd-on-gcp/index.html">CI/CD on GCP + SQL</a><a class="item" href="../../cache/nomad-and-waypoint/index.html">Nomad &amp; Waypoint</a></div><div class="nav-feed nf-reading"><a class="item" href="../../reading/smartphone-addiction/index.html">Predicting Smartphone Addiction</a><a class="item" href="../../reading/kaggriculture/index.html">Improving Kaggriculture Bot</a><a class="item" href="../../reading/iran-war/index.html">The Iran War</a><a class="item active" href="../../reading/kimi-vs-claude/index.html">Open vs Closed Models</a><a class="item" href="../../reading/klefki/index.html">Penetration Testing with Claude Code</a><a class="item" href="../../reading/world-cup-2026/index.html">Who Will Win the 2026 World Cup?</a><a class="item" href="../../reading/poker-pros/index.html">High Roller Ledger</a><a class="item" href="../../reading/spacs/index.html">Understanding SPACs</a><a class="item" href="../../reading/ipos-spacex/index.html">Will the SpaceX IPO Beat the Market?</a><a class="item" href="../../reading/making-an-iphone/index.html">Anatomy of an iPhone</a><a class="item" href="../../reading/watches/index.html">Watches That Beat Retail</a><a class="item" href="../../reading/wine/index.html">Wine as an Investment Asset</a><a class="item" href="../../reading/real-estate/index.html">What Predicts US Real-Estate Returns?</a><a class="item" href="../../reading/ncaa/index.html">Predicting March Madness 2026</a></div><div class="nav-feed nf-standalone"><a class="item" href="../../whismur/">Tone Skill Builder</a><a class="item ext" href="https://www.bwang.io/ekans/" target="_blank" rel="noopener" title="Trading Signals — live external app, opens in a new tab" aria-label="Trading Signals, opens in a new tab">Trading Signals <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/magikarp/" target="_blank" rel="noopener" title="Newsletter — live external app, opens in a new tab" aria-label="Newsletter, opens in a new tab">Newsletter <span aria-hidden="true">↗</span></a><a class="item ext" href="https://www.bwang.io/muk/" target="_blank" rel="noopener" title="Energy Trading Primer — live external app, opens in a new tab" aria-label="Energy Trading Primer, opens in a new tab">Energy Trading Primer <span aria-hidden="true">↗</span></a><a class="item ext" href="https://chansey.bwang.io" target="_blank" rel="noopener" title="Medical RAG — live external app, opens in a new tab" aria-label="Medical RAG, opens in a new tab">Medical RAG <span aria-hidden="true">↗</span></a><a class="item ext" href="https://arbitrage.bwang.io" target="_blank" rel="noopener" title="Arbitrage Finder — live external app, opens in a new tab" aria-label="Arbitrage Finder, opens in a new tab">Arbitrage Finder <span aria-hidden="true">↗</span></a><a class="item ext" href="https://stonks.bwang.io/" target="_blank" rel="noopener" title="Stock Picker — live external app, opens in a new tab" aria-label="Stock Picker, opens in a new tab">Stock Picker <span aria-hidden="true">↗</span></a></div><div class="nav-feed nf-private"><a class="item locked" href="../../private.html">unlock private posts</a></div></div></div>
 
 <div class=wrap>
 <header>
-<h1>Claude vs. Kimi K3: should you switch?</h1>
-<p class=dek>Moonshot's 2.8-trillion-parameter <b>Kimi K3</b> is the largest open-weight model ever
-released. It tops Claude on a frontend-coding leaderboard, undercuts Opus on price, and slots into
-Claude Code with three environment variables. A comparison of capability, cost, and the switching
-path &mdash; and the case for <b>staying</b>.</p>
-<div class=byline>A study, July 30, 2026 &middot; updated August 5 with DeepSeek V4 &middot; <a href="#verdict">jump to the verdict &darr;</a></div>
+<h1>Open weights vs. closed models: should you switch?</h1>
+<p class=dek>The open-weight labs now ship models you can download, host and fine-tune that land
+within a few points of the closed frontier &mdash; and charge a fifth to a fiftieth of the price.
+Epoch AI puts the remaining capability gap at about <b>four months</b>. A comparison of what each
+camp actually buys you: capability, cost, the switching path, and the case for <b>staying</b>
+closed anyway.</p>
+<div class=byline>A study, July 30, 2026 &middot; <b>restructured and updated August 24</b> &middot; figures as of 24 August 2026 &middot; <a href="#verdict">jump to the verdict &darr;</a></div>
 </header>
 
 <nav class="outline" aria-label="Outline">
   <a href="#tldr">0 &middot; TL;DR</a>
-  <a href="#contenders">1 &middot; The contenders</a>
-  <a href="#bench">2 &middot; Benchmarks</a>
+  <a href="#contenders">1 &middot; The two camps</a>
+  <a href="#bench">2 &middot; How big is the gap</a>
   <a href="#price">3 &middot; Pricing</a>
-  <a href="#wins">4 &middot; Where each wins</a>
+  <a href="#wins">4 &middot; Where each camp wins</a>
   <a href="#switch">5 &middot; The switching path</a>
   <a href="#giveup">6 &middot; What you give up</a>
   <a href="#next">7 &middot; What happens next</a>
@@ -310,48 +311,89 @@ path &mdash; and the case for <b>staying</b>.</p>
 
 <section id=tldr>
 <h2>TL;DR</h2>
-<div class=note><b>K3 is the credible answer to a high Claude bill.</b> It matches or beats Claude
-on several coding benchmarks at ~40% below Opus blended cost, and the weights are open &mdash; nobody
-can deprecate it out from under you. On the hardest long-horizon work, Opus 5 is still the safer
-default; Fable 5 sits above both. Keep Opus or Fable where a failed run is expensive. Give the
-routine work to K3 if it wins your eval. And know that K3 is the <em>middle</em> option on price, not
-the cheap one &mdash; DeepSeek's MIT-licensed V4 serves agentic coding for a tenth to a fiftieth of
-K3's output rate, a few benchmark points behind.</div>
+<div class=note><b>The open camp is now a real answer to a high model bill, and it is not one
+model.</b> Kimi K3, DeepSeek V4, GLM-5.2 and MiniMax M3 sit within a few points of the closed
+frontier on coding benchmarks at a fifth to a fiftieth of the price, and the weights are
+downloadable &mdash; nobody can deprecate them out from under you. What the closed labs still sell
+is the last few months of capability and the harness around it. Epoch AI measures that lead at
+roughly <b>four months</b>, or 8 points of its capability index, and it has not widened this year.
+The honest split: give routine and high-volume work to open weights, keep Opus 5 or Fable 5 for
+long-horizon agent runs where a failed run is expensive, and treat the choice as a routing decision
+rather than a migration.</div>
 
 <div class=stats>
-<div class=stat><b>2.8T</b><small>K3 parameters &mdash; largest open-weight model ever</small></div>
-<div class=stat><b>$2.90</b><small>K3 input per 1M tokens, vs $5.00 for Claude Opus 5</small></div>
-<div class=stat><b>1M</b><small>token context window &mdash; both models</small></div>
-<div class=stat><b>32.9</b><small>K3 output tokens/sec, vs 53.7 for Opus 5</small></div>
+<div class=stat><b>4 months</b><small>Epoch AI's measured lag between the best open weights and the closed frontier</small></div>
+<div class=stat><b>5&ndash;10&times;</b><small>cheaper per token, for 70&ndash;90% of the closed capability</small></div>
+<div class=stat><b>$0.14</b><small>DeepSeek V4-Flash input per 1M tokens, against $5.00 for Claude Opus 5</small></div>
+<div class=stat><b>2.8T</b><small>Kimi K3 parameters &mdash; the largest open-weight model released</small></div>
 </div>
 </section>
 
 <section id=contenders>
-<h2><span class=n>1</span>The contenders</h2>
-<p><b>Claude</b> is Anthropic's closed-weight family: Haiku 4.5 for cheap fast tasks, Sonnet 5 as
-the volume workhorse, Opus 5 for hard agentic coding, and Fable 5 at the top of the range. The
-relevant tiers here are <b>Opus 5 and Fable 5</b>; that's what K3 has to beat. All current tiers run a 1M-token context window with 128K max output. The moat isn't just the models
-&mdash; it's the harness around them: Claude Code, adaptive thinking with effort control, prompt
-caching, server-side tools, and a first-party API that the whole toolchain is tuned against.</p>
-<p><b>Kimi K3</b> is Moonshot AI's flagship, released July 16, 2026, with the full 2.8-trillion-parameter
-weights published on July 27. It's a mixture-of-experts model (KDA plus attention residuals for
-computational efficiency), natively multimodal, with a 1M-token context window &mdash; up from 256K
-on its 1.1T-parameter predecessor K2.7. It's positioned squarely at agentic coding: navigating large
-repositories, using tools, debugging, and iterating against screenshots, logs, and test output.</p>
-<p><b>DeepSeek V4</b> is the third name that belongs here, and the reason this isn't a two-model
-question. Released April 24, 2026 under a plain MIT license, it ships as V4-Pro (1.6T total, 49B
-active) and the smaller V4-Flash (284B total, 13B active). It is text-only and it does not top the
-agentic leaderboards &mdash; but it costs a fraction of either contender above, and its July 31
-Flash checkpoint closed most of the agentic gap. It sets the price floor this whole comparison
-is measured against.</p>
+<h2><span class=n>1</span>The two camps</h2>
+<p>Start with the word, because it does real work here. <b>Open-weight</b> means the parameters are
+published and you can download, host and fine-tune them. It does not mean open source: the training
+data and pipeline stay private in every case below, and the licenses range from plain MIT to
+bespoke agreements with revenue gates. <b>Closed</b> means the model exists only behind an API you
+rent. The practical difference is not ideology. It is whether the model can be taken away from you,
+whether you can run it on your own hardware, and who captures the margin on every token.</p>
+
+<h3>The closed side</h3>
+<p><b>Anthropic</b> ships Haiku 4.5 for cheap fast tasks, Sonnet 5 as the volume workhorse, Opus 5
+for hard agentic coding, and Fable 5 at the top. Opus 5 leads Artificial Analysis's Intelligence
+Index at 63 and its Agentic Index at 55.3, and holds the coding crown on both of Arena's vote-based
+boards. <b>OpenAI's GPT-5.6 Sol</b> narrowly leads the overall composite snapshot and is the better
+generalist. <b>Google's Gemini 3.1 Pro</b> leads the reasoning benchmarks. <b>xAI's Grok 4.5</b>
+takes the near-frontier value slot, at 91% of the leading score for 88% less output cost. The
+separation across all four is a few points on most composites, which is why the real question is
+rarely which is smartest.</p>
+<p>What the closed labs actually sell on top of the weights is the harness: adaptive thinking with
+effort control, prompt caching, server-side tools, compaction, batch pricing, and a first-party API
+the whole toolchain is tuned against. That is the part the open camp cannot copy by publishing a
+checkpoint.</p>
+
+<h3>The open side</h3>
+<p>There is no single open-weight answer any more, which is the main thing that changed this year.
+Five models matter, and they are good at different things:</p>
+<ul>
+<li><b>Kimi K3</b> &mdash; Moonshot's flagship, 2.8T parameters with 104B active, weights published
+27 July. Natively multimodal, 1M context, best open model overall on agentic coding at 88.3 on
+Terminal-Bench 2.1 and 81.2 on FrontierSWE. The catch is the license, which is a bespoke Kimi K3
+agreement rather than Apache or MIT, and the footprint: roughly 1.6&nbsp;TB of weights.</li>
+<li><b>DeepSeek V4</b> &mdash; plain MIT, no revenue gate, no attribution clause. Ships as V4-Pro
+(1.6T total, 49B active) and V4-Flash (284B total, 13B active). Text-only, and it will lose the
+hardest runs, but it sets the price floor everything else is measured against.</li>
+<li><b>GLM-5.2</b> &mdash; Zhipu's long-horizon coding model, MIT-licensed, 1M context, 62.1% on
+SWE-bench Pro. The strongest model available under a genuinely permissive license, and the one to
+reach for when the license itself is the constraint.</li>
+<li><b>MiniMax M3</b> &mdash; the first open-weight model to combine coding, native multimodal input
+and computer use at 1M context in one checkpoint.</li>
+<li><b>Qwen3.6</b> &mdash; Alibaba's range, spanning sizes that run on a laptop up to server tiers,
+under permissive licenses. The practical choice for local and on-premises work.</li>
+</ul>
+<p class=mut>Two more names show up at the top of August's open-weight boards and are worth knowing
+even though they sit outside this comparison: NVIDIA's Nemotron 3 Nano Omni, and the growing tier of
+community fine-tunes and quantizations that appear within days of any major weight drop.</p>
 </section>
 
 <section id=bench>
-<h2><span class=n>2</span>What the benchmarks say</h2>
-<p>K3 placed in the top three across six coding benchmarks at launch, and took the #1 spot on
-Arena.AI's Frontend Code Arena &mdash; ahead of both Claude Fable 5 and GPT-5.6 Sol. On the
-independent Artificial Analysis index, though, Claude Opus 5 still edges it out on raw intelligence
-and generates substantially faster.</p>
+<h2><span class=n>2</span>How big is the gap</h2>
+<p>The useful way to size this is not a benchmark table but a clock. Epoch AI tracks both camps on
+its Capabilities Index and reports the best open-weight models running about <b>four months</b>
+behind the closed frontier, an 8-point ECI gap &mdash; roughly the distance between consecutive
+point releases of the same model family. When Epoch last cut the numbers, GLM-5 sat at 146.62 and
+Kimi K2.6 at 151.60, against GPT-5.5 Pro at 159.35 and Claude Opus 4.7 at 156.18.</p>
+<p>Four months is the whole argument. It is short enough that most work does not notice, and long
+enough that the hardest work does. The pattern across independent evaluations is consistent: open
+weights close 70&ndash;90% of the capability gap at 5&ndash;10&times; lower cost per token, and the
+part they do not close is specific rather than general. It shows up in long-horizon agentic
+reasoning &mdash; holding coherence over a long chain, noticing a wrong turn, backtracking cleanly.
+That is exactly the profile of repo-scale debugging and multi-hour agent runs, and exactly why the
+verdict at the end is a routing rule rather than a winner.</p>
+<p>On the individual boards the picture is genuinely mixed. Kimi K3 placed top-three across six
+coding benchmarks at launch and took #1 on Arena.AI's Frontend Code Arena, ahead of both Claude
+Fable 5 and GPT-5.6 Sol. Claude Opus 5 still leads Artificial Analysis on raw intelligence and
+agentic work, and generates substantially faster.</p>
 <table class=cap>
 <tr><th class=l>Measure</th><th class=l>Kimi K3</th><th class=l>Comparison</th><th class=l>Read</th></tr>
 <tr><td class=l>Frontend Code Arena (Arena.AI)</td><td class=l><b>1,679 &mdash; #1</b></td><td class=l>ahead of Claude Fable 5, GPT-5.6 Sol</td><td class=l>K3's headline win; visual/frontend work is its strongest suit</td></tr>
@@ -370,11 +412,13 @@ comparisons) is more modest: K3 is genuinely in the frontier pack, slightly behi
 intelligence, clearly behind on throughput, clearly ahead on price. For <em>your</em> workload, the
 only benchmark that matters is running both on a week of your real tasks.</div>
 
-<h3 id=deepseek>The other open-weight option: DeepSeek V4</h3>
-<p>K3 is not the only open-weight model in this conversation. DeepSeek shipped <b>V4</b> on April 24,
-2026 in two tiers &mdash; <b>V4-Pro</b> (1.6T total, 49B active) and <b>V4-Flash</b> (284B total, 13B
-active) &mdash; both MIT-licensed, both with 1M-token context. The comparison splits along a line that
-matters more than any headline score: <b>writing code</b> versus <b>doing coding work</b>.</p>
+<h3 id=deepseek>Inside the open camp: K3 against DeepSeek V4</h3>
+<p>Choosing between open models turns out to be harder than choosing between the camps, because the
+spread inside the open camp is wider than the gap to the frontier. DeepSeek shipped <b>V4</b> on
+April 24, 2026 in two tiers &mdash; <b>V4-Pro</b> (1.6T total, 49B active) and <b>V4-Flash</b> (284B
+total, 13B active) &mdash; both MIT-licensed, both with 1M-token context. Set against K3 the
+comparison splits along a line that matters more than any headline score: <b>writing code</b> versus
+<b>doing coding work</b>.</p>
 <table class=cap>
 <tr><th class=l>Measure</th><th class=l>Kimi K3</th><th class=l>DeepSeek V4-Pro</th><th class=l>DeepSeek V4-Flash-0731</th></tr>
 <tr><td class=l>SWE-bench Verified</td><td class=l><b>93.4</b> (vendor)</td><td class=l>80.6</td><td class=l>&mdash;</td></tr>
@@ -385,7 +429,7 @@ matters more than any headline score: <b>writing code</b> versus <b>doing coding
 <tr><td class=l>AA Intelligence Index</td><td class=l><b>57</b></td><td class=l>44</td><td class=l>&mdash;</td></tr>
 <tr><td class=l>Output speed</td><td class=l>32.9 tok/s</td><td class=l>66.5 tok/s</td><td class=l><b>115.9 tok/s</b></td></tr>
 <tr><td class=l>Total / active parameters</td><td class=l>2.8T / ~104B</td><td class=l>1.6T / 49B</td><td class=l>284B / 13B</td></tr>
-<tr><td class=l>Input / output $ per 1M</td><td class=l>$2.90 / $15.00</td><td class=l>$0.435 / $0.87</td><td class=l><b>$0.14 / $0.28</b></td></tr>
+<tr><td class=l>Input / output $ per 1M</td><td class=l>$3.00 / $15.00</td><td class=l>$0.435 / $0.87</td><td class=l><b>$0.14 / $0.28</b></td></tr>
 <tr><td class=l>License</td><td class=l>Kimi K3 License</td><td class=l><b>MIT</b></td><td class=l><b>MIT</b></td></tr>
 </table>
 <p>V4-Pro is the best model in the world at single-shot algorithmic coding &mdash; LiveCodeBench 93.5,
@@ -427,14 +471,20 @@ suites (Terminal-Bench, SWE Marathon) exist at all.</figcaption>
 <h2><span class=n>3</span>What it costs</h2>
 <table class=cap>
 <tr><th class=l>Model</th><th>Input $/1M</th><th>Output $/1M</th><th>Context</th><th class=l>Notes</th></tr>
-<tr><td class=l>Kimi K3</td><td>$2.90</td><td>$15.00</td><td>1M</td><td class=l>via OpenRouter; caching cuts effective cost 60&ndash;80%</td></tr>
-<tr><td class=l>DeepSeek V4-Pro</td><td>$0.435</td><td>$0.87</td><td>1M</td><td class=l>MIT-licensed; cache-hit input $0.0036</td></tr>
+<tr><td class=l colspan=5><b>Open weights</b></td></tr>
+<tr><td class=l>Kimi K3</td><td>$3.00</td><td>$15.00</td><td>1M</td><td class=l>Moonshot list; $2.90 via OpenRouter, cache-hit input $0.30</td></tr>
+<tr><td class=l>GLM-5.2</td><td>$1.40</td><td>$4.40</td><td>1M</td><td class=l>MIT; the strongest permissively-licensed option</td></tr>
+<tr><td class=l>DeepSeek V4-Pro</td><td>$0.435</td><td>$0.87</td><td>1M</td><td class=l>MIT; cache-hit input $0.0036</td></tr>
 <tr><td class=l>DeepSeek V4-Flash-0731</td><td>$0.14</td><td>$0.28</td><td>1M</td><td class=l>$0.09 / $0.18 on OpenRouter; cache-hit input 98% off</td></tr>
-<tr><td class=l>Claude Haiku 4.5</td><td>$1.00</td><td>$5.00</td><td>200K</td><td class=l>cheap tier, not a K3 peer</td></tr>
+<tr><td class=l colspan=5><b>Closed</b></td></tr>
+<tr><td class=l>Claude Haiku 4.5</td><td>$1.00</td><td>$5.00</td><td>200K</td><td class=l>cheap tier, not a frontier peer</td></tr>
 <tr><td class=l>Claude Sonnet 5</td><td>$3.00</td><td>$15.00</td><td>1M</td><td class=l><b>$2.00 / $10.00 intro through Aug 31, 2026</b></td></tr>
 <tr><td class=l>Claude Opus 5</td><td>$5.00</td><td>$25.00</td><td>1M</td><td class=l>the model most switchers are leaving</td></tr>
 <tr><td class=l>Claude Fable 5</td><td>$10.00</td><td>$50.00</td><td>1M</td><td class=l>top tier</td></tr>
 </table>
+<p class=mut>Note what the two blocks have in common: every model here runs a 1M-token context
+window except Haiku. Context length stopped being a differentiator this year, which is part of why
+the argument moved to price and licensing.</p>
 <p>Artificial Analysis puts the blended real-world cost at <b>$2.31 per 1M tokens for K3 versus
 $3.85 for Opus 5</b> at high effort &mdash; roughly a 40% saving against the model most people are
 thinking of leaving. Fable 5 doubles Opus again. The question isn't whether K3 is cheaper per token
@@ -468,7 +518,7 @@ smaller V4-Flash, at $0.14, would fall below the bottom of the axis.</figcaption
 </section>
 
 <section id=wins>
-<h2><span class=n>4</span>Where each one wins</h2>
+<h2><span class=n>4</span>Where each camp wins</h2>
 <table class=cap>
 <tr><th class=l>Dimension</th><th class=l>Claude</th><th class=l>Kimi K3</th><th class=l>DeepSeek V4</th></tr>
 <tr><td class=l>Hardest agentic coding, repo-scale debugging</td><td class=l><span class="pill p-vhigh">Stronger</span> safer default when a failed run is expensive</td><td class=l><span class="pill p-high">Close</span> top-3 on most suites</td><td class=l><span class="pill p-med">Behind</span> Flash-0731 closed most of the gap; V4-Pro never competed here</td></tr>
@@ -529,12 +579,13 @@ hardware &mdash; of running the thing yourself.</p>
 
 <section id=next>
 <h2><span class=n>7</span>What happens next</h2>
-<p>Everything above is a snapshot: K3's weights shipped a week ago, and Anthropic's intro pricing
-ends <b>August 31</b>. Switching today is a bet on where both curves go. Six forecasts, each with
-the signal that confirms or kills it.</p>
+<p>Everything above is a snapshot. K3's weights are four weeks old, MiniMax M3 is newer than that, and
+Anthropic's Sonnet 5 intro pricing ends <b>August 31</b>. Choosing a camp today is a bet on where
+both curves go. Six forecasts, each with the signal that confirms or kills it, reviewed against what
+the last month actually did.</p>
 <table class=cap>
 <tr><th class=l>Prediction</th><th class=l>Confidence</th><th class=l>Watch for</th><th class=l>What it means for you</th></tr>
-<tr><td class=l><b>K3 serving prices fall below list</b> as independent hosts come online, the way DeepSeek and Qwen prices did within weeks of their weights dropping. K3 is cheap to serve for its size: ~104B active parameters, weights shipped natively in MXFP4.</td><td class=l><span class="pill p-vhigh">High</span></td><td class=l>A second and third provider on OpenRouter under $3/$15 by mid-August. As of July 30 there is exactly one listing, at effectively Moonshot's list price.</td><td class=l>The price case gets stronger if you wait; don't lock in anything annual this month.</td></tr>
+<tr><td class=l><b>K3 serving prices fall below list</b> as independent hosts come online, the way DeepSeek and Qwen prices did within weeks of their weights dropping. K3 is cheap to serve for its size: ~104B active parameters, weights shipped natively in MXFP4.</td><td class=l><span class="pill p-vhigh">High</span></td><td class=l>A second and third provider on OpenRouter under $3/$15. As of 24 August the cheapest listing is $2.90 against Moonshot's $3.00 list &mdash; a 3% discount, not the collapse this forecast expected. Serving competition has been slower to arrive than the DeepSeek and Qwen precedents implied.</td><td class=l>The price case gets stronger if you wait; don't lock in anything annual this month.</td></tr>
 <tr><td class=l><b>The "Kimi K3 License" becomes the real fight.</b> The weights are downloadable but the license is proprietary, not Apache. Whether it permits commercial re-hosting decides whether the row above happens at full speed.</td><td class=l><span class="pill p-high">Med-high</span></td><td class=l>Independent hosts appearing (the license permits it) or still absent by mid-August (it doesn't). A definitional "is this even open?" dispute either way.</td><td class=l>Read the license before building on self-hosting or fine-tuning rights; "open weights" may be narrower than it sounds.</td></tr>
 <tr><td class=l><b>Routing beats picking a side.</b> Fireworks ran 1,030 agentic tasks through a K3-vs-frontier router and it beat either model alone, sending 72&ndash;96% of tasks to K3. The Exacto/Nitro modes in section 5 are an early version of the same idea.</td><td class=l><span class="pill p-vhigh">High</span></td><td class=l>Router layers becoming the default way teams consume models rather than a power-user trick.</td><td class=l>The hybrid verdict below is the end state, not a compromise.</td></tr>
 <tr><td class=l><b>Washington restricts government use, not yours.</b> A draft executive order on Chinese open models was reported in July and remains unsigned; ~200 startups, then Nvidia, Microsoft, and Meta, pushed back publicly. A blanket ban on a model already downloaded worldwide is hollow; procurement rules and hosting-liability conditions are the live options.</td><td class=l><span class="pill p-med">Medium</span></td><td class=l>A Commerce or OMB action scoped to government procurement or federal contractors, likely before September.</td><td class=l>If your work touches government or regulated clients, consume K3 through a US host &mdash; that's the compliance hedge.</td></tr>
@@ -546,7 +597,8 @@ inference margin." Moonshot gave up pricing power the day the weights shipped; i
 Every prediction above is that trade playing out &mdash; hosts competing the margin away, licenses
 clawing some back, incumbents cutting prices to defend theirs, and regulators deciding whose
 infrastructure it runs on.</div>
-<p class=mut>Forecasts as of July 30, 2026; confidence labels are judgment, not measurement. The macro
+<p class=mut>Forecasts made 30 July 2026, reviewed 24 August; confidence labels are judgment, not
+measurement. The macro
 side of this &mdash; what commodity inference does to an AI buildout financed on off-balance-sheet debt
 &mdash; is tracked weekly in <a href="https://www.bwang.io/magikarp/" target=_blank rel=noopener>the
 newsletter</a>.</p>
@@ -554,14 +606,16 @@ newsletter</a>.</p>
 
 <section id=verdict>
 <h2><span class=n>8</span>The verdict</h2>
-<p>This is a portfolio decision, not a clean switch.</p>
+<p>Nobody sensible picks a camp. They split the work across both, and the split is legible once you
+stop asking which model is better and start asking what a failure costs.</p>
 <ul class=check>
-<li><input type=checkbox aria-label="High-volume routine coding"><span><span class=k>Switch the routine work</span> if your bill is dominated by high-volume, low-stakes coding &mdash; the discount compounds exactly where a failure costs little.</span></li>
-<li><input type=checkbox aria-label="Frontend and visual work"><span><span class=k>Switch the visual work</span> if you build UIs, dashboards, games, or anything where the model iterates against screenshots &mdash; the Frontend Arena #1 is exactly this workload.</span></li>
-<li><input type=checkbox aria-label="Open weights requirement"><span><span class=k>Switch on principle</span> if open weights, self-hosting, or data control are requirements rather than preferences. Claude has no answer to this one.</span></li>
-<li><input type=checkbox aria-label="Hard agentic work"><span><span class=k>Stay for the hard stuff</span> &mdash; repo-scale debugging, long-horizon agent runs, the work you already route to Opus or Fable. They remain the stronger defaults there.</span></li>
-<li><input type=checkbox aria-label="Cost-dominated workloads"><span><span class=k>Look past K3 entirely</span> if cost is the binding constraint &mdash; DeepSeek V4-Flash-0731 does agentic coding within six Terminal-Bench points of K3 at 2% of its output price, under a plain MIT license with no revenue gate. It is text-only and it will lose the hard runs, which is exactly why it belongs on the routine tier rather than the whole job.</span></li>
-<li><input type=checkbox aria-label="Run the experiment"><span><span class=k>Either way, run the experiment</span>: point the harness at K3 for one week of real tasks and keep your own pass/fail notes. Not testing is the only wrong answer.</span></li>
+<li><input type=checkbox aria-label="High-volume routine coding"><span><span class=k>Open weights for the routine tier</span> &mdash; high-volume, low-stakes coding, where the four-month capability gap does not show and a 5&ndash;10&times; discount compounds every day.</span></li>
+<li><input type=checkbox aria-label="Frontend and visual work"><span><span class=k>Open weights for visual work</span> &mdash; UIs, dashboards, games, anything where the model iterates against screenshots. K3 holds #1 on the Frontend Arena and MiniMax M3 brings computer use, so this is a camp strength now rather than one model's trick.</span></li>
+<li><input type=checkbox aria-label="Open weights requirement"><span><span class=k>Open weights when the requirement is structural</span> &mdash; self-hosting, data residency, air-gapped deployment, or a model nobody can deprecate. The closed labs have no answer to this, and it is the one dimension where the gap is infinite rather than four months.</span></li>
+<li><input type=checkbox aria-label="Hard agentic work"><span><span class=k>Closed for long-horizon work</span> &mdash; repo-scale debugging and multi-hour agent runs. This is precisely where the residual gap lives: holding coherence over a long chain and backtracking cleanly. Opus 5 and Fable 5 remain the stronger defaults.</span></li>
+<li><input type=checkbox aria-label="License constraints"><span><span class=k>Read the license before the benchmark</span> &mdash; &ldquo;open weights&rdquo; spans plain MIT (DeepSeek V4, GLM-5.2) and bespoke agreements with revenue gates (Kimi K3). If you plan to re-host or fine-tune, that clause decides more than any leaderboard position.</span></li>
+<li><input type=checkbox aria-label="Cost-dominated workloads"><span><span class=k>Go to the floor if cost binds</span> &mdash; DeepSeek V4-Flash-0731 does agentic coding within six Terminal-Bench points of K3 at 2% of its output price, MIT, no revenue gate. Text-only, and it will lose the hard runs, which is exactly why it belongs on the routine tier rather than the whole job.</span></li>
+<li><input type=checkbox aria-label="Run the experiment"><span><span class=k>Either way, run the experiment</span>: point the harness at one open model for a week of real tasks and keep your own pass/fail notes. Switching costs three environment variables in each direction. Not testing is the only wrong answer.</span></li>
 </ul>
 </section>
 

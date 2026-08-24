@@ -337,7 +337,7 @@ READING = [
 	("smartphone-addiction", None, "Predicting Smartphone Addiction"),
 	("kaggriculture", None, "Improving Kaggriculture Bot"),
 	("iran-war", None, "The Iran War"),
-	("kimi-vs-claude", None, "Claude vs Kimi"),
+	("kimi-vs-claude", None, "Open vs Closed Models"),
 	("klefki", None, "Penetration Testing with Claude Code"),
 	("world-cup-2026", "golem", "Who Will Win the 2026 World Cup?"),
 	("poker-pros", "voltorb", "High Roller Ledger"),
