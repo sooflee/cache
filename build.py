@@ -137,13 +137,14 @@ def inject_backtotop(text):
 	return re.sub(r'</body>', BACKTOTOP + "\n</body>", text, count=1, flags=re.I)
 
 
-def external_anchor(url, label, cls):
-	"""Anchor for a live external app: new tab, screen-reader + hover hints, and a
-	decorative ↗ that's hidden from assistive tech."""
+def external_anchor(url, label, cls, noun="live external app"):
+	"""Anchor for something hosted off this archive: new tab, screen-reader +
+	hover hints, and a decorative ↗ that's hidden from assistive tech. `noun`
+	names the kind of thing in the hover title (apps aren't the only ones)."""
 	esc = html.escape(label)
 	return (
 		f'<a class="{cls}" href="{url}" target="_blank" rel="noopener" '
-		f'title="{esc} — live external app, opens in a new tab" '
+		f'title="{esc} — {noun}, opens in a new tab" '
 		f'aria-label="{esc}, opens in a new tab">'
 		f'{esc} <span aria-hidden="true">↗</span></a>'
 	)
@@ -181,7 +182,8 @@ def build_sitemap():
 	paths = (
 		["index.html", "reading.html", "standalone.html"]
 		+ [post_url(slug) for slug in POSTS]
-		+ [f"reading/{slug}/index.html" for slug, _cn, _l in READING]
+		+ [f"reading/{slug}/index.html" for slug, _cn, _l in READING
+		   if slug not in READING_PENDING]
 		+ [target for target, _l in LOCAL_STANDALONE]
 	)
 	rows = "\n".join(f"  <url><loc>{BASE_URL}/{p}</loc></url>" for p in paths)
@@ -258,6 +260,8 @@ def build_feed():
 		                  page_description(os.path.join(SRC, f"{slug}.html")), iso))
 		latest = max(latest, iso)
 	for slug, _cn, label in READING:
+		if slug in READING_PENDING:
+			continue
 		items.append(item(
 			label, f"reading/{slug}/index.html",
 			page_description(os.path.join(OUT, "reading", slug, "index.html")),
@@ -333,6 +337,12 @@ TITLE_OVERRIDES = {
 #                    mirror source. Never regenerated (that would discard the
 #                    hand-written markup); only its navigator tray is refreshed
 #                    in place, so reordering this list still reaches it.
+# Pinned to the top of the reading feed, ahead of the articles: live things
+# that read like reading but aren't pages in this archive, so they're linked out
+# to instead of built. (target, label).
+READING_LINKS = [
+	("https://www.bwang.io/magikarp/", "Newsletter"),
+]
 READING = [
 	("smartphone-addiction", None, "Predicting Smartphone Addiction"),
 	("kaggriculture", None, "Improving Kaggriculture Bot"),
@@ -349,6 +359,18 @@ READING = [
 	("real-estate", "arbok", "What Predicts US Real-Estate Returns?"),
 	("ncaa", "omastar", "Predicting March Madness 2026"),
 ]
+# Reading articles held back for now: still listed, but rendered as plain text
+# instead of a link, and kept out of sitemap.xml + feed.xml so nothing else
+# advertises a page the feed itself won't open. Drop a slug from this set to
+# publish it — the page is built either way.
+READING_PENDING = {"smartphone-addiction", "kaggriculture"}
+# Display order for the reading feed and the tray: held-back articles sink to
+# the bottom, everything else keeps its authored order. READING itself stays the
+# canonical build order.
+READING_ORDERED = (
+	[e for e in READING if e[0] not in READING_PENDING]
+	+ [e for e in READING if e[0] in READING_PENDING]
+)
 # Derived from READING so the two can never drift apart.
 MIRRORED_READING = [e for e in READING if e[1] is not None]
 NATIVE_READING = [e for e in READING if e[1] is None]
@@ -368,7 +390,6 @@ STANDALONE = []
 STANDALONE_APPS = [
 	("whismur/", "Tone Skill Builder", True),
 	("https://www.bwang.io/ekans/", "Trading Signals", False),
-	("https://www.bwang.io/magikarp/", "Newsletter", False),
 	("https://www.bwang.io/muk/", "Energy Trading Primer", False),
 	("https://chansey.bwang.io", "Medical RAG", False),
 	("https://arbitrage.bwang.io", "Arbitrage Finder", False),
@@ -434,6 +455,10 @@ TRAY_STYLE = """<style>
 	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .nav-card a.item:hover{background:#f6f6f6;color:#111;}
 .nav-card a.item.active{color:#357BB3;font-weight:600;box-shadow:inset 2px 0 0 #357BB3;}
+.nav-card a.item.pinned{color:#C2662D;font-weight:600;}
+.nav-card a.item.pinned:hover{background:#fbf3ec;color:#A2521F;}
+.nav-card .item.pending{display:block;padding:7px 20px;color:#b4b4b4;cursor:default;
+	white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .nav-radio{position:absolute;opacity:0;pointer-events:none;}
 .nav-toggle{display:flex;flex-wrap:wrap;gap:.5rem .9rem;margin:0 20px 12px;}
 .nav-toggle label{font-size:13px;font-weight:600;color:#c4c4c4;cursor:pointer;
@@ -519,11 +544,16 @@ def tray_html(context, active_slug=None):
 	face = READING_EXTRA.format(p="../../assets") if context == "reading" else ""
 
 	def item(href, label, slug):
+		if slug in READING_PENDING:
+			return f'<span class="item pending">{html.escape(label)}</span>'
 		cls = "item active" if slug == active_slug else "item"
 		return f'<a class="{cls}" href="{href}">{html.escape(label)}</a>'
 
 	cache_items = "".join(item(cache_href(slug), title, slug) for slug, title in CACHE_ITEMS)
-	reading_items = "".join(item(read_href(slug), label, slug) for slug, _cn, label in READING)
+	reading_items = "".join(
+		external_anchor(target, label, "item ext pinned", "external link")
+		for target, label in READING_LINKS
+	) + "".join(item(read_href(slug), label, slug) for slug, _cn, label in READING_ORDERED)
 	standalone_items = "".join(
 		item(read_href(slug), label, slug)
 		for slug, _cn, label in STANDALONE
@@ -674,6 +704,43 @@ def rewrite_common(text, up=""):
 	return text
 
 
+# Posts whose bolded lead-in paragraphs act as section headings. Each one gets
+# an id slugified from the bold text, and the name itself becomes a self-link,
+# so a section can be shared directly: cache/some-projects/index.html#diglett
+ANCHOR_POSTS = {"some-projects"}
+
+# A lead-in is a <p>/<li> that *opens* with its bold name; bold used mid-
+# sentence elsewhere in a post is left alone.
+LEAD_IN_RE = re.compile(r"<(p|li)><strong>(.*?)</strong>")
+
+
+def anchor_slug(label):
+	"""Bold text -> url fragment. 'Farfetch\u2019d' -> 'farfetchd'."""
+	s = html.unescape(re.sub(r"<[^>]+>", "", label))
+	s = re.sub(r"[\u2019\u2018'`]", "", s)
+	return re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-").lower()
+
+
+def add_section_anchors(text):
+	"""Give each bolded lead-in an id and wrap its name in a link to itself."""
+	# Seed with the ids the page already carries (post-body, title, the tray
+	# inputs) so a project can never shadow one of them.
+	seen = set(re.findall(r'id="([^"]+)"', text))
+
+	def anchor(m):
+		tag, label = m.group(1), m.group(2)
+		slug = anchor_slug(label)
+		if not slug or slug in seen:
+			return m.group(0)
+		seen.add(slug)
+		return (
+			f'<{tag} id="{slug}" class="anchored">'
+			f'<a class="anchor-link" href="#{slug}"><strong>{label}</strong></a>'
+		)
+
+	return LEAD_IN_RE.sub(anchor, text)
+
+
 def build_post(slug):
 	with open(os.path.join(SRC, f"{slug}.html"), encoding="utf-8") as f:
 		text = f.read()
@@ -708,6 +775,8 @@ def build_post(slug):
 			lambda m: m.group(1) + esc + m.group(2), text, count=1)
 		text = re.sub(r'(<meta name="twitter:title" content=")[^"]*(")',
 			lambda m: m.group(1) + esc + " &mdash; cache" + m.group(2), text, count=1)
+	if slug in ANCHOR_POSTS:
+		text = add_section_anchors(text)
 	text = inject_tray(text, "cache", slug)
 	text = inject_backtotop(text)
 	out_dir = os.path.join(OUT, POST_DIR, slug)
@@ -974,13 +1043,23 @@ def build_index():
 	def article_rows(items):
 		rows = []
 		for slug, _cn, label in items:
+			title = (
+				f'<span class="pending">{html.escape(label)}</span>'
+				if slug in READING_PENDING
+				else f'<a href="reading/{slug}/index.html">{html.escape(label)}</a>'
+			)
 			rows.append(
 				'<article class="norm h-entry">\n'
-				f'\t<h2 class="post-title"><a href="reading/{slug}/index.html">{html.escape(label)}</a></h2>\n'
+				f'\t<h2 class="post-title">{title}</h2>\n'
 				'</article>'
 			)
 		return rows
-	reading_rows = article_rows(READING)
+	reading_rows = [
+		'<article class="norm h-entry">\n'
+		f'\t<h2 class="post-title">{external_anchor(target, label, "ext pinned", "external link")}</h2>\n'
+		'</article>'
+		for target, label in READING_LINKS
+	] + article_rows(READING_ORDERED)
 	standalone_rows = article_rows(STANDALONE) + [
 		'<article class="norm h-entry">\n'
 		+ (

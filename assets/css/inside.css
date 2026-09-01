@@ -183,6 +183,12 @@ body#collection #wrapper article.h-entry .post-title a:hover {
 	text-decoration: underline;
 	text-decoration-style: dotted;
 }
+/* Pinned reading links (the newsletter): a rust accent so they read as
+   something other than another article in the list. */
+body#collection #wrapper article.h-entry .post-title a.pinned { color: #C2662D; }
+body#collection #wrapper article.h-entry .post-title a.pinned:hover { color: #A2521F; }
+/* Held-back reading articles: listed, but not yet a link anywhere. */
+body#collection #wrapper article.h-entry .post-title .pending { color: #b4b4b4; }
 /* Reading + standalone lists inherit the same Josefin Sans / 18px / 600 as the
    cache list above — no per-feed override, so all three feeds look identical. */
 .dt-published {
@@ -238,6 +244,25 @@ article#post-body > .dt-published {
 
 .e-content strong,
 .e-content b { font-weight: 900; }
+
+/* Section anchors — in posts whose bolded lead-ins act as headings, the name
+   links to itself so any section can be shared (…/some-projects#diglett). */
+.e-content .anchored { scroll-margin-top: 1.5rem; }
+/* Phones reserve a 56px strip for the fixed "posts" pill; without this a
+   linked section lands underneath it. */
+@media (max-width: 700px) { .e-content .anchored { scroll-margin-top: 68px; } }
+.e-content a.anchor-link { color: inherit; text-decoration: none; }
+.e-content a.anchor-link:hover,
+.e-content a.anchor-link:focus-visible { color: #357BB3; }
+.e-content .anchored:target > .anchor-link { color: #357BB3; }
+@keyframes anchorLand {
+	from { background-color: rgba(53, 123, 179, .16); }
+	to { background-color: transparent; }
+}
+.e-content .anchored:target { animation: anchorLand 1.8s ease both; }
+@media (prefers-reduced-motion: reduce) {
+	.e-content .anchored:target { animation: none; }
+}
 .e-content em,
 .e-content i { font-style: italic; }
 
