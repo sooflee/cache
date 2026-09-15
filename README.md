@@ -119,6 +119,13 @@ while keeping its scroll-spy JS). ncaa's dark dashboard theme is re-skinned to t
 light essay palette and given a matching header + outline (see the CACHE RE-SKIN
 block appended to `reading/assets/ncaa/styles.css`).
 
+Watches, wine and real-estate are listed as **one article with three tabs**
+(`READING_TABS` in `build.py`). Each tab is still its own page at its old
+`reading/<slug>/` URL, built from its own mirror source with a shared tab strip
+above its header, so the studies' ids, styles and chart scripts never share a
+page and existing links keep working. Feeds, the tray and the sitemap treat the
+three as one entry that opens on the first tab.
+
 The **standalone** tab holds the interactive apps, which can't be frozen into a
 static archive (live backends, dynamic data), so they're **external links** to
 their running versions rather than mirrored pages — defined in

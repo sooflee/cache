@@ -182,8 +182,8 @@ def build_sitemap():
 	paths = (
 		["index.html", "reading.html", "standalone.html"]
 		+ [post_url(slug) for slug in POSTS]
-		+ [f"reading/{slug}/index.html" for slug, _cn, _l in READING
-		   if slug not in READING_PENDING]
+		+ [f"reading/{page}/index.html" for slug, _cn, _l in READING
+		   if slug not in READING_PENDING for page in page_slugs(slug)]
 		+ [target for target, _l in LOCAL_STANDALONE]
 	)
 	rows = "\n".join(f"  <url><loc>{BASE_URL}/{p}</loc></url>" for p in paths)
@@ -344,6 +344,7 @@ READING_LINKS = [
 	("https://www.bwang.io/magikarp/", "Newsletter"),
 ]
 READING = [
+	("ipos-spacex", "elekid", "Will the SpaceX IPO Beat the Market?"),
 	("smartphone-addiction", None, "Predicting Smartphone Addiction"),
 	("kaggriculture", None, "Improving Kaggriculture Bot"),
 	("iran-war", None, "The Iran War"),
@@ -352,18 +353,38 @@ READING = [
 	("world-cup-2026", "golem", "Who Will Win the 2026 World Cup?"),
 	("poker-pros", "voltorb", "High Roller Ledger"),
 	("spacs", "jolteon", "Understanding SPACs"),
-	("ipos-spacex", "elekid", "Will the SpaceX IPO Beat the Market?"),
 	("making-an-iphone", "electabuzz", "Anatomy of an iPhone"),
-	("watches", "magnemite", "Watches That Beat Retail"),
-	("wine", "squirtle", "Wine as an Investment Asset"),
-	("real-estate", "arbok", "What Predicts US Real-Estate Returns?"),
+	("watches", "magnemite", "Watches, Wine & Real Estate"),
 	("ncaa", "omastar", "Predicting March Madness 2026"),
 ]
+# Reading entries published as one article with a tab per study. The READING
+# entry is the first tab, so the feeds link there; every tab is still built from
+# its own mirror source at its own reading/<slug>/ URL, which keeps the links to
+# the separate articles that are already out in the world working, and keeps
+# each study's own ids, styles and chart scripts from colliding with the others.
+# Tabs are plain links between those pages, like the feed tabs.
+# {entry slug: [(slug, codename, tab label, page title)]}.
+READING_TABS = {
+	"watches": [
+		("watches", "magnemite", "Watches", "Watches That Beat Retail"),
+		("wine", "squirtle", "Wine", "Wine as an Investment Asset"),
+		("real-estate", "arbok", "Real Estate", "What Predicts US Real-Estate Returns?"),
+	],
+}
+# Tab slug -> the READING entry it's listed under.
+TAB_PARENT = {tab[0]: entry for entry, tabs in READING_TABS.items() for tab in tabs}
+
+
+def page_slugs(slug):
+	"""Every reading/<slug>/ page behind a READING entry: its tabs, or itself."""
+	return [tab[0] for tab in READING_TABS.get(slug, [(slug,)])]
+
+
 # Reading articles held back for now: still listed, but rendered as plain text
 # instead of a link, and kept out of sitemap.xml + feed.xml so nothing else
 # advertises a page the feed itself won't open. Drop a slug from this set to
 # publish it — the page is built either way.
-READING_PENDING = {"smartphone-addiction", "kaggriculture"}
+READING_PENDING = {"smartphone-addiction", "kaggriculture", "poker-pros", "kimi-vs-claude"}
 # Display order for the reading feed and the tray: held-back articles sink to
 # the bottom, everything else keeps its authored order. READING itself stays the
 # canonical build order.
@@ -371,8 +392,13 @@ READING_ORDERED = (
 	[e for e in READING if e[0] not in READING_PENDING]
 	+ [e for e in READING if e[0] in READING_PENDING]
 )
-# Derived from READING so the two can never drift apart.
-MIRRORED_READING = [e for e in READING if e[1] is not None]
+# Derived from READING so the two can never drift apart. A tabbed entry expands
+# to one page per tab, each titled by its own study: (slug, codename, title).
+MIRRORED_READING = [
+	(tab[0], tab[1], tab[3])
+	for slug, codename, label in READING if codename is not None
+	for tab in READING_TABS.get(slug, [(slug, codename, label, label)])
+]
 NATIVE_READING = [e for e in READING if e[1] is None]
 # Full-screen interactive apps that can't live in the narrow reading column (a
 # live chat app and a multi-page trading terminal). Listed under their own
@@ -400,7 +426,7 @@ LOCAL_STANDALONE = [(t, l) for t, l, local in STANDALONE_APPS if local]
 EXTERNAL_STANDALONE = [(t, l) for t, l, local in STANDALONE_APPS if not local]
 # Every reading article now shares the cache narrow column for a consistent
 # format. The standalone apps keep their own full-bleed layout.
-NARROW_SLUGS = {slug for slug, _cn, _label in READING}
+NARROW_SLUGS = {page for slug, _cn, _label in READING for page in page_slugs(slug)}
 # Display titles of the cache (blog) posts, filled in by main() before any page
 # is built — used to populate the left tray.
 CACHE_ITEMS: list[tuple[str, str]] = []
@@ -844,6 +870,31 @@ def build_redirects():
 		f.write(page)
 
 
+def inject_series_tabs(text, slug):
+	"""Put the combined article's tab strip directly above this tab's <header>.
+
+	Searched for after </head>, the same precaution as inject_tray: real-estate's
+	stylesheet comments quote tag names, so the <head> can't be trusted."""
+	entry = TAB_PARENT[slug]
+	name = next(label for s, _cn, label in READING if s == entry)
+	links = "".join(
+		f'<a href="../{s}/index.html"'
+		+ (' aria-current="page"' if s == slug else "")
+		+ f">{html.escape(tab)}</a>"
+		for s, _cn, tab, _title in READING_TABS[entry]
+	)
+	strip = (
+		f'<nav class="series-tabs" aria-label="{html.escape(name)}">'
+		f'<span class="series-name">{html.escape(name)}</span>'
+		f'<span class="series-list">{links}</span></nav>\n'
+	)
+	body = re.search(r"</head>", text, flags=re.I).end()
+	m = re.compile(r"<header\b", re.I).search(text, body)
+	if not m:
+		raise SystemExit(f"reading/{slug}: no <header> to hang the tab strip on")
+	return text[: m.start()] + strip + text[m.start() :]
+
+
 def build_reading_articles():
 	"""Mirror each reading article into reading/<slug>/index.html, preserving its
 	original styling. Copy any sibling assets and inject a back-link."""
@@ -887,8 +938,12 @@ def build_reading_articles():
 		text = set_favicon(text)
 		text = inject_ga(text)
 		text = add_og_tags(text, _label, f"reading/{slug}/index.html")
-		# Inject the left tray right after <body ...>, highlighting this article.
-		text = inject_tray(text, "reading", slug)
+		# A tab of a combined article gets the tab strip above its own header.
+		if slug in TAB_PARENT:
+			text = inject_series_tabs(text, slug)
+		# Inject the left tray right after <body ...>, highlighting this article
+		# (for a tab, the combined entry it's listed under).
+		text = inject_tray(text, "reading", TAB_PARENT.get(slug, slug))
 		if slug in NARROW_SLUGS:
 			text = inject_backtotop(text)
 

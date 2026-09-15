@@ -212,6 +212,29 @@ html.cache-narrow .hero-sub {
 	font-style: normal !important; font-weight: 400 !important; margin: 0 0 10px !important; max-width: none !important;
 }
 
+/* ─── Tab strip for a reading entry that combines several studies ───
+   (READING_TABS in build.py). Each tab is its own page, so the tabs are links;
+   the strip sits above that page's header and names the combined article. */
+html.cache-narrow .series-tabs {
+	display: block !important; margin: 0 0 18px !important; padding: 0 !important;
+	border-bottom: 1px solid #e6e1d8 !important;
+}
+html.cache-narrow .series-name {
+	display: block !important; font-size: 13px !important; font-weight: 300 !important;
+	color: #757575 !important; margin: 0 0 4px !important;
+}
+html.cache-narrow .series-list { display: flex !important; flex-wrap: wrap !important; gap: 0 22px !important; }
+html.cache-narrow .series-list a {
+	font-size: 15px !important; font-weight: 600 !important; line-height: 1.4 !important;
+	color: #6f6a62 !important; text-decoration: none !important;
+	padding: 6px 0 8px !important; margin-bottom: -1px !important;
+	border-bottom: 2px solid transparent !important;
+}
+html.cache-narrow .series-list a:hover { color: #111 !important; }
+html.cache-narrow .series-list a[aria-current="page"] {
+	color: #111 !important; border-bottom-color: var(--accent, #357BB3) !important;
+}
+
 /* Keep wide media/tables inside the column. */
 html.cache-narrow img,
 html.cache-narrow video,
