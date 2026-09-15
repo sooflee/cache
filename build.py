@@ -384,7 +384,10 @@ def page_slugs(slug):
 # instead of a link, and kept out of sitemap.xml + feed.xml so nothing else
 # advertises a page the feed itself won't open. Drop a slug from this set to
 # publish it — the page is built either way.
-READING_PENDING = {"smartphone-addiction", "kaggriculture", "poker-pros", "kimi-vs-claude"}
+READING_PENDING = {
+	"smartphone-addiction", "kaggriculture", "poker-pros", "kimi-vs-claude",
+	"making-an-iphone", "klefki",
+}
 # Display order for the reading feed and the tray: held-back articles sink to
 # the bottom, everything else keeps its authored order. READING itself stays the
 # canonical build order.
