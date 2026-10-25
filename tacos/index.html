@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Taco Tuesday Atlas</title>
+<meta name="description" content="Find al pastor Taco Tuesday deals across Chicago, Philadelphia, NYC/NJ, Greater LA, San Diego, and Las Vegas." />
+<meta name="theme-color" content="#2e7d32" />
+<link rel="preconnect" href="https://server.arcgisonline.com" crossorigin />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    --green: #2e7d32;
+    --green-dark: #1b5e20;
+    --amber: #f2b300;
+    --amber-dark: #8a5a00;
+    --blue: #2563eb;
+    --ink: #1d2521;
+    --muted: #6b736e;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: #eef2ee;
+  }
+  #map { position: absolute; inset: 0; --tile-filter: saturate(0.62) brightness(1.06) contrast(0.94); }
+  .leaflet-tile-pane { filter: var(--tile-filter); }
+
+  /* ---------- side panel ---------- */
+  .panel {
+    position: absolute;
+    z-index: 1000;
+    top: 16px;
+    left: 16px;
+    width: 360px;
+    max-height: calc(100% - 32px);
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+  }
+  .panel-head { padding: 16px 18px 12px; border-bottom: 1px solid #ecece7; }
+  .kicker {
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 4px;
+  }
+  h1 { font-size: 19px; line-height: 1.15; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .region-tabs {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 10px;
+    padding: 3px;
+    background: #f1f3ee;
+    border-radius: 10px;
+  }
+  .region-tab {
+    grid-column: span 2;
+    min-width: 0;
+    width: 100%;
+    white-space: nowrap;
+    border: 0;
+    background: transparent;
+    color: #5d665f;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .region-tab:hover { color: var(--green-dark); }
+  .region-tab.active {
+    background: #fff;
+    color: var(--green-dark);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+  .region-tab:focus-visible,
+  .filter:focus-visible,
+  .locate:focus-visible,
+  .search button:focus-visible,
+  .search input:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+  @media (max-width: 350px) {
+    .region-tab { font-size: 9px; padding: 6px 2px; }
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 12px;
+    font-size: 11.5px;
+    color: #414a45;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.18);
+    flex: none;
+  }
+  .dot.ok { background: var(--green); }
+  .dot.warn {
+    background: var(--green);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+    position: relative;
+  }
+  .dot.warn::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .dot.you { background: var(--blue); }
+  .dot.price-strict { background: #2e7d32; }
+  .dot.price-extended { background: #81c784; }
+  .dot.price-value { background: #d4c62a; }
+  .legend-note {
+    width: 100%;
+    font-size: 10.5px;
+    color: #7a827d;
+    line-height: 1.35;
+    margin-top: 2px;
+  }
+
+  /* ---------- search ---------- */
+  .search { padding: 12px 18px 10px; border-bottom: 1px solid #ecece7; }
+  .search form { display: flex; gap: 8px; }
+  .search input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #dcdcd4;
+    border-radius: 10px;
+    padding: 9px 11px;
+    font-size: 12.5px;
+    outline: none;
+    background: #fff;
+    color: var(--ink);
+  }
+  .search input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+  }
+  .search button[type="submit"] {
+    border: 0;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 10px;
+    padding: 0 15px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .search button[type="submit"]:hover { background: var(--green); }
+  .search button[type="submit"]:disabled { opacity: 0.55; cursor: wait; }
+  .status {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.35;
+    min-height: 15px;
+  }
+  .status.err { color: #b3261e; }
+  .status.ok { color: var(--green-dark); }
+  .locate {
+    margin-top: 5px;
+    border: 0;
+    background: none;
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 12px;
+  }
+  .locate:hover { text-decoration: underline; }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .filter {
+    border: 1px solid #e2e2da;
+    background: #fff;
+    color: #4a534d;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 10.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .filter:hover { background: #f6f8f3; }
+  .filter.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .map-style-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #6b736e;
+  }
+  .map-style-row select {
+    border: 1px solid #e2e2da;
+    background: #fff;
+    color: #4a534d;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .map-style-row select:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+  .price-slider {
+    margin-top: 9px;
+    padding: 8px 10px 5px;
+    background: #f7f8f4;
+    border: 1px solid #e5e7df;
+    border-radius: 10px;
+  }
+  .price-slider-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b736e;
+    margin-bottom: 2px;
+  }
+  .price-slider-row strong {
+    font-size: 12px;
+    color: var(--ink);
+  }
+  #priceSlider {
+    width: 100%;
+    margin: 2px 0 0;
+    accent-color: var(--slider-color, #2e7d32);
+    cursor: pointer;
+  }
+  .price-slider-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    font-weight: 700;
+    color: #8a918c;
+    margin-top: -1px;
+  }
+  .pop-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+  .pop-links a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+  .pop-links a:hover { text-decoration: underline; }
+  /* ---------- list ---------- */
+  .list { overflow-y: auto; padding: 4px 8px 10px; }
+  .list-title {
+    padding: 10px 10px 2px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #3f4843;
+    line-height: 1.3;
+  }
+  .section {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #8a918c;
+    padding: 12px 10px 5px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .section .bar { height: 3px; width: 20px; border-radius: 2px; background: var(--green); flex: none; }
+  .item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.12s ease;
+  }
+  .item:hover { background: #f5f6f1; }
+  .item .dot-badge {
+    flex: none;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px rgba(0, 0, 0, 0.14);
+    margin-top: 5px;
+  }
+  .item .dot-badge.verify {
+    background: var(--green);
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14);
+  }
+  .item .dot-badge.verify::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .item-name { font-size: 12.5px; font-weight: 650; line-height: 1.25; }
+  .item-tier {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 1px 5px;
+    border-radius: 999px;
+    background: #f1f3ee;
+    color: #4c554f;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    vertical-align: 1px;
+  }
+  .item-tier.extended { background: #e8f5e9; color: #2e7d32; }
+  .item-tier.value { background: #f4f9c8; color: #5d6b00; }
+  .item-tier.daily { background: #e3f2fd; color: #1565c0; }
+  .item-sub { font-size: 10.8px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+  .item-dist { font-size: 10.8px; color: var(--green-dark); font-weight: 650; margin-top: 2px; }
+  .panel-foot {
+    padding: 8px 18px 11px;
+    border-top: 1px solid #ecece7;
+    font-size: 10px;
+    line-height: 1.4;
+    color: #8a918c;
+  }
+
+  /* ---------- map markers ---------- */
+  .pin {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--c);
+    border: 3px solid #fff;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.32);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .pin::after {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+  }
+  .pin:hover { transform: scale(1.14); }
+  .pin.verify::after {
+    width: 11px;
+    height: 11px;
+    background: #fff;
+  }
+  .you-dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--blue);
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 7px rgba(37, 99, 235, 0.18);
+    animation: pulse 2.2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.35); }
+    70% { box-shadow: 0 0 0 14px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  }
+
+  /* ---------- popups ---------- */
+  .leaflet-popup-content-wrapper {
+    border-radius: 13px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+  .leaflet-popup-content { margin: 14px 16px; font-size: 12.5px; line-height: 1.45; }
+  .pop-kicker {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 800;
+    margin-bottom: 3px;
+    color: var(--green-dark);
+  }
+  .pop-kicker.warn { color: var(--green-dark); }
+  .pop-title { font-size: 15px; font-weight: 750; line-height: 1.2; margin-bottom: 5px; }
+  .pop-price { font-size: 17px; font-weight: 800; color: var(--green-dark); margin-bottom: 1px; }
+  .price-swatch {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: 1px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+  }
+  .pop-price span { font-size: 11.5px; font-weight: 600; color: #5c665f; }
+  .pop-tier {
+    display: inline-block;
+    margin: 3px 0 6px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #f1f3ee;
+    color: #4c554f;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pop-tier.extended { background: #e8f5e9; color: #2e7d32; }
+  .pop-tier.value { background: #f4f9c8; color: #5d6b00; }
+  .pop-dist { font-size: 11.5px; font-weight: 700; color: var(--blue); margin: 2px 0 4px; }
+  .pop-photo {
+    width: 100%;
+    height: 145px;
+    object-fit: cover;
+    border-radius: 9px;
+    margin: 6px 0 8px;
+    background: #eee;
+    display: block;
+  }
+  .pop-quote {
+    margin: 8px 0 6px;
+    padding: 7px 9px;
+    border-left: 3px solid var(--green);
+    background: #f5f8f3;
+    border-radius: 0 8px 8px 0;
+    font-size: 11px;
+    color: #3f4843;
+  }
+  .pop-quote cite {
+    display: block;
+    margin-top: 3px;
+    font-size: 9.5px;
+    color: #7a827d;
+    font-style: normal;
+  }
+  .pop-when { font-size: 11.5px; font-weight: 650; color: #3d4540; margin-bottom: 7px; }
+  .pop-note { font-size: 11.5px; color: #59625c; margin-bottom: 7px; }
+  .pop-addr { font-size: 10.5px; color: #8a918c; border-top: 1px solid #eee; padding-top: 6px; }
+  .pop-status {
+    display: inline-block;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 2px 7px;
+    margin-top: 2px;
+  }
+  .pop-status.ok { background: #e6f4e7; color: #1b5e20; }
+  .pop-status.warn { background: #eef3ea; color: #3f5a3f; }
+
+  .item-deal {
+    font-size: 10.2px;
+    color: #3f4843;
+    margin-top: 2px;
+    line-height: 1.3;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pop-deal {
+    margin: 0 0 8px;
+    padding: 7px 9px;
+    border-radius: 9px;
+    background: #f3f7f0;
+    border: 1px solid #e3ebdf;
+    font-size: 11.5px;
+    color: #3f4843;
+    line-height: 1.35;
+  }
+  .pop-deal strong { display: block; font-size: 12px; color: #1b5e20; }
+  .pop-deal span { display: block; margin-top: 2px; color: #5c665f; }
+  .pop-verified {
+    font-size: 10px;
+    color: #8a918c;
+    margin-top: 5px;
+  }
+  .report-link {
+    border: 0;
+    background: none;
+    padding: 0;
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .report-link:hover { text-decoration: underline; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%) translateY(16px);
+    background: #1d2521;
+    color: #fff;
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    line-height: 1.35;
+    max-width: 80vw;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 4000;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  /* ---------- map hud ---------- */
+  .hud {
+    position: absolute;
+    z-index: 900;
+    right: 16px;
+    bottom: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    padding: 10px 14px;
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #4c554f;
+    max-width: 320px;
+  }
+  .you-label {
+    background: var(--blue);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 2px 7px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .hud strong { color: var(--ink); }
+
+  .pop-photo-note {
+    font-size: 9.5px;
+    color: #8a918c;
+    margin: -3px 0 7px;
+  }
+  .sheet-handle { display: none; }
+
+  @media (max-width: 720px) {
+    .panel {
+      top: auto;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-height: 78vh;
+      border-radius: 18px 18px 0 0;
+      transition: max-height 0.25s ease;
+    }
+    .panel.collapsed { max-height: 92px; }
+    .panel.collapsed .legend,
+    .panel.collapsed .region-tabs,
+    .panel.collapsed .search,
+    .panel.collapsed .list { display: none; }
+    .sheet-handle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      background: transparent;
+      padding: 8px 0 2px;
+      cursor: pointer;
+    }
+    .sheet-handle span {
+      width: 36px;
+      height: 4px;
+      border-radius: 999px;
+      background: #cfcfc6;
+      display: block;
+    }
+    .legend-note { display: none; }
+    .hud { display: none; }
+    .list { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+  }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<aside class="panel" id="panel">
+  <button class="sheet-handle" id="sheetToggle" aria-label="Collapse panel" aria-expanded="true"><span></span></button>
+  <div class="panel-head">
+    <div class="kicker" id="kicker">Al pastor edition · ≤ $1.60 per taco</div>
+    <h1 id="mapTitle">Taco Tuesday, Chicagoland</h1>
+    <div class="region-tabs" role="tablist" aria-label="City">
+      <button class="region-tab active" data-city="chicago" role="tab" aria-selected="true">Chicago</button>
+      <button class="region-tab" data-city="philadelphia" role="tab" aria-selected="false">Philadelphia</button>
+      <button class="region-tab" data-city="nycnj" role="tab" aria-selected="false">NYC / NJ</button>
+      <button class="region-tab" data-city="losangeles" role="tab" aria-selected="false">Greater LA</button>
+      <button class="region-tab" data-city="sandiego" role="tab" aria-selected="false">San Diego</button>
+      <button class="region-tab" data-city="lasvegas" role="tab" aria-selected="false">Las Vegas</button>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><span class="dot price-strict"></span>≤$1.60</div>
+      <div class="legend-item"><span class="dot price-extended"></span>$1.61–$2.00</div>
+      <div class="legend-item"><span class="dot price-value"></span>$2.01+</div>
+      <div class="legend-item"><span class="dot warn"></span>Call first</div>
+      <div class="legend-item"><span class="dot you"></span>Your search</div>
+    </div>
+  </div>
+
+  <div class="search">
+    <form id="searchForm">
+      <input id="q" type="text" autocomplete="postal-code" placeholder="Address or ZIP code" aria-label="Address or ZIP code" />
+      <button type="submit">Find</button>
+    </form>
+    <div class="price-slider">
+      <div class="price-slider-row">
+        <span>Max per taco</span>
+        <strong id="priceCapLabel">$3.00</strong>
+      </div>
+      <input id="priceSlider" type="range" min="0" max="2" step="1" value="2" aria-label="Maximum price per taco" />
+      <div class="price-slider-ticks" aria-hidden="true">
+        <span id="tickStrict">$1.60</span>
+        <span id="tickExtended">$2.00</span>
+        <span id="tickValue">$3.00</span>
+      </div>
+    </div>
+    <div class="filters">
+      <button class="filter" id="filterRating" title="Google ratings only" aria-pressed="false">★ Google 4.0+</button>
+      <button class="filter" id="filterDays" aria-pressed="false">More than Tuesday</button>
+      <button class="filter" id="filterTrucks" aria-pressed="false">Hide food trucks</button>
+    </div>
+    <div class="map-style-row">
+      <label for="mapStyle">Map style</label>
+      <select id="mapStyle">
+        <option value="street">Street</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="terrain">Terrain</option>
+        <option value="satellite">Satellite</option>
+      </select>
+    </div>
+    <div class="map-style-row">
+      <label for="ownershipFilter">Ownership</label>
+      <select id="ownershipFilter" aria-label="Filter by chain or independent">
+        <option value="all">All spots</option>
+        <option value="independent">Independent</option>
+        <option value="chain">Chains</option>
+      </select>
+    </div>
+    <div class="status" id="status">Enter a location to sort by distance.</div>
+    <button class="locate" id="locate">Use my current location</button>
+    <button class="locate" id="clear" style="display:none">Clear search</button>
+  </div>
+
+  <div class="list" id="list"></div>
+</aside>
+
+<div class="hud">
+  <strong id="hudCount">19</strong> spots · <span id="hudRegion">Chicagoland</span> · <span id="hudCap">≤ $1.60/taco</span><br />
+  <span id="hudSub">Search an address or ZIP to sort by distance.</span>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="taco-data.js"></script>
+
+<script>
+  // ---------------- DATA ----------------
+  const regions = window.TACO_REGIONS || {};
+  const cities = window.TACO_CITIES || {};
+  let activeCityKey = "chicago";
+  let activeState = "Illinois";
+  let activeStateAbbr = "IL";
+  let activeAltState = null;
+  let activeAltStateAbbr = null;
+  let places = [];
+
+  // ---------------- MAP ----------------
+  const map = L.map("map", {
+    zoomControl: false,
+    scrollWheelZoom: true,
+    zoomSnap: 0.5,
+    fadeAnimation: false,
+    markerZoomAnimation: false
+  }).setView([41.85, -87.95], 9);
+
+  L.control.zoom({ position: "topright" }).addTo(map);
+  window.addEventListener("resize", () => map.invalidateSize());
+
+  map.on("popupopen", function (e) {
+    setTimeout(function () { e.popup.update(); }, 120);
+  });
+  L.control.scale({ imperial: true, position: "bottomleft" }).addTo(map);
+
+  // Basemap styles. Each style loads at most two Esri layers so switching
+  // cities stays fast; labels are a separate overlay only when needed.
+  const MAP_STYLES = {
+    street: {
+      label: "Street",
+      base: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      attribution: "Tiles &copy; Esri &mdash; Esri, HERE, Garmin, USGS, OpenStreetMap contributors",
+      filter: "saturate(0.62) brightness(1.06) contrast(0.94)"
+    },
+    light: {
+      label: "Light",
+      base: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+      labels: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+      attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
+      filter: "none"
+    },
+    dark: {
+      label: "Dark",
+      base: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+      labels: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+      attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
+      filter: "none"
+    },
+    terrain: {
+      label: "Terrain",
+      base: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+      attribution: "Tiles &copy; Esri &mdash; Esri, HERE, Garmin, USGS, OpenStreetMap contributors",
+      filter: "saturate(0.8) brightness(1.02) contrast(0.96)"
+    },
+    satellite: {
+      label: "Satellite",
+      base: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      labels: "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer/tile/{z}/{y}/{x}",
+      attribution: "Tiles &copy; Esri &mdash; Esri, Maxar, Earthstar Geographics",
+      filter: "saturate(0.95) brightness(0.98)"
+    }
+  };
+  let activeStyle = "street";
+  let baseTiles = null;
+  let labelTiles = null;
+  let fallbackTiles = null;
+
+  function setMapStyle(styleKey, opts) {
+    const style = MAP_STYLES[styleKey];
+    if (!style) return;
+    if (baseTiles) map.removeLayer(baseTiles);
+    if (labelTiles) map.removeLayer(labelTiles);
+    if (fallbackTiles) { map.removeLayer(fallbackTiles); fallbackTiles = null; }
+    activeStyle = styleKey;
+
+    document.getElementById("map").style.setProperty("--tile-filter", style.filter);
+    baseTiles = L.tileLayer(style.base, {
+      maxZoom: 19,
+      zIndex: 1,
+      keepBuffer: 4,
+      attribution: style.attribution
+    }).addTo(map);
+
+    if (style.labels) {
+      labelTiles = L.tileLayer(style.labels, {
+        maxZoom: 19,
+        pane: "overlayPane",
+        opacity: 0.9,
+        zIndex: 3
+      }).addTo(map);
+    } else {
+      labelTiles = null;
+    }
+
+    baseTiles.on("tileerror", function () {
+      if (fallbackTiles) return;
+      const fallback = styleKey === "street" ? MAP_STYLES.terrain : MAP_STYLES.street;
+      fallbackTiles = L.tileLayer(fallback.base, {
+        maxZoom: 19,
+        zIndex: 0,
+        attribution: fallback.attribution
+      }).addTo(map);
+    });
+
+    const select = document.getElementById("mapStyle");
+    if (select) select.value = styleKey;
+    try { localStorage.setItem("tacoMapStyle", styleKey); } catch (e) { /* private mode */ }
+    if (opts && opts.toast) showToast(`Map style: ${style.label}`);
+  }
+
+  const savedStyle = (() => {
+    try { return localStorage.getItem("tacoMapStyle"); } catch (e) { return null; }
+  })();
+  setMapStyle(MAP_STYLES[savedStyle] ? savedStyle : "street");
+
+
+  const isMobile = window.matchMedia("(max-width: 720px)").matches;
+
+  // Warm the browser cache for the other city tabs. Leaflet reuses cached
+  // tile images, so switching tabs is nearly instant after this runs. Keep
+  // concurrency low and pause while a new city is loading so the active map
+  // never waits behind background prefetches.
+  const prefetchedCityTiles = new Set();
+  const prefetchQueue = [];
+  const PREFETCH_MAX_TILES = 180;
+  const PREFETCH_CONCURRENCY = 2;
+  let prefetchActive = 0;
+  let prefetchPaused = false;
+  let prefetchResumeTimer = null;
+
+  function runPrefetchQueue() {
+    if (prefetchPaused) return;
+    while (prefetchActive < PREFETCH_CONCURRENCY && prefetchQueue.length) {
+      const url = prefetchQueue.shift();
+      const img = new Image();
+      prefetchActive += 1;
+      const done = () => {
+        prefetchActive -= 1;
+        runPrefetchQueue();
+      };
+      img.onload = done;
+      img.onerror = done;
+      img.fetchPriority = "low";
+      img.src = url;
+    }
+  }
+
+  function pausePrefetch() {
+    prefetchPaused = true;
+    clearTimeout(prefetchResumeTimer);
+    prefetchResumeTimer = setTimeout(() => {
+      prefetchPaused = false;
+      runPrefetchQueue();
+    }, 4500);
+  }
+
+  function prefetchCityTiles(cityKey, urgent) {
+    if (cityKey === activeCityKey || prefetchedCityTiles.has(cityKey)) return;
+    const city = cities[cityKey];
+    const region = city && regions[city.region];
+    if (!region) return;
+    const items = (region.places || []).filter(
+      p => p.priceValue != null && p.priceValue <= (city.valueCap || 3) + 0.001
+    );
+    if (!items.length) return;
+    if (navigator.connection && navigator.connection.saveData) return;
+
+    const bounds = L.latLngBounds(items.map(p => [p.lat, p.lng]));
+    const paddingTL = L.point(isMobile ? 16 : 390, 30);
+    const paddingBR = L.point(30, 30);
+    let zoom = map.getBoundsZoom(bounds, false, paddingTL.add(paddingBR));
+    zoom = Math.min(12, zoom);
+    const paddingOffset = paddingBR.subtract(paddingTL).divideBy(2);
+    const sw = map.project(bounds.getSouthWest(), zoom);
+    const ne = map.project(bounds.getNorthEast(), zoom);
+    const center = map.unproject(sw.add(ne).divideBy(2).add(paddingOffset), zoom);
+
+    const tileZoom = Math.round(zoom);
+    const scale = Math.pow(2, tileZoom - zoom);
+    const half = map.getSize().multiplyBy(0.5 * scale);
+    const centerPixel = map.project(center, tileZoom);
+    const nw = centerPixel.subtract(half);
+    const se = centerPixel.add(half);
+    const x0 = Math.floor(nw.x / 256) - 1;
+    const x1 = Math.floor(se.x / 256) + 1;
+    const y0 = Math.floor(nw.y / 256) - 1;
+    const y1 = Math.floor(se.y / 256) + 1;
+    if ((x1 - x0 + 1) * (y1 - y0 + 1) > PREFETCH_MAX_TILES) return;
+
+    prefetchedCityTiles.add(cityKey);
+    const urls = [];
+    for (let x = x0; x <= x1; x += 1) {
+      for (let y = y0; y <= y1; y += 1) {
+        urls.push(MAP_STYLES[activeStyle].base
+          .replace("{z}", String(tileZoom))
+          .replace("{y}", String(y))
+          .replace("{x}", String(x)));
+      }
+    }
+    if (urgent) prefetchQueue.unshift(...urls);
+    else prefetchQueue.push(...urls);
+    runPrefetchQueue();
+  }
+
+  function warmOtherCities() {
+    const queue = Object.keys(cities).filter(key => key !== activeCityKey);
+    const next = () => {
+      const cityKey = queue.shift();
+      if (!cityKey) return;
+      prefetchCityTiles(cityKey);
+      setTimeout(next, 900);
+    };
+    setTimeout(next, 6000);
+  }
+
+
+  const panelEl = document.getElementById("panel");
+  const sheetToggle = document.getElementById("sheetToggle");
+  sheetToggle.addEventListener("click", function () {
+    const collapsed = panelEl.classList.toggle("collapsed");
+    sheetToggle.setAttribute("aria-expanded", String(!collapsed));
+    sheetToggle.setAttribute("aria-label", collapsed ? "Expand panel" : "Collapse panel");
+  });
+
+  // ---------------- STATE ----------------
+  const markers = {};
+  const preloadedPhotos = new Set();
+  let userMarker = null;
+  let focusSeq = 0;
+  let searching = false;
+  let searchSeq = 0;
+  const geocodeCache = new Map();
+  let currentLoc = null;
+  let filterRating = false;
+  let filterMoreDays = false;
+  let hideTrucks = false;
+  let ownershipFilter = "all";
+  let priceTier = "value";
+
+  const listEl = document.getElementById("list");
+  const statusEl = document.getElementById("status");
+  const hudSub = document.getElementById("hudSub");
+  const hudRegion = document.getElementById("hudRegion");
+  const hudCap = document.getElementById("hudCap");
+  const kicker = document.getElementById("kicker");
+  const clearBtn = document.getElementById("clear");
+  const qInput = document.getElementById("q");
+  const mapTitle = document.getElementById("mapTitle");
+  const filterRatingBtn = document.getElementById("filterRating");
+  const filterDaysBtn = document.getElementById("filterDays");
+  const filterTrucksBtn = document.getElementById("filterTrucks");
+  const ownershipSelect = document.getElementById("ownershipFilter");
+  const priceSlider = document.getElementById("priceSlider");
+  const priceCapLabel = document.getElementById("priceCapLabel");
+  const tickStrict = document.getElementById("tickStrict");
+  const tickExtended = document.getElementById("tickExtended");
+  const tickValue = document.getElementById("tickValue");
+
+  // ---------------- HELPERS ----------------
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 3958.8;
+    const toRad = d => (d * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
+  function driveMin(miles) {
+    return Math.max(2, Math.round(miles * 2.0));
+  }
+
+  function ratingText(p) {
+    return p.rating != null ? `${p.rating.toFixed(1)}★ Google` : "No Google rating";
+  }
+
+  function priceColor(p) {
+    if (p.priceValue == null) return "#2e7d32";
+    if (p.priceValue <= 1.6) return "#2e7d32";
+    if (p.priceValue <= 2.0) return "#81c784";
+    return "#d4c62a";
+  }
+
+  function isDaily(p) {
+    const when = (p.when || "").toLowerCase();
+    return when.includes("daily") || when.includes("every day") || when.includes("everyday");
+  }
+
+  function preloadPhoto(src) {
+    if (!src || preloadedPhotos.has(src)) return;
+    preloadedPhotos.add(src);
+    const img = new Image();
+    img.decoding = "async";
+    img.src = src;
+  }
+
+  function preloadPhotos(items) {
+    // Don't compete with the basemap on a city switch. Popups still load
+    // their own image on demand, and hover/click preloads immediately.
+    const run = () => items.slice(0, 3).forEach(p => preloadPhoto(p.photo));
+    if ("requestIdleCallback" in window) requestIdleCallback(run, { timeout: 1200 });
+    else setTimeout(run, 700);
+  }
+
+  function currentCap() {
+    const city = cities[activeCityKey] || {};
+    if (priceTier === "value" && Number.isFinite(city.valueCap)) return city.valueCap;
+    if (priceTier === "extended" && Number.isFinite(city.extendedCap)) return city.extendedCap;
+    return 1.6;
+  }
+
+  function updateCapLabels() {
+    const city = cities[activeCityKey] || {};
+    const cap = currentCap();
+    const idx = priceTier === "value" ? 2 : priceTier === "extended" ? 1 : 0;
+    const sliderColor = idx === 0 ? "#2e7d32" : idx === 1 ? "#81c784" : "#d4c62a";
+    priceSlider.value = String(idx);
+    priceSlider.style.setProperty("--slider-color", sliderColor);
+    priceCapLabel.textContent = `$${cap.toFixed(2)}`;
+    tickStrict.textContent = "$1.60";
+    tickExtended.textContent = `$${Number.isFinite(city.extendedCap) ? city.extendedCap.toFixed(2) : "2.00"}`;
+    tickValue.textContent = `$${Number.isFinite(city.valueCap) ? city.valueCap.toFixed(2) : "3.00"}`;
+    priceSlider.setAttribute("aria-valuetext", `Maximum $${cap.toFixed(2)} per taco`);
+    kicker.textContent = `Al pastor edition · ≤ $${cap.toFixed(2)} per taco`;
+    hudCap.textContent = `≤ $${cap.toFixed(2)}/taco`;
+  }
+
+  function pinIcon(p, dx, dy) {
+    const verify = p.status === "verify";
+    const color = priceColor(p);
+    const cls = verify ? " verify" : "";
+    const ox = dx || 0;
+    const oy = dy || 0;
+    return L.divIcon({
+      className: "",
+      html: `<div class="pin${cls}" style="--c:${color}"></div>`,
+      iconSize: [22, 22],
+      iconAnchor: [11 - ox, 11 - oy],
+      popupAnchor: [ox, -13 + oy]
+    });
+  }
+
+  function googleLink(p) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + ", " + p.addr)}`;
+  }
+
+  function yelpLink(p) {
+    return `https://www.yelp.com/search?find_desc=${encodeURIComponent(p.name)}&find_loc=${encodeURIComponent(p.addr)}`;
+  }
+
+  function popupHtml(p) {
+    const status =
+      p.status === "confirmed"
+        ? '<span class="pop-status ok">Venue-confirmed</span>'
+        : p.status === "likely"
+          ? '<span class="pop-status warn">Listing + reports</span>'
+          : '<span class="pop-status warn">Call ahead</span>';
+    const dist = p._dist != null
+      ? `<div class="pop-dist">${p._dist.toFixed(1)} mi · ~${driveMin(p._dist)} min drive</div>`
+      : "";
+    const photoNote = p.photoType === "venue"
+      ? "Venue photo — may not show al pastor"
+      : "Al pastor photo";
+    return `
+      <div class="pop">
+        <div class="pop-kicker ${p.status === "verify" ? "warn" : ""}">Taco Tuesday · al pastor</div>
+        <div class="pop-title">${p.name}</div>
+        <div class="pop-price"><span class="price-swatch" style="background:${priceColor(p)}"></span>${p.price} <span>per taco · al pastor</span></div>
+        ${p.tier === "extended" ? '<div class="pop-tier extended">$1.61–$2.00</div>' : p.tier === "value" ? '<div class="pop-tier value">$2.01+</div>' : ""}
+        ${dist}
+        ${p.photo ? `<img class="pop-photo" src="${p.photo}" alt="Food at ${p.name}" loading="lazy" decoding="async"><div class="pop-photo-note">${photoNote}</div>` : ""}
+        <div class="pop-when">${p.when} · ${ratingText(p)}</div>
+        <div class="pop-deal"><strong>3 tacos ${p.total3}</strong><span>${p.conditions}</span></div>
+        <div class="pop-note">${p.note}</div>
+        ${p.quote ? `<blockquote class="pop-quote">“${p.quote}”<cite>${p.quoteBy}</cite></blockquote>` : ""}
+        <div class="pop-addr">${p.addr}</div>
+        <div class="pop-verified">${p.chain ? "Chain" : "Independent"} · Checked ${p.verified} · <button class="report-link" data-id="${p.id}">Report outdated</button></div>
+        <div class="pop-links">
+          <a href="${googleLink(p)}" target="_blank" rel="noopener">Google reviews</a>
+          <a href="${yelpLink(p)}" target="_blank" rel="noopener">Yelp</a>
+          ${p.sourceUrl ? `<a href="${p.sourceUrl}" target="_blank" rel="noopener">Source</a>` : ""}
+        </div>
+        <div>${status}</div>
+      </div>`;
+  }
+
+  const youIcon = L.divIcon({
+    className: "",
+    html: '<div class="you-dot"></div>',
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+    popupAnchor: [0, -12]
+  });
+
+  // ---------------- MARKERS ----------------
+  const markerLayer = L.layerGroup().addTo(map);
+
+  function buildMarkers() {
+    Object.keys(markers).forEach(key => delete markers[key]);
+    markerLayer.clearLayers();
+    places.forEach(p => {
+      const m = L.marker([p.lat, p.lng], {
+        icon: pinIcon(p, false),
+        riseOnHover: true
+      }).bindPopup(function () { return popupHtml(p); }, {
+        maxWidth: 300,
+        autoPanPadding: L.point(24, 90),
+        keepInView: true
+      });
+      m.on("mouseover", () => preloadPhoto(p.photo));
+      markerLayer.addLayer(m);
+      markers[p.id] = m;
+    });
+  }
+
+  // ---------------- REGIONS ----------------
+  function loadCity(cityKey, options) {
+    const city = cities[cityKey];
+    if (!city) return;
+    const region = regions[city.region];
+    if (!region) return;
+
+    activeCityKey = cityKey;
+    activeState = city.state || region.state || "Illinois";
+    activeStateAbbr = city.stateAbbr || region.stateAbbr || "IL";
+    activeAltState = city.altState || null;
+    activeAltStateAbbr = city.altStateAbbr || null;
+    searchSeq++;
+    searching = false;
+    const searchBtn = document.querySelector('#searchForm button[type="submit"]');
+    if (searchBtn) searchBtn.disabled = false;
+    places = (region.places || []).map(p => ({ ...p, photo: `photos/${p.photoId}.jpg` }));
+
+    currentLoc = city.focus ? { ...city.focus, isCity: true } : null;
+    if (currentLoc) {
+      places.forEach(p => {
+        p._dist = haversine(currentLoc.lat, currentLoc.lng, p.lat, p.lng);
+      });
+    }
+
+    filterRating = false;
+    filterMoreDays = false;
+    hideTrucks = false;
+    ownershipFilter = "all";
+    ownershipSelect.value = "all";
+    filterRatingBtn.classList.remove("active");
+    filterDaysBtn.classList.remove("active");
+    filterTrucksBtn.classList.remove("active");
+    filterTrucksBtn.textContent = "Hide food trucks";
+    filterRatingBtn.setAttribute("aria-pressed", "false");
+    filterDaysBtn.setAttribute("aria-pressed", "false");
+    filterTrucksBtn.setAttribute("aria-pressed", "false");
+    if (userMarker) {
+      map.removeLayer(userMarker);
+      userMarker = null;
+    }
+    clearBtn.style.display = "none";
+    qInput.value = "";
+    const zipHint = city.exampleZipAlt ? `${city.exampleZip} / ${city.exampleZipAlt}` : (city.exampleZip || "60601");
+    qInput.placeholder = `Address or ZIP — e.g. ${zipHint}`;
+    statusEl.textContent = "Enter a location to sort by distance.";
+    statusEl.className = "status";
+
+    if (isMobile && options && options.collapse) {
+      panelEl.classList.add("collapsed");
+      sheetToggle.setAttribute("aria-expanded", "false");
+      sheetToggle.setAttribute("aria-label", "Expand panel");
+    }
+
+    mapTitle.textContent = city.focus
+      ? `Taco Tuesday, near ${city.label}`
+      : `Taco Tuesday, ${city.label}`;
+    document.title = `Taco Tuesday Atlas — ${city.label}`;
+    hudRegion.textContent = city.focus ? `near ${city.label}` : city.label;
+    document.querySelectorAll(".region-tab").forEach(btn => {
+      const active = btn.dataset.city === cityKey;
+      btn.classList.toggle("active", active);
+      btn.setAttribute("aria-selected", String(active));
+    });
+
+    map.stop();
+    pausePrefetch();
+    buildMarkers();
+    map.closePopup();
+    // refresh() fits the visible pins. Only set a fallback view when there
+    // are no visible pins, avoiding a second camera move and duplicate tiles.
+    if (!city.focus && !visiblePlaces().length) {
+      map.setView(region.center, region.zoom, { animate: false });
+    }
+    refresh();
+  }
+
+  // ---------------- LIST ----------------
+  function addItem(p) {
+    const item = document.createElement("div");
+    item.className = "item";
+    const badgeClass = p.status === "verify" ? "verify" : "ok";
+    const dist = p._dist != null
+      ? `<div class="item-dist">${p._dist.toFixed(1)} mi · ~${driveMin(p._dist)} min drive</div>`
+      : "";
+    const tier = p.tier === "extended"
+      ? '<span class="item-tier extended">$1.61–$2.00</span>'
+      : p.tier === "value"
+        ? '<span class="item-tier value">$2.01+</span>'
+        : "";
+    const daily = isDaily(p) ? '<span class="item-tier daily">Daily</span>' : "";
+    item.innerHTML = `
+      <div class="dot-badge ${badgeClass}" style="background:${priceColor(p)}" aria-hidden="true"></div>
+      <div>
+        <div class="item-name">${p.name}${tier}${daily}</div>
+        <div class="item-sub">${p.area} · <strong>${p.price}</strong> · ${ratingText(p)}</div>
+        <div class="item-deal">3 tacos ${p.total3} · ${p.conditions}</div>
+        ${dist}
+      </div>`;
+    item.addEventListener("mouseenter", () => preloadPhoto(p.photo));
+    item.addEventListener("click", () => focusPlace(p));
+    listEl.appendChild(item);
+  }
+
+  function addSection(label, items) {
+    const div = document.createElement("div");
+    div.className = "section";
+    div.innerHTML = `<span class="bar"></span>${label}`;
+    listEl.appendChild(div);
+    items.forEach(addItem);
+  }
+
+  function renderList(items, title, split) {
+    listEl.innerHTML = "";
+    const titleEl = document.createElement("div");
+    titleEl.className = "list-title";
+    titleEl.textContent = title;
+    listEl.appendChild(titleEl);
+
+    if (split) {
+      addSection("Closest 5", items.slice(0, 5));
+      if (items.length > 5) addSection("Everything else", items.slice(5));
+    } else {
+      addSection("All spots", items);
+    }
+  }
+
+  function focusPlace(p) {
+    if (isMobile) {
+      panelEl.classList.add("collapsed");
+      sheetToggle.setAttribute("aria-expanded", "false");
+      sheetToggle.setAttribute("aria-label", "Expand panel");
+    }
+    const seq = ++focusSeq;
+    preloadPhoto(p.photo);
+    const openPopup = function () {
+      if (seq !== focusSeq) return;
+      const marker = markers[p.id];
+      if (marker) marker.openPopup();
+    };
+    map.flyTo([p.lat, p.lng], 15, { duration: 0.7, easeLinearity: 0.25 });
+    map.once("moveend", openPopup);
+    setTimeout(openPopup, 1000);
+  }
+
+  function fitPlaces(items) {
+    if (!items.length) return;
+    const bounds = L.latLngBounds(items.map(p => [p.lat, p.lng]));
+    map.fitBounds(bounds, {
+      paddingTopLeft: [isMobile ? 16 : 390, 30],
+      paddingBottomRight: [30, isMobile ? 104 : 30],
+      maxZoom: 12,
+      animate: false
+    });
+  }
+
+  function fitNearest(loc, top5, maxZoom = 11) {
+    if (!top5.length) return;
+    const pts = [[loc.lat, loc.lng], ...top5.map(p => [p.lat, p.lng])];
+    map.fitBounds(L.latLngBounds(pts), {
+      paddingTopLeft: [isMobile ? 16 : 390, 40],
+      paddingBottomRight: [40, isMobile ? 110 : 40],
+      maxZoom,
+      animate: false
+    });
+  }
+
+  function visiblePlaces() {
+    const cap = currentCap();
+    return places.filter(p =>
+      p.priceValue != null &&
+      p.priceValue <= cap + 0.001 &&
+      (!hideTrucks || !p.isTruck) &&
+      (ownershipFilter === "all" ||
+        (ownershipFilter === "chain" ? p.chain === true : p.chain !== true)) &&
+      (!filterRating || (p.rating != null && p.rating >= 4)) &&
+      (!filterMoreDays || p.moreDays)
+    );
+  }
+
+  function refresh() {
+    updateCapLabels();
+    const items = visiblePlaces();
+    const sorted = [...items].sort(
+      currentLoc ? (a, b) => a._dist - b._dist : (a, b) => a.id - b.id
+    );
+
+    markerLayer.clearLayers();
+    sorted.forEach(p => markerLayer.addLayer(markers[p.id]));
+    preloadPhotos(sorted);
+
+    const tierSuffix = ` · ≤$${currentCap().toFixed(2)}`;
+    const ownershipSuffix = ownershipFilter === "all" ? "" : ownershipFilter === "chain" ? " · chains" : " · independent";
+    const filtersActive = filterRating || filterMoreDays || ownershipFilter !== "all";
+    const title = currentLoc
+      ? `Nearest to ${currentLoc.label}${tierSuffix}${ownershipSuffix}`
+      : (filtersActive
+          ? `${sorted.length} filtered spots${tierSuffix}${ownershipSuffix}`
+          : `All ${sorted.length} spots${tierSuffix}`);
+    renderList(sorted, title, !!currentLoc);
+
+    document.getElementById("hudCount").textContent = sorted.length;
+
+    if (currentLoc) {
+      statusEl.textContent = `${currentLoc.label} — ${sorted.length} spots sorted by distance`;
+      statusEl.className = "status ok";
+      const focusCity = currentLoc.isCity ? cities[activeCityKey] : null;
+      if (focusCity && focusCity.note) {
+        statusEl.textContent = focusCity.note;
+        statusEl.className = "status";
+      }
+      hudSub.textContent = sorted.length
+        ? `Nearest: ${sorted[0].name} — ${sorted[0]._dist.toFixed(1)} mi`
+        : "No spots match those filters.";
+      if (sorted.length) {
+        fitNearest(
+          currentLoc,
+          sorted.slice(0, currentLoc.isCity ? 3 : 5),
+          currentLoc.isCity ? 13 : 11
+        );
+      }
+    } else {
+      statusEl.textContent = filtersActive
+        ? `${sorted.length} spots match the filters.`
+        : "Enter a location to sort by distance.";
+      statusEl.className = "status";
+      hudSub.textContent = filtersActive
+        ? `${sorted.length} spots match the filters.`
+        : "Search an address or ZIP to sort by distance.";
+      if (sorted.length) fitPlaces(sorted);
+    }
+    setTimeout(spreadMarkers, 60);
+  }
+
+  function spreadMarkers() {
+    const zoom = map.getZoom();
+    const items = places
+      .map(p => ({ p, m: markers[p.id], pt: map.project([p.lat, p.lng], zoom) }))
+      .filter(o => markerLayer.hasLayer(o.m));
+
+    const used = new Set();
+    const groups = [];
+
+    items.forEach((o, i) => {
+      if (used.has(i)) return;
+      const group = [i];
+      used.add(i);
+      for (let k = 0; k < group.length; k++) {
+        const base = items[group[k]].pt;
+        items.forEach((q, j) => {
+          if (used.has(j)) return;
+          if (base.distanceTo(q.pt) < 26) {
+            used.add(j);
+            group.push(j);
+          }
+        });
+      }
+      groups.push(group.map(idx => items[idx]));
+    });
+
+    groups.forEach(group => {
+      if (group.length === 1) {
+        group[0].m.setIcon(pinIcon(group[0].p, 0, 0));
+        return;
+      }
+      const cx = group.reduce((sum, o) => sum + o.pt.x, 0) / group.length;
+      const cy = group.reduce((sum, o) => sum + o.pt.y, 0) / group.length;
+
+      // Pack the group into a compact grid instead of a ring, so the middle
+      // stays filled and the pins sit next to each other without overlapping.
+      const spacing = 24.5;
+      const cols = Math.ceil(Math.sqrt(group.length));
+      const rows = Math.ceil(group.length / cols);
+      const slots = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          slots.push({
+            x: (c - (cols - 1) / 2) * spacing,
+            y: (r - (rows - 1) / 2) * spacing
+          });
+        }
+      }
+      while (slots.length > group.length) slots.pop();
+      const slotCx = slots.reduce((sum, s) => sum + s.x, 0) / slots.length;
+      const slotCy = slots.reduce((sum, s) => sum + s.y, 0) / slots.length;
+
+      const remaining = slots.map(s => ({ x: s.x - slotCx, y: s.y - slotCy }));
+      const ordered = [...group].sort(
+        (a, b) => a.pt.distanceTo(L.point(cx, cy)) - b.pt.distanceTo(L.point(cx, cy))
+      );
+
+      ordered.forEach(o => {
+        let best = 0;
+        let bestDist = Infinity;
+        remaining.forEach((s, idx) => {
+          const d = Math.hypot(s.x - (o.pt.x - cx), s.y - (o.pt.y - cy));
+          if (d < bestDist) { bestDist = d; best = idx; }
+        });
+        const slot = remaining.splice(best, 1)[0];
+        o.m.setIcon(pinIcon(o.p, slot.x - (o.pt.x - cx), slot.y - (o.pt.y - cy)));
+      });
+    });
+  }
+
+  map.on("zoomend", spreadMarkers);
+
+  // ---------------- GEOCODING ----------------
+  async function geocode(raw) {
+    const q = raw.trim();
+    const state = activeState || "Illinois";
+    const stateAbbr = activeStateAbbr || "IL";
+    const statePattern = activeAltState
+      ? `\\b${stateAbbr}\\b|${state}|\\b${activeAltStateAbbr}\\b|${activeAltState}`
+      : `\\b${stateAbbr}\\b|${state}`;
+    const hasState = new RegExp(statePattern, "i").test(q);
+    const nycZip = /^\d{5}$/.test(q) && /^(10[0-4]\d\d|11[0-6]\d\d)$/.test(q);
+    const nycIntent = nycZip || /\b(manhattan|new york|nyc|brooklyn|queens|bronx|staten island|williamsburg|bushwick|bed[- ]?stuy|sunset park|park slope|crown heights|flatbush|bay ridge|greenpoint|carroll gardens|red hook|dumbo)\b/i.test(q);
+    const southJerseyIntent = /\b(camden|cherry hill|collingswood|pennsauken|haddonfield|voorhees|maple shade|merchantville|gloucester city|westmont|haddon township)\b/i.test(q);
+    const preferredState = activeAltState && (nycIntent || southJerseyIntent) ? activeAltState : state;
+    const withState = hasState ? q : `${q}, ${preferredState}`;
+
+    const zipMatch = q.match(/^(\d{5})(?:-\d{4})?$/);
+    if (zipMatch) {
+      const zip = zipMatch[1];
+      try {
+        const z = await fetch(`https://api.zippopotam.us/us/${zip}`).then(r => r.json());
+        if (z.places && z.places.length) {
+          const p = z.places[0];
+          return {
+            lat: +p.latitude,
+            lng: +p.longitude,
+            label: `${p["place name"]}, ${p["state abbreviation"]} ${zip}`
+          };
+        }
+      } catch (e) { /* fall through */ }
+    }
+
+    // Nominatim is stricter than autocomplete geocoders, so garbage doesn't
+    // silently resolve to a random storefront.
+    async function nominatim(query) {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&countrycodes=us&accept-language=en&q=${encodeURIComponent(query)}`,
+        { headers: { Accept: "application/json" } }
+      );
+      if (!res.ok) throw new Error("geocoder unavailable");
+      return res.json();
+    }
+
+    async function photon(query) {
+      const res = await fetch(
+        `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=1&lang=en`
+      );
+      if (!res.ok) return null;
+      const data = await res.json();
+      const f = data.features && data.features[0];
+      if (!f) return null;
+      const [lng, lat] = f.geometry.coordinates;
+      const p = f.properties || {};
+      const label = [p.name, p.city || p.town || p.village, p.state, p.postcode]
+        .filter(Boolean)
+        .join(", ");
+      return { lat, lng, label: label || query };
+    }
+
+    let d = [];
+    try {
+      d = await nominatim(withState);
+      if (!d.length && !hasState) {
+        const fallbackState = preferredState === state ? activeAltState : state;
+        if (fallbackState) d = await nominatim(`${q}, ${fallbackState}`);
+      }
+    } catch (e) {
+      d = [];
+    }
+
+    if (!d.length) {
+      const fallbackQueries = [withState];
+      if (!hasState) {
+        const fallbackState = preferredState === state ? activeAltState : state;
+        if (fallbackState) fallbackQueries.push(`${q}, ${fallbackState}`);
+      }
+      for (const query of fallbackQueries) {
+        try {
+          const hit = await photon(query);
+          if (hit) return hit;
+        } catch (e) { /* try next */ }
+      }
+      throw new Error("not found");
+    }
+
+    const hit = d[0];
+    const a = hit.address || {};
+    const city = a.city || a.town || a.village || a.municipality || a.county;
+    const borough = a.borough || a.suburb;
+    const neighborhood = a.neighbourhood || a.quarter;
+    const st = a.state || a.state_code;
+    const road = a.road || a.pedestrian;
+    const house = a.house_number;
+    const parts = [];
+    if (house && road) parts.push(`${house} ${road}`);
+    else if (road) parts.push(road);
+    if (neighborhood && neighborhood !== city && neighborhood !== road) parts.push(neighborhood);
+    if (borough && borough !== city && borough !== neighborhood) parts.push(borough);
+    if (city) parts.push(city);
+    if (st && parts[parts.length - 1] !== st) parts.push(st);
+
+    return {
+      lat: +hit.lat,
+      lng: +hit.lon,
+      label: parts.join(", ") || hit.display_name.split(",").slice(0, 3).join(", ")
+    };
+  }
+
+  function applyLocation(loc) {
+    if (userMarker) map.removeLayer(userMarker);
+    userMarker = L.marker([loc.lat, loc.lng], {
+      icon: youIcon,
+      zIndexOffset: 1000
+    }).addTo(map);
+    userMarker.bindPopup(`<strong>Your search</strong><br><span style="color:#666">${loc.label}</span>`);
+    userMarker.bindTooltip("You", {
+      permanent: true,
+      direction: "top",
+      className: "you-label",
+      offset: [0, -10]
+    });
+
+    places.forEach(p => {
+      p._dist = haversine(loc.lat, loc.lng, p.lat, p.lng);
+    });
+
+    currentLoc = loc;
+    clearBtn.style.display = "inline";
+    refresh();
+  }
+
+  async function searchLocation(raw) {
+    const q = raw.trim();
+    if (!q || searching) return;
+    const seq = ++searchSeq;
+    const cacheKey = `${activeStateAbbr}|${q.toLowerCase()}`;
+    searching = true;
+    const btn = document.querySelector('#searchForm button[type="submit"]');
+    btn.disabled = true;
+    statusEl.textContent = "Searching…";
+    statusEl.className = "status";
+    try {
+      const loc = geocodeCache.has(cacheKey)
+        ? geocodeCache.get(cacheKey)
+        : await geocode(q);
+      if (seq !== searchSeq) return;
+      geocodeCache.set(cacheKey, loc);
+      applyLocation(loc);
+    } catch (e) {
+      if (seq !== searchSeq) return;
+      const hint = activeAltStateAbbr
+        ? `', ${activeStateAbbr}' or ', ${activeAltStateAbbr}'`
+        : `', ${activeStateAbbr}'`;
+      statusEl.textContent = `Couldn't find that. Try a ZIP or add ${hint}.`;
+      statusEl.className = "status err";
+    } finally {
+      if (seq === searchSeq) {
+        searching = false;
+        btn.disabled = false;
+      }
+    }
+  }
+
+  function clearSearch() {
+    if (userMarker) {
+      map.removeLayer(userMarker);
+      userMarker = null;
+    }
+    const city = cities[activeCityKey];
+    if (city && city.focus) {
+      currentLoc = { ...city.focus, isCity: true };
+      places.forEach(p => {
+        p._dist = haversine(currentLoc.lat, currentLoc.lng, p.lat, p.lng);
+      });
+    } else {
+      currentLoc = null;
+      places.forEach(p => {
+        delete p._dist;
+      });
+    }
+    clearBtn.style.display = "none";
+    refresh();
+  }
+
+  let toastTimer = null;
+
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+  }
+
+  function reportOutdated(id) {
+    const p = places.find(x => x.id === id);
+    if (!p) return;
+    const text = [
+      `Outdated taco deal: ${p.name}`,
+      `Address: ${p.addr}`,
+      `Listed: ${p.price} · ${p.when}`,
+      `Conditions: ${p.conditions}`,
+      `Last checked: ${p.verified}`
+    ].join("\n");
+
+    const copyFallback = () => {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); showToast("Report copied — paste it in chat or send it to me."); }
+      catch (e) { showToast("Couldn't copy the report."); }
+      document.body.removeChild(ta);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(
+        () => showToast("Report copied — paste it in chat or send it to me."),
+        copyFallback
+      );
+    } else {
+      copyFallback();
+    }
+  }
+
+  // ---------------- EVENTS ----------------
+  document.getElementById("searchForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    searchLocation(qInput.value);
+  });
+
+  const regionTabButtons = [...document.querySelectorAll(".region-tab")];
+  regionTabButtons.forEach((btn, idx) => {
+    btn.addEventListener("mouseenter", function () {
+      prefetchCityTiles(btn.dataset.city, true);
+    });
+    btn.addEventListener("focus", function () {
+      prefetchCityTiles(btn.dataset.city, true);
+    });
+    btn.addEventListener("click", function () {
+      loadCity(btn.dataset.city, { collapse: true });
+    });
+    btn.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      e.preventDefault();
+      const dir = e.key === "ArrowRight" ? 1 : -1;
+      const next = regionTabButtons[(idx + dir + regionTabButtons.length) % regionTabButtons.length];
+      next.focus();
+      next.click();
+    });
+  });
+
+  document.getElementById("locate").addEventListener("click", function () {
+    if (!navigator.geolocation) {
+      statusEl.textContent = "Geolocation isn't supported — enter a ZIP instead.";
+      statusEl.className = "status err";
+      return;
+    }
+    statusEl.textContent = "Locating…";
+    statusEl.className = "status";
+    navigator.geolocation.getCurrentPosition(
+      pos => applyLocation({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        label: "Your current location"
+      }),
+      () => {
+        statusEl.textContent = "Location blocked — enter a ZIP instead.";
+        statusEl.className = "status err";
+      },
+      { timeout: 9000, maximumAge: 60000 }
+    );
+  });
+
+  clearBtn.addEventListener("click", clearSearch);
+
+  document.addEventListener("click", function (e) {
+    const reportBtn = e.target.closest(".report-link");
+    if (reportBtn) reportOutdated(Number(reportBtn.dataset.id));
+  });
+
+  filterRatingBtn.addEventListener("click", function () {
+    filterRating = !filterRating;
+    filterRatingBtn.classList.toggle("active", filterRating);
+    filterRatingBtn.setAttribute("aria-pressed", String(filterRating));
+    refresh();
+  });
+
+  filterDaysBtn.addEventListener("click", function () {
+    filterMoreDays = !filterMoreDays;
+    filterDaysBtn.classList.toggle("active", filterMoreDays);
+    filterDaysBtn.setAttribute("aria-pressed", String(filterMoreDays));
+    refresh();
+  });
+
+  document.getElementById("mapStyle").addEventListener("change", function (e) {
+    prefetchQueue.length = 0;
+    prefetchedCityTiles.clear();
+    setMapStyle(e.target.value, { toast: true });
+  });
+
+  ownershipSelect.addEventListener("change", function (e) {
+    ownershipFilter = e.target.value;
+    refresh();
+  });
+
+  filterTrucksBtn.addEventListener("click", function () {
+    hideTrucks = !hideTrucks;
+    filterTrucksBtn.classList.toggle("active", hideTrucks);
+    filterTrucksBtn.setAttribute("aria-pressed", String(hideTrucks));
+    filterTrucksBtn.textContent = hideTrucks ? "Show food trucks" : "Hide food trucks";
+    refresh();
+  });
+
+  priceSlider.addEventListener("input", function () {
+    priceTier = ["strict", "extended", "value"][Number(priceSlider.value)] || "value";
+    updateCapLabels();
+    refresh();
+  });
+
+  // ---------------- INIT ----------------
+  const requestedCity = new URLSearchParams(window.location.search).get("region");
+  const nycAliases = ["jerseycity", "manhattan", "northbergen", "newark", "nyc"];
+  const initialCity = cities[requestedCity]
+    ? requestedCity
+    : (nycAliases.includes(requestedCity) ? "nycnj" : "chicago");
+  loadCity(initialCity);
+  warmOtherCities();
+</script>
+</body>
+</html>

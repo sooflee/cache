@@ -417,6 +417,7 @@ STANDALONE = []
 #                  archive; linked out to its running version in a new tab.
 # (target, label, local). Targets for local apps are repo-root-relative dirs.
 STANDALONE_APPS = [
+	("tacos/", "Taco Tuesday Atlas", True),
 	("whismur/", "Tone Skill Builder", True),
 	("https://www.bwang.io/ekans/", "Trading Signals", False),
 	("https://www.bwang.io/muk/", "Energy Trading Primer", False),
