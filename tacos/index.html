@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Taco Tuesday Atlas</title>
 <meta name="description" content="Find al pastor Taco Tuesday deals across Chicago, Philadelphia, NYC/NJ, Greater LA, San Diego, and Las Vegas." />
 <meta name="theme-color" content="#2e7d32" />
@@ -50,19 +50,27 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    z-index: 2;
-    width: 25px;
-    height: 25px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 34px;
+    height: 34px;
     padding: 0;
-    border: 1px solid #e2e2da;
+    border: 1.5px solid var(--green-dark);
     border-radius: 999px;
-    background: #fff;
-    color: #4a534d;
-    font-size: 18px;
+    background: var(--green-dark);
+    color: #fff;
+    font-size: 21px;
+    font-weight: 800;
     line-height: 1;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.28);
     cursor: pointer;
   }
-  .panel-hide:hover { background: #f6f8f3; }
+  .panel-hide:hover { background: var(--green); border-color: var(--green); }
+  .panel-hide:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .panel-hide-text { display: none; }
   .panel-show {
     position: absolute;
     top: 16px;
@@ -70,25 +78,52 @@
     z-index: 1100;
     display: none;
     align-items: center;
-    gap: 6px;
-    border: 1px solid #d9ded6;
+    gap: 7px;
+    border: 1.5px solid var(--green-dark);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.96);
-    color: #2e3a32;
-    padding: 7px 12px;
+    background: var(--green-dark);
+    color: #fff;
+    padding: 9px 15px;
     font: inherit;
-    font-size: 11px;
-    font-weight: 700;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32);
     cursor: pointer;
   }
-  .panel-show:hover { background: #f6f8f3; }
+  .panel-show:hover { background: var(--green); border-color: var(--green); }
+  .panel-show:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .panel-show-icon { flex: none; }
   body.tray-hidden .panel-show { display: inline-flex; }
   @media (min-width: 721px) {
     body.tray-hidden .panel { transform: translateX(calc(-100% - 24px)); }
   }
   @media (max-width: 720px) {
-    .panel-hide, .panel-show { display: none !important; }
+    .panel-hide { display: block; }
+    .panel-show { display: none; }
+    .panel.collapsed ~ .panel-show { display: inline-flex; }
+    .panel.collapsed .panel-hide { display: none; }
+    .panel-show {
+      top: calc(16px + env(safe-area-inset-top));
+      min-height: 46px;
+      padding: 0 18px;
+      gap: 9px;
+      font-size: 14px;
+    }
+    .leaflet-top { margin-top: env(safe-area-inset-top); }
+    .panel-hide {
+      display: inline-flex;
+      width: auto;
+      height: 40px;
+      padding: 0 14px;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .panel-hide-icon { font-size: 19px; line-height: 1; transform: rotate(-90deg); }
+    .panel-show-icon { width: 17px; height: 17px; }
+    .panel-hide-text { display: inline; }
+    .panel-head h1 { padding-right: 78px; }
   }
   .kicker {
     font-size: 10.5px;
@@ -233,6 +268,7 @@
   }
   .locate:hover { text-decoration: underline; }
 
+  .options-toggle { display: none; }
   .filters {
     display: flex;
     flex-wrap: wrap;
@@ -612,8 +648,6 @@
     color: #8a918c;
     margin: -3px 0 7px;
   }
-  .sheet-handle { display: none; }
-
   @media (max-width: 720px) {
     .panel {
       top: auto;
@@ -621,31 +655,35 @@
       right: 0;
       bottom: 0;
       width: 100%;
-      max-height: 78vh;
+      max-height: 84vh;
       border-radius: 18px 18px 0 0;
       transition: max-height 0.25s ease;
     }
     .panel.collapsed { max-height: 92px; }
+    .options-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 8px;
+      border: 1px solid #e2e2da;
+      border-radius: 9px;
+      background: #fff;
+      color: #4a534d;
+      padding: 7px 10px;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .options-toggle .chev { font-size: 13px; transition: transform 0.18s ease; }
+    .options-toggle[aria-expanded="true"] .chev { transform: rotate(180deg); }
+    .options { display: none; }
+    .options.open { display: block; }
     .panel.collapsed .legend,
     .panel.collapsed .region-tabs,
     .panel.collapsed .search,
     .panel.collapsed .list { display: none; }
-    .sheet-handle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      background: transparent;
-      padding: 8px 0 2px;
-      cursor: pointer;
-    }
-    .sheet-handle span {
-      width: 36px;
-      height: 4px;
-      border-radius: 999px;
-      background: #cfcfc6;
-      display: block;
-    }
     .legend-note { display: none; }
     .hud { display: none; }
     .list { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
@@ -657,8 +695,7 @@
 <div id="map"></div>
 
 <aside class="panel" id="panel">
-  <button class="panel-hide" id="panelHide" aria-label="Hide search panel" title="Hide search panel">‹</button>
-  <button class="sheet-handle" id="sheetToggle" aria-label="Collapse panel" aria-expanded="true"><span></span></button>
+  <button class="panel-hide" id="panelHide" aria-label="Hide search panel" title="Hide search panel"><span class="panel-hide-icon" aria-hidden="true">‹</span><span class="panel-hide-text">Hide</span></button>
   <div class="panel-head">
     <div class="kicker" id="kicker">Al pastor edition · ≤ $1.60 per taco</div>
     <h1 id="mapTitle">Taco Tuesday, Chicagoland</h1>
@@ -684,6 +721,10 @@
       <input id="q" type="text" autocomplete="postal-code" placeholder="Address or ZIP code" aria-label="Address or ZIP code" />
       <button type="submit">Find</button>
     </form>
+    <button class="options-toggle" id="optionsToggle" aria-expanded="false" aria-controls="options">
+      <span>Filters &amp; options</span><span class="chev" aria-hidden="true">⌄</span>
+    </button>
+    <div class="options" id="options">
     <div class="price-slider">
       <div class="price-slider-row">
         <span>Max per taco</span>
@@ -719,14 +760,15 @@
         <option value="chain">Chains</option>
       </select>
     </div>
-    <div class="status" id="status"></div>
     <button class="locate" id="locate">Use my current location</button>
+    </div>
+    <div class="status" id="status"></div>
     <button class="locate" id="clear" style="display:none">Clear search</button>
   </div>
 
   <div class="list" id="list"></div>
 </aside>
-<button class="panel-show" id="panelShow" aria-label="Show search panel">‹ Search</button>
+<button class="panel-show" id="panelShow" aria-label="Show search panel"><svg class="panel-show-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span>Search</span></button>
 
 <div class="hud">
   <strong id="hudCount">19</strong> spots · <span id="hudRegion">Chicagoland</span> · <span id="hudCap">≤ $1.60/taco</span>
@@ -787,7 +829,7 @@
       base: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
       labels: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
       attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
-      filter: "none"
+      filter: "brightness(1.24) contrast(1.05)"
     },
     terrain: {
       label: "Terrain",
@@ -963,12 +1005,23 @@
   const panelEl = document.getElementById("panel");
   const panelHide = document.getElementById("panelHide");
   const panelShow = document.getElementById("panelShow");
-  const sheetToggle = document.getElementById("sheetToggle");
-  sheetToggle.addEventListener("click", function () {
-    const collapsed = panelEl.classList.toggle("collapsed");
-    sheetToggle.setAttribute("aria-expanded", String(!collapsed));
-    sheetToggle.setAttribute("aria-label", collapsed ? "Expand panel" : "Collapse panel");
+  const optionsToggle = document.getElementById("optionsToggle");
+  const optionsPanel = document.getElementById("options");
+
+  function setOptionsOpen(open) {
+    optionsPanel.classList.toggle("open", open);
+    optionsToggle.setAttribute("aria-expanded", String(open));
+    optionsToggle.querySelector("span").textContent = open ? "Hide options" : "Filters & options";
+  }
+
+  optionsToggle.addEventListener("click", function () {
+    setOptionsOpen(!optionsPanel.classList.contains("open"));
   });
+
+  function setSheetCollapsed(collapsed) {
+    panelEl.classList.toggle("collapsed", collapsed);
+    if (collapsed) setOptionsOpen(false);
+  }
 
   function setTrayHidden(hidden) {
     trayHidden = hidden;
@@ -979,8 +1032,14 @@
     // invalidate here: that would trigger a second round of tile loading.
   }
 
-  panelHide.addEventListener("click", () => setTrayHidden(true));
-  panelShow.addEventListener("click", () => setTrayHidden(false));
+  panelHide.addEventListener("click", () => {
+    if (isMobile) setSheetCollapsed(true);
+    else setTrayHidden(true);
+  });
+  panelShow.addEventListener("click", () => {
+    if (isMobile) setSheetCollapsed(false);
+    else setTrayHidden(false);
+  });
 
   // ---------------- STATE ----------------
   const markers = {};
@@ -1224,11 +1283,7 @@
     statusEl.textContent = "";
     statusEl.className = "status";
 
-    if (isMobile && options && options.collapse) {
-      panelEl.classList.add("collapsed");
-      sheetToggle.setAttribute("aria-expanded", "false");
-      sheetToggle.setAttribute("aria-label", "Expand panel");
-    }
+    if (isMobile && options && options.collapse) setSheetCollapsed(true);
 
     mapTitle.textContent = city.focus
       ? `Taco Tuesday, near ${city.label}`
@@ -1304,11 +1359,7 @@
   }
 
   function focusPlace(p) {
-    if (isMobile) {
-      panelEl.classList.add("collapsed");
-      sheetToggle.setAttribute("aria-expanded", "false");
-      sheetToggle.setAttribute("aria-label", "Expand panel");
-    }
+    if (isMobile) setSheetCollapsed(true);
     const seq = ++focusSeq;
     preloadPhoto(p.photo);
     const openPopup = function () {
@@ -1481,6 +1532,10 @@
   }
 
   map.on("zoomend", spreadMarkers);
+
+  map.on("click", function () {
+    if (isMobile && !panelEl.classList.contains("collapsed")) setSheetCollapsed(true);
+  });
 
   // ---------------- GEOCODING ----------------
   async function geocode(raw) {
@@ -1810,6 +1865,7 @@
     ? requestedCity
     : (nycAliases.includes(requestedCity) ? "nycnj" : "chicago");
   loadCity(initialCity);
+  if (isMobile) setSheetCollapsed(true);
   warmOtherCities();
 </script>
 </body>
