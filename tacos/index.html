@@ -799,14 +799,17 @@
 
     const select = document.getElementById("mapStyle");
     if (select) select.value = styleKey;
-    try { localStorage.setItem("tacoMapStyle", styleKey); } catch (e) { /* private mode */ }
+    try { localStorage.setItem("tacoMapStyleV2", styleKey); } catch (e) { /* private mode */ }
     if (opts && opts.toast) showToast(`Map style: ${style.label}`);
   }
 
   const savedStyle = (() => {
-    try { return localStorage.getItem("tacoMapStyle"); } catch (e) { return null; }
+    try {
+      // V2 makes Dark the new default while still remembering an explicit choice.
+      return localStorage.getItem("tacoMapStyleV2");
+    } catch (e) { return null; }
   })();
-  setMapStyle(MAP_STYLES[savedStyle] ? savedStyle : "street");
+  setMapStyle(MAP_STYLES[savedStyle] ? savedStyle : "dark");
 
 
   const isMobile = window.matchMedia("(max-width: 720px)").matches;
