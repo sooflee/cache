@@ -86,7 +86,7 @@ body#subpage #wrapper article {
 
 		<article id="post-body" class="norm h-entry "><h2 id="title" class="p-name dated">api in rust</h2><time class="dt-published" datetime="2021-05-23T23:30:21Z" pubdate itemprop="datePublished" content="2021-05-23 23:30:21 &#43;0000 UTC">May 23, 2021</time><div class="e-content"><p>After some notes in rust, I created a rust app in rust deployed on Google Kubernetes Engine (GKE).</p>
 
-<p>Here are some of the tooling/stack I went with. I started with the basic diesel example in <a href="https://github.com/actix/examples/tree/master/diesel">actix/examples/diesel</a> to bring up something with basic get/post features.</p>
+<p>Here are some of the tooling/stack I went with. I started with the basic diesel example in <a href="https://github.com/actix/examples/tree/main/databases/diesel">actix/examples/diesel</a> to bring up something with basic get/post features.</p>
 <ul><li>Dev Tooling
 <ul><li>Use <code>systemfd cargo-watch</code> to automatically rebuild your code and watch for change. <code>systemfd</code> works by creating a parallel process, and then works with conjunction with <code>cargo watch</code> to reload your app whenever you save. Sometimes the reload doesn&#39;t work as intended; I had a weird bug where I had to restart whenever I added a new endpoint.</li></ul></li></ul>
 
@@ -490,7 +490,7 @@ let sum = x + y;
 
 <p>You can use nested paths to put a bunch of use things together like so: <code>use std::{cmp::Ordering, io};</code> or <code>use std::io::{self, Write};</code> (<code>self</code> references itself). You can also use the glob operator to bring all public items into scope like so: <code>use std::collections::*;</code></p>
 
-<p>Put external packages into <code>Cargo.toml</code> under dependencies. A bunch of them are available at <a href="https://blog.bwang.io/notes-on-rust-part-1/crates.io">crates.io</a>. The standard library (e.g. <code>use std::collections:Hashmap;</code>) is automatically imported.</p>
+<p>Put external packages into <code>Cargo.toml</code> under dependencies. A bunch of them are available at <a href="https://crates.io/">crates.io</a>. The standard library (e.g. <code>use std::collections:Hashmap;</code>) is automatically imported.</p>
 <ul><li>Start relative paths with the <code>super</code> keyword, e.g:</li></ul>
 
 <pre><code>  // example 14
@@ -559,7 +559,7 @@ let row = vec![
 <li><p>Unrecoverable errors</p>
 <ul><li>calls <code>panic!</code></li></ul></li></ol>
 
-<p>You can use <code>unwrap</code> to <a href="https://learning-rust.github.io/docs/e4.unwrap_and_expect.html">directly</a> access the <code>Some()</code> value of a result. Likewise, you <code>expect</code> is the same but can also return a custom panic statement.</p>
+<p>You can use <code>unwrap</code> to <a href="https://learning-rust.github.io/docs/unwrap-and-expect/">directly</a> access the <code>Some()</code> value of a result. Likewise, you <code>expect</code> is the same but can also return a custom panic statement.</p>
 
 <p>Another super common pattern in rust is error propagation. The code below are the same. We can place the <code>?</code> operator after a <code>Result</code> value to return an Error value, else return an Ok value.</p>
 

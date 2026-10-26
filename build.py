@@ -341,13 +341,13 @@ TITLE_OVERRIDES = {
 # that read like reading but aren't pages in this archive, so they're linked out
 # to instead of built. (target, label).
 READING_LINKS = [
-	("https://www.bwang.io/magikarp/", "Newsletter"),
+	("https://www.bwang.io/newsletter/", "Newsletter"),
 ]
 READING = [
 	("ipos-spacex", "elekid", "Will the SpaceX IPO Beat the Market?"),
+	("iran-war", None, "The Iran War"),
 	("smartphone-addiction", None, "Predicting Smartphone Addiction"),
 	("kaggriculture", None, "Improving Kaggriculture Bot"),
-	("iran-war", None, "The Iran War"),
 	("kimi-vs-claude", None, "Open vs Closed Models"),
 	("klefki", None, "Penetration Testing with Claude Code"),
 	("world-cup-2026", "golem", "Who Will Win the 2026 World Cup?"),
@@ -419,8 +419,7 @@ STANDALONE = []
 STANDALONE_APPS = [
 	("tacos/", "Taco Tuesday Atlas", True),
 	("whismur/", "Tone Skill Builder", True),
-	("https://www.bwang.io/ekans/", "Trading Signals", False),
-	("https://www.bwang.io/muk/", "Energy Trading Primer", False),
+	("https://www.bwang.io/energy/", "Energy Trading Primer", False),
 	("https://chansey.bwang.io", "Medical RAG", False),
 	("https://arbitrage.bwang.io", "Arbitrage Finder", False),
 	("https://stonks.bwang.io/", "Stock Picker", False),

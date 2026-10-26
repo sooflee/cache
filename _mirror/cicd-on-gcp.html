@@ -26,14 +26,12 @@
 		<meta name="twitter:card" content="summary_large_image">
 		<meta name="twitter:description" content="\[This post was originally written in 2020.\]  This post is dedicated primarily on making a cicd pipeline, a pretty generic boilerplate p...">
 		<meta name="twitter:title" content="cicd on gcp &#43; sql &mdash; cache">
-		<meta name="twitter:image" content="https://blog.bwang.io/content/images/2020/10/image-20201012224313973.png">
 		<meta property="og:title" content="cicd on gcp &#43; sql" />
 		<meta property="og:description" content="\[This post was originally written in 2020.\]  This post is dedicated primarily on making a cicd pipeline, a pretty generic boilerplate p..." />
 		<meta property="og:site_name" content="cache" />
 		<meta property="og:type" content="article" />
 		<meta property="og:url" content="https://cache.bwang.io/cicd-on-gcp" />
 		<meta property="og:updated_time" content="2020-12-16T02:20:52Z" />
-		<meta property="og:image" content="https://blog.bwang.io/content/images/2020/10/image-20201012224313973.png" />
 		<meta property="article:published_time" content="2020-12-16T02:20:52Z">
 		
 		
@@ -92,17 +90,14 @@ body#subpage #wrapper article {
 
 <p>My trigger is defined as any changes to my master branch, and my cloudbuild.yml file has pretty self-explanatory steps: run a test, build docker image, push docker image (and optionally deploy docker image).</p>
 
-<p>This <a href="https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build">tutorial</a>, which is what I&#39;m generally following, has a separate branch that has a separate cloudbuild.yaml file to manage deployment. This way, the CI step which is generally managed by the developer is decoupled from the CD step, which is generally managed by automated <a href="https://cloud.google.com/kubernetes-engine/images/gitops-tutorial-pipeline-flow.svg">systems</a>. The CD step uses the <a href="https://blog.bwang.io/cicd-pipeline-cloud-build/gcr.io/cloud-builders/kubectl">kubectl builder</a> to automatically link a cluster to deploy, which is a nice abstraction. I made some custom modifications to conform to the way I want feature-branch tested and the final result deployed.</p>
+<p>This <a href="https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build">tutorial</a>, which is what I&#39;m generally following, has a separate branch that has a separate cloudbuild.yaml file to manage deployment. This way, the CI step which is generally managed by the developer is decoupled from the CD step, which is generally managed by automated <a href="https://cloud.google.com/kubernetes-engine/images/gitops-tutorial-pipeline-flow.svg">systems</a>. The CD step uses the kubectl builder to automatically link a cluster to deploy, which is a nice abstraction. I made some custom modifications to conform to the way I want feature-branch tested and the final result deployed.</p>
 
 <p>Feature branch runs test and builds docker image.</p>
 
-<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201012224313973.png" alt="image-20201012224313973"/></p>
 
-<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201012224339864.png" alt="image-20201012224339864"/></p>
 
 <p>Master branch runs test, builds, pushes image, and deploys</p>
 
-<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201012230527371.png" alt="image-20201012230527371"/></p>
 
 <p>Cool! Everything works like a charm. You can also do more <a href="https://cloud.google.com/cloud-build/docs/build-config">fancy things</a>. I think if you have more complex docker images, you can simply layer images on top of the GCP builder images. These A-records are mapped to LoadBalancer IPs:</p>
 
@@ -110,7 +105,6 @@ body#subpage #wrapper article {
 
 <p>I&#39;m using postgresql as the backend hosted on <a href="https://cloud.google.com/sql">Cloud SQL</a>; it&#39;s a managed database service that does scaling, security, and backups for you. For postgres tooling, everything I&#39;m using is pretty standard: psycopg2/sqlalchemy/alembic via the flask ecosystem.</p>
 
-<p><img src="https://blog.bwang.io/content/images/2020/10/image-20201021224538288-1.png" alt="image-20201021224538288-1"/></p>
 
 <p>Anyways, everything works great! I can also see it exposed on a lightweight front end I made.</p>
 
